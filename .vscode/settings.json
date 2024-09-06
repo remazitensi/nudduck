@@ -2,8 +2,10 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.ts": "always", // explicit",
     "source.fixAll": "always",
-    "source.fixAll.eslint":"always",
+    "source.fixAll.eslint": "always",
     "source.fixAll.stylelint": "always",
-    "source.organizeImports": "always",
-  }
+    "source.organizeImports": "always"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
