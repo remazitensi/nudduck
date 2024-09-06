@@ -1,3 +1,9 @@
 {
-  "cSpell.words": ["pretendard"]
+  "editor.codeActionsOnSave": {
+    "source.fixAll.ts": "always", // explicit",
+    "source.fixAll": "always",
+    "source.fixAll.eslint":"always",
+    "source.fixAll.stylelint": "always",
+    "source.organizeImports": "always",
+  }
 }
