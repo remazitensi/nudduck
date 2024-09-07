@@ -7,9 +7,18 @@ module.exports = {
   singleQuote: true,
   quoteProps: 'as-needed',
   trailingComma: 'all',
-  bracketSpacing: true,  
+  bracketSpacing: true,
   jsxSingleQuote: true,
   jsxBracketSameLine: false,
   arrowParens: 'always',
   parser: 'typescript',
-}
+  plugins: ['prettier-plugin-tailwindcss'],
+  overrides: [
+    {
+      files: '*.css',
+      options: {
+        parser: 'css',
+      },
+    },
+  ],
+};
