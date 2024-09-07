@@ -1,17 +1,24 @@
 import { Module } from '@nestjs/common';
-import { ChatController } from 'modules/chat/chat-controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from 'modules/auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CommunityController } from './modules/community/community-controller';
-import { ExpertController } from './modules/expert/expert-controller';
-import { IntroController } from './modules/intro-controller';
-import { LifeGraphController } from './modules/lifeGraph/life-graph-controller';
-import { SimulationController } from './modules/simulation/simulation-controller';
-import { UserController } from './modules/user/user-controller';
 
 @Module({
-  imports: [],
-  controllers: [AppController, IntroController, UserController, SimulationController, CommunityController, ChatController, ExpertController, LifeGraphController],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost', // MySQL 서버의 호스트
+      port: 3306, // MySQL 서버 포트
+      username: 'Lsiron', // MySQL 사용자 이름
+      password: '971209', // MySQL 사용자 비밀번호
+      database: 'nudduck', // MySQL 데이터베이스 이름
+      entities: [__dirname + '/**/*.entity{.ts,.js}'], // 사용할 엔티티 목록
+      synchronize: true, // 자동으로 테이블을 동기화 (개발 환경에서만 사용 권장)
+    }),
+    AuthModule,
+  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
