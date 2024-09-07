@@ -1,3 +1,14 @@
+/**
+ * File Name    : google.strategy.ts
+ * Description  : 구글 소셜로그인 전략
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    이승철      Created
+ * 2024.09.07    이승철      Modified    구글 전략 추가
+ */
+
 import { OAuthUser } from '@_auth/interface/oauth-user.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

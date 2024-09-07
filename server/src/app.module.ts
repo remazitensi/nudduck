@@ -1,3 +1,14 @@
+/**
+ * File Name    : app.module.ts
+ * Description  : app 모듈
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    김재영      Created
+ * 2024.09.07    이승철      Modified    db설정 및, 엔티티 경로 설정
+ */
+
 import { AuthModule } from '@_auth/auth.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';

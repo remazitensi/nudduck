@@ -1,3 +1,14 @@
+/**
+ * File Name    : auth.repository.ts
+ * Description  : auth repository
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    이승철      Created
+ * 2024.09.07    이승철      Modified    db 유저 조회, 생성, rf토큰 업데이트 로직 구현
+ */
+
 import { UserDto } from '@_auth/dto/user.dto';
 import { User } from '@_user/entity/user.entity';
 import { Injectable } from '@nestjs/common';

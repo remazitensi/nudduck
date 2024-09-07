@@ -1,3 +1,14 @@
+/**
+ * File Name    : jwt.strategy.ts
+ * Description  : jwt 전략
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    이승철      Created
+ * 2024.09.07    이승철      Modified    jwt 전략 추가
+ */
+
 import { AuthService } from '@_auth/auth.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

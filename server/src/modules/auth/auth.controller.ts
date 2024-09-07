@@ -1,3 +1,14 @@
+/**
+ * File Name    : auth.controller.ts
+ * Description  : auth 컨트롤러 로직
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    이승철      Created
+ * 2024.09.07    이승철      Modified    구글, 카카오, 토큰재발급 api 추가
+ */
+
 import { AuthService } from '@_auth/auth.service';
 import { RefreshTokenDto } from '@_auth/dto/refresh-token.dto';
 import { UserDto } from '@_auth/dto/user.dto';
