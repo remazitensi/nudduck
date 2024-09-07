@@ -1,3 +1,14 @@
+/**
+ * File Name    : main.ts
+ * Description  : main 로직
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    김재영      Created
+ * 2024.09.07    이승철      Modified    ValidationPipe 추가 및 cookieParser 설정
+ */
+
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';

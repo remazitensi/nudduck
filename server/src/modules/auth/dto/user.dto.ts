@@ -1,3 +1,14 @@
+/**
+ * File Name    : user.dto.ts
+ * Description  : user dto 설정
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    이승철      Created
+ * 2024.09.07    이승철      Modified    user dto 설정
+ */
+
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 

@@ -1,3 +1,14 @@
+/**
+ * File Name    : auth.service.ts
+ * Description  : auth 서비스 로직
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    이승철      Created
+ * 2024.09.07    이승철      Modified    구글, 카카오 로그인 및 인가처리
+ */
+
 import { AuthRepository } from '@_auth/auth.repository';
 import { UserDto } from '@_auth/dto/user.dto';
 import { User } from '@_user/entity/user.entity';

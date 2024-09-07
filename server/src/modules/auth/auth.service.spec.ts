@@ -1,3 +1,14 @@
+/**
+ * File Name    : auth.service.spec.ts
+ * Description  : auth 서비스 유닛테스트
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    이승철      Created
+ * 2024.09.07    이승철      Modified    서비스 메서드 유닛테스트
+ */
+
 import { AuthRepository } from '@_auth/auth.repository';
 import { AuthService } from '@_auth/auth.service';
 import { ConfigService } from '@nestjs/config';
