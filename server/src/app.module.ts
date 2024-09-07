@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
+import { ChatController } from 'modules/chat/chat-controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ExpertController } from './modules/expert/expert-controller';
-import { LifeGraphController } from './modules/lifeGraph/life-graph-controller';
-import { UserController } from './modules/user/user-controller';
-import { SimulationController } from './modules/simulation/simulation-controller';
 import { CommunityController } from './modules/community/community-controller';
-import { ChatController } from 'modules/chat/chat-controller';
+import { ExpertController } from './modules/expert/expert-controller';
 import { IntroController } from './modules/intro-controller';
+import { LifeGraphController } from './modules/lifeGraph/life-graph-controller';
+import { SimulationController } from './modules/simulation/simulation-controller';
+import { UserController } from './modules/user/user-controller';
 
 @Module({
   imports: [],
