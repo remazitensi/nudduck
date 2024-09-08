@@ -7,9 +7,10 @@
  * Date          Author      Status      Description
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    jwt 전략 추가
+ * 2024.09.08    이승철      Modified    메서드 중복 제거로 인한 authService => authRepository
  */
 
-import { AuthService } from '@_auth/auth.service';
+import { AuthRepository } from '@_auth/auth.repository';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -19,7 +20,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
-    private readonly authService: AuthService,
+    private readonly authRepository: AuthRepository,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -28,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { sub: string; provider: string }): Promise<{ id: number }> {
-    const user = await this.authService.findUserByProvider(payload.provider, payload.sub);
+    const user = await this.authRepository.findUserByProvider(payload.provider, payload.sub);
     if (!user) {
       throw new UnauthorizedException();
     }
