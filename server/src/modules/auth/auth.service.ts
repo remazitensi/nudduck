@@ -8,6 +8,7 @@
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    구글, 카카오 로그인 및 인가처리
  * 2024.09.08    이승철      Modified    예외처리 및 리팩토링
+ * 2024.09.08    이승철      Modified    회원가입 시, 임의로 닉네임 추가
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
@@ -17,6 +18,7 @@ import { ForbiddenException, Injectable, NotFoundException, UnauthorizedExceptio
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { customAlphabet } from 'nanoid';
 
 @Injectable()
 export class AuthService {
@@ -43,7 +45,27 @@ export class AuthService {
 
   // 신규 사용자 생성
   private async createNewUser(userDto: UserDto): Promise<User> {
-    return await this.authRepository.createUser(userDto);
+    // 임의의 닉네임 생성
+    const nickname = await this.newUserNickname();
+    const newUserDto = { ...userDto, nickName: nickname };
+    return await this.authRepository.createUser(newUserDto);
+  }
+
+  // 고유한 닉네임 생성 로직
+  private async newUserNickname(): Promise<string> {
+    const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const nanoid = customAlphabet(alphabet, 10); // 10자리 닉네임 생성
+
+    const nickname = nanoid();
+    const existingNickname = await this.authRepository.findUserByNickname(nickname);
+
+    if (existingNickname) {
+      // 닉네임이 중복되면 다시 재귀 호출하여 새로운 닉네임 생성
+      return await this.newUserNickname();
+    } else {
+      // 닉네임이 중복되지 않으면 반환
+      return nickname;
+    }
   }
 
   // 사용자 ID로 조회

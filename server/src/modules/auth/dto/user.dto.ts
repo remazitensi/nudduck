@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    user dto 설정
+ * 2024.09.08    이승철      Modified    nickname 추가
  */
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -33,15 +34,24 @@ export class UserDto {
     description: '사용자 이름',
     example: 'Test User',
   })
-  @IsOptional()
   @IsString()
-  name?: string;
+  @IsNotEmpty() // 이름을 필수로 설정
+  name: string;
 
   @ApiProperty({
     description: '사용자 이메일 주소',
     example: 'test@test.com',
   })
-  @IsOptional()
   @IsEmail()
-  email?: string;
+  @IsNotEmpty() // 이메일을 필수로 설정
+  email: string;
+
+  // nickName 필드 추가
+  @ApiProperty({
+    description: '사용자 닉네임',
+    example: 'RandomNick123',
+  })
+  @IsOptional()
+  @IsString()
+  nickName?: string;
 }

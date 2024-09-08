@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    db 유저 조회, 생성, rf토큰 업데이트 로직 구현
+ * 2024.09.08    이승철      Modified    닉네임 중복확인 로직
  */
 
 import { UserDto } from '@_auth/dto/user.dto';
@@ -29,6 +30,11 @@ export class AuthRepository {
     });
   }
 
+  // 사용자 닉네임으로 사용자 조회 (닉네임 중복 확인용)
+  async findUserByNickname(nickName: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { nickName } });
+  }
+
   // 사용자 ID로 사용자 조회
   async findUserById(id: number): Promise<User | null> {
     return this.userRepository.findOne({ where: { id, deletedAt: null } });
@@ -41,6 +47,7 @@ export class AuthRepository {
       providerId: userDto.providerId,
       name: userDto.name,
       email: userDto.email,
+      nickName: userDto.nickName,
     });
     return this.userRepository.save(newUser);
   }

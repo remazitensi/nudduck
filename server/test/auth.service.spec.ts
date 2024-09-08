@@ -8,6 +8,7 @@
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    서비스 메서드 유닛테스트
  * 2024.09.08    이승철      Modified    통합 test폴더로 위치 변경
+ * 2024.09.08    이승철      Modified    mockUser에 nickName 추가
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
@@ -73,6 +74,7 @@ describe('AuthService', () => {
       providerId: '12345',
       email: 'test@test.com',
       name: 'Test User',
+      nickName: 'asdfg',
       refreshToken: 'mockRefreshToken',
       imageUrl: 'https://example.com/avatar.png',
       createdAt: new Date(),
