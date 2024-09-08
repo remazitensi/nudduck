@@ -7,12 +7,13 @@
  * Date          Author      Status      Description
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    구글, 카카오, 토큰재발급 api 추가
+ * 2024.09.08    이승철      Modified    예외처리
  */
 
 import { AuthService } from '@_auth/auth.service';
 import { RefreshTokenDto } from '@_auth/dto/refresh-token.dto';
 import { UserDto } from '@_auth/dto/user.dto';
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -71,6 +72,9 @@ export class AuthController {
   @ApiOperation({ summary: '토큰 재발급' })
   @Post('refresh-token')
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    if (!refreshTokenDto.refreshToken) {
+      throw new BadRequestException('리프레시 토큰이 제공되지 않았습니다.');
+    }
     const accessToken = await this.authService.regenerateAccessToken(refreshTokenDto.refreshToken);
     return { accessToken };
   }
