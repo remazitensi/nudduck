@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    서비스 메서드 유닛테스트
+ * 2024.09.08    이승철      Modified    통합 test폴더로 위치 변경
  */
 
 import { AuthRepository } from '@_auth/auth.repository';

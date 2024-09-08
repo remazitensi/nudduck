@@ -7,12 +7,13 @@
  * Date          Author      Status      Description
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    구글, 카카오 로그인 및 인가처리
+ * 2024.09.08    이승철      Modified    예외처리 및 리팩토링
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
 import { UserDto } from '@_auth/dto/user.dto';
 import { User } from '@_user/entity/user.entity';
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -27,12 +28,12 @@ export class AuthService {
 
   // 구글/카카오 로그인 처리
   async socialLogin(userDto: UserDto, res: Response): Promise<void> {
-    let user = await this.authRepository.findUserByProvider(userDto.provider, userDto.providerId);
+    const existingUser = await this.authRepository.findUserByProvider(userDto.provider, userDto.providerId);
 
-    if (!user) {
-      user = await this.createNewUser(userDto);
-    }
+    // 유저가 있으면 기존 유저, 없으면 새로운 유저 생성
+    const user = existingUser || (await this.createNewUser(userDto));
 
+    // 토큰 생성 및 리프레시 토큰 저장
     const tokens = this.generateTokens(user);
     await this.authRepository.updateRefreshToken(user.id, tokens.refreshToken);
 
@@ -42,12 +43,7 @@ export class AuthService {
 
   // 신규 사용자 생성
   private async createNewUser(userDto: UserDto): Promise<User> {
-    const user = await this.authRepository.createUser(userDto);
-    return user;
-  }
-  // 소셜 로그인 기반 사용자 조회
-  async findUserByProvider(provider: string, providerId: string): Promise<User | null> {
-    return this.authRepository.findUserByProvider(provider, providerId);
+    return await this.authRepository.createUser(userDto);
   }
 
   // 사용자 ID로 조회
@@ -96,13 +92,13 @@ export class AuthService {
       secret: this.configService.get('JWT_REFRESH_SECRET'),
     });
 
-    const user = await this.findUserByProvider(payload.provider, payload.sub);
+    const user = await this.authRepository.findUserByProvider(payload.provider, payload.sub);
     if (!user) {
       throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
     }
 
     if (user.refreshToken !== refreshToken) {
-      throw new UnauthorizedException('RefreshToken이 일치하지 않습니다.');
+      throw new ForbiddenException('리프레시 토큰이 일치하지 않습니다.');
     }
 
     const accessToken = this.jwtService.sign(
