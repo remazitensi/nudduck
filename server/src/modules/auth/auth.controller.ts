@@ -8,6 +8,7 @@
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    구글, 카카오, 토큰재발급 api 추가
  * 2024.09.08    이승철      Modified    예외처리
+ * 2024.09.09    이승철      Modified    로그인 성공 시 응답만 전달, 클라이언트에서 redirect
  */
 
 import { AuthService } from '@_auth/auth.service';
@@ -17,6 +18,7 @@ import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards }
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { OAuthUser } from './interface/oauth-user.interface';
 
 @ApiTags('Authentication')
@@ -35,7 +37,7 @@ export class AuthController {
   @ApiOperation({ summary: '구글 로그인 콜백' })
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleCallback(@Req() req: { user: OAuthUser }, @Res() res): Promise<void> {
+  async googleCallback(@Req() req: { user: OAuthUser }, @Res() res: Response): Promise<void> {
     const userDto: UserDto = {
       provider: 'google',
       providerId: req.user.providerId,
@@ -44,8 +46,7 @@ export class AuthController {
     };
 
     await this.authService.socialLogin(userDto, res);
-    const clientUrl = this.configService.get<string>('CLIENT_URL');
-    res.redirect(clientUrl);
+    res.status(200).send('Login successful'); // 성공 응답을 주고 클라이언트에서 redirect
   }
 
   @ApiOperation({ summary: '카카오 로그인' })
@@ -56,7 +57,7 @@ export class AuthController {
   @ApiOperation({ summary: '카카오 로그인 콜백' })
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(@Req() req: { user: OAuthUser }, @Res() res): Promise<void> {
+  async kakaoAuthCallback(@Req() req: { user: OAuthUser }, @Res() res: Response): Promise<void> {
     const userDto: UserDto = {
       provider: 'kakao',
       providerId: req.user.providerId,
@@ -65,8 +66,7 @@ export class AuthController {
     };
 
     await this.authService.socialLogin(userDto, res);
-    const clientUrl = this.configService.get<string>('CLIENT_URL');
-    res.redirect(clientUrl);
+    res.status(200).send('Login successful'); // 성공 응답을 주고 클라이언트에서 redirect
   }
 
   @ApiOperation({ summary: '토큰 재발급' })

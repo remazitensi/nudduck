@@ -9,11 +9,13 @@
  * 2024.09.07    이승철      Modified    구글, 카카오 로그인 및 인가처리
  * 2024.09.08    이승철      Modified    예외처리 및 리팩토링
  * 2024.09.08    이승철      Modified    회원가입 시, 임의로 닉네임 추가
+ * 2024.09.09    이승철      Modified    findUserById 메서드 user.repository로 경로 변경
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
 import { UserDto } from '@_auth/dto/user.dto';
 import { User } from '@_user/entity/user.entity';
+import { UserRepository } from '@_user/user.repository';
 import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -24,6 +26,7 @@ import { customAlphabet } from 'nanoid';
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
+    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -70,7 +73,7 @@ export class AuthService {
 
   // 사용자 ID로 조회
   async findUserById(id: number): Promise<User> {
-    const user = await this.authRepository.findUserById(id);
+    const user = await this.userRepository.findUserById(id);
     if (!user) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
