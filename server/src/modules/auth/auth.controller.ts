@@ -9,13 +9,13 @@
  * 2024.09.07    이승철      Modified    구글, 카카오, 토큰재발급 api 추가
  * 2024.09.08    이승철      Modified    예외처리
  * 2024.09.09    이승철      Modified    로그인 성공 시 응답만 전달, 클라이언트에서 redirect
+ * 2024.09.09    이승철      Modified    configService 삭제
  */
 
 import { AuthService } from '@_auth/auth.service';
 import { RefreshTokenDto } from '@_auth/dto/refresh-token.dto';
 import { UserDto } from '@_auth/dto/user.dto';
 import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -24,10 +24,7 @@ import { OAuthUser } from './interface/oauth-user.interface';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: '구글 소셜 로그인' })
   @Get('google')
