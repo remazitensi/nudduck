@@ -9,12 +9,14 @@
  * 2024.09.09    김재영      Modified    게시글 속성 및 설명 추가
  */
 
+import { Category } from '../enums/category.enum';
+
 export class Community {
   post_id: number;
   title: string;
   content: string;
   user_id: number;
-  category?: string; // Category Enum 대신 string 사용
+  category?: Category;
   created_at: Date;
   updated_at: Date;
   likes_count: number;
