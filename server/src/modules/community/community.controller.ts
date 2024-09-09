@@ -8,6 +8,7 @@
  * 2024.09.07    김재영      Created     커뮤니티 컨트롤러 초기 생성
  * 2024.09.09    김재영      Modified    게시글 CRUD API 메서드 구현
  * 2024.09.09    김재영      Modified    카테고리 내 특정 게시글 조회 기능 추가
+ * 2024.09.10    김재영      Modified    댓글 및 대댓글 관련 API 추가 및 수정
  */
 
 import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, Logger } from '@nestjs/common';
@@ -15,7 +16,10 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CommunityService } from './community.service';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { UpdateCommunityDto } from './dto/update-community.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Community } from './entities/community.entity';
+import { Comment } from './entities/comment.entity'; // Comment 엔티티 임포트 추가
 import { Category } from './enums/category.enum';
 
 @ApiTags('Community')
@@ -25,6 +29,8 @@ export class CommunityController {
 
   constructor(private readonly communityService: CommunityService) {}
 
+  // 커뮤니티 게시글 관련 API
+
   @ApiOperation({ summary: '전체 커뮤니티 게시글 목록 조회' })
   @Get()
   async getAllPosts(): Promise<Community[]> {
@@ -32,56 +38,32 @@ export class CommunityController {
     return this.communityService.findAll();
   }
 
-  @ApiOperation({ summary: '면접 관련 게시글 조회' })
-  @Get('interview')
-  async getInterviewPosts(): Promise<Community[]> {
-    this.logger.log('Fetching interview posts');
-    return this.communityService.findByCategory(Category.INTERVIEW);
-  }
-
-  @ApiOperation({ summary: '스터디 관련 게시글 조회' })
-  @Get('study')
-  async getStudyPosts(): Promise<Community[]> {
-    this.logger.log('Fetching study posts');
-    return this.communityService.findByCategory(Category.STUDY);
-  }
-
-  @ApiOperation({ summary: '잡담 관련 게시글 조회' })
-  @Get('talk')
-  async getChatPosts(): Promise<Community[]> {
-    this.logger.log('Fetching chat posts');
-    return this.communityService.findByCategory(Category.TALK);
-  }
-
-  @ApiOperation({ summary: '모임 관련 게시글 조회' })
-  @Get('meeting')
-  async getMeetingPosts(): Promise<Community[]> {
-    this.logger.log('Fetching meeting posts');
-    return this.communityService.findByCategory(Category.MEETING);
+  @ApiOperation({ summary: '카테고리별 게시글 조회' })
+  @Get(':category')
+  async getPostsByCategory(@Param('category') category: string): Promise<Community[]> {
+    this.logger.log(`Fetching posts for category ${category}`);
+    const categoryEnum = Category[category.toUpperCase() as keyof typeof Category];
+    if (!categoryEnum) {
+      this.logger.error(`Invalid category ${category}`);
+      throw new NotFoundException(`유효하지 않은 카테고리 ${category}입니다.`);
+    }
+    return this.communityService.findByCategory(categoryEnum);
   }
 
   @ApiOperation({ summary: '카테고리 내 특정 게시글 조회' })
   @Get(':category/:id')
   async getPostByCategoryAndId(@Param('category') category: string, @Param('id') id: number): Promise<Community> {
     this.logger.log(`Received request to get post with id ${id} in category ${category}`);
-
     const categoryEnum = Category[category.toUpperCase() as keyof typeof Category];
     if (!categoryEnum) {
       this.logger.error(`Invalid category ${category}`);
       throw new NotFoundException(`유효하지 않은 카테고리 ${category}입니다.`);
     }
-
-    this.logger.log(`Fetching posts for category ${categoryEnum}`);
-    const posts = await this.communityService.findByCategory(categoryEnum);
-    this.logger.log(`Posts found: ${JSON.stringify(posts)}`);
-
-    const post = posts.find((p) => p.post_id === id);
+    const post = await this.communityService.findByIdAndCategory(id, categoryEnum);
     if (!post) {
       this.logger.error(`Post with id ${id} not found in category ${category}`);
       throw new NotFoundException(`${category} 카테고리 내 게시글 ${id}를 찾을 수 없습니다.`);
     }
-
-    this.logger.log(`Post found: ${JSON.stringify(post)}`);
     return post;
   }
 
@@ -96,7 +78,7 @@ export class CommunityController {
   @Get(':id')
   async getPostById(@Param('id') id: string): Promise<Community> {
     this.logger.log(`Fetching post with id ${id}`);
-    const post = await this.communityService.findOne(+id); // 문자열을 숫자로 변환
+    const post = await this.communityService.findOne(+id);
     if (!post) {
       this.logger.error(`Post with id ${id} not found`);
       throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
@@ -126,5 +108,36 @@ export class CommunityController {
       throw new NotFoundException(`게시글 ${id}를 삭제할 수 없습니다.`);
     }
     await this.communityService.remove(+id);
+  }
+
+  // 댓글 및 대댓글 관련 API
+
+  @ApiOperation({ summary: '게시글에 댓글 작성' })
+  @Post(':id/comments')
+  async addComment(@Param('id') postId: string, @Body() createCommentDto: CreateCommentDto): Promise<Comment> {
+    this.logger.log(`Adding comment to post with id ${postId}: ${JSON.stringify(createCommentDto)}`);
+    return this.communityService.addComment(+postId, createCommentDto);
+  }
+
+  @ApiOperation({ summary: '댓글 수정' })
+  @Put(':id/comments/:commentId')
+  async updateComment(@Param('id') postId: string, @Param('commentId') commentId: string, @Body() updateCommentDto: UpdateCommentDto): Promise<Comment> {
+    this.logger.log(`Updating comment with id ${commentId} on post with id ${postId}: ${JSON.stringify(updateCommentDto)}`);
+    return this.communityService.updateComment(+postId, +commentId, updateCommentDto);
+  }
+
+  @ApiOperation({ summary: '댓글 삭제' })
+  @Delete(':id/comments/:commentId')
+  async deleteComment(@Param('id') postId: string, @Param('commentId') commentId: string): Promise<void> {
+    this.logger.log(`Deleting comment with id ${commentId} on post with id ${postId}`);
+    await this.communityService.deleteComment(+postId, +commentId);
+  }
+
+  @ApiOperation({ summary: '댓글에 대댓글 작성' })
+  @Post(':id/comments/:commentId/replies')
+  async addReply(@Param('id') postId: string, @Param('commentId') commentId: string, @Body() createCommentDto: CreateCommentDto): Promise<Comment> {
+    this.logger.log(`Adding reply to comment with id ${commentId} on post with id ${postId}: ${JSON.stringify(createCommentDto)}`);
+    createCommentDto.parent_id = +commentId; // 대댓글이므로 parent_id 설정
+    return this.communityService.addComment(+postId, createCommentDto);
   }
 }
