@@ -5,7 +5,6 @@ import { SessionMessageDto } from './dto/session-message.dto';
 @ApiTags('Simulation')
 @Controller('simulation')
 export class SimulationController {
-  
   @ApiOperation({ summary: 'AI와 의사소통 시뮬레이션 시작' })
   @Post()
   startSimulation() {
@@ -26,10 +25,7 @@ export class SimulationController {
 
   @ApiOperation({ summary: 'AI 시뮬레이션 세션에서 메시지 전송' })
   @Post(':sessionId/send')
-  sendSimulationMessage(
-    @Param('sessionId') sessionId: string,
-    @Body() sessionMessageDto: SessionMessageDto,
-  ) {
+  sendSimulationMessage(@Param('sessionId') sessionId: string, @Body() sessionMessageDto: SessionMessageDto) {
     return {
       message: `세션 ${sessionId}에 메시지 전송`,
       messageContent: sessionMessageDto.message,
