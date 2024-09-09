@@ -10,6 +10,7 @@
  * 2024.09.08    이승철      Modified    예외처리 및 리팩토링
  * 2024.09.08    이승철      Modified    회원가입 시, 임의로 닉네임 추가
  * 2024.09.09    이승철      Modified    findUserById 메서드 user.repository로 경로 변경
+ * 2024.09.09    이승철      Modified    쿠키에 sameSite:lax(CSRF 방지) 추가
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
@@ -102,11 +103,13 @@ export class AuthService {
     res.cookie('accessToken', tokens.accessToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'lax',
       maxAge: 60 * 60 * 1000, // 1시간
     });
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7일
     });
   }
