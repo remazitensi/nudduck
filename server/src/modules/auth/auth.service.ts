@@ -12,10 +12,12 @@
  * 2024.09.09    이승철      Modified    findUserById 메서드 user.repository로 경로 변경
  * 2024.09.09    이승철      Modified    쿠키에 sameSite:lax(CSRF 방지) 추가
  * 2024.09.10    이승철      Modified    refreshToken 재발급 로직 삭제 및 유효기간 3일로 변경
+ * 2024.09.10    이승철      Modified    회원가입 시, 기본이미지 설정 로직 추가
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
 import { UserDto } from '@_auth/dto/user.dto';
+import { FileUploadService } from '@_file-upload/file-upload.service';
 import { User } from '@_user/entity/user.entity';
 import { UserRepository } from '@_user/user.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -31,6 +33,7 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   // 구글/카카오 로그인 처리
@@ -51,15 +54,17 @@ export class AuthService {
   // 신규 사용자 생성
   private async createNewUser(userDto: UserDto): Promise<User> {
     // 임의의 닉네임 생성
-    const nickname = await this.newUserNickname();
-    const newUserDto = { ...userDto, nickName: nickname };
+    const nickName = await this.newUserNickname();
+    const imageUrl = this.fileUploadService.getDefaultProfileImgURL(); // 기본 이미지 URL 가져오기
+    const newUserDto = { ...userDto, nickName, imageUrl }; // 기본 이미지 추가
     return await this.authRepository.createUser(newUserDto);
   }
 
   // 고유한 닉네임 생성 로직
   private async newUserNickname(): Promise<string> {
     const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const nanoid = customAlphabet(alphabet, 10); // 10자리 닉네임 생성
+    const NICKNAME_LENGTH = 6;
+    const nanoid = customAlphabet(alphabet, NICKNAME_LENGTH); // 6자리 닉네임 생성
 
     const nickname = nanoid();
     const existingNickname = await this.authRepository.findUserByNickname(nickname);
@@ -93,7 +98,7 @@ export class AuthService {
 
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_REFRESH_SECRET'),
-      expiresIn: '3d', // 유효기간 3일로 설정
+      expiresIn: '3d',
     });
 
     return { accessToken, refreshToken };
