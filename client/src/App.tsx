@@ -9,15 +9,28 @@
  * 2024.09.07    김민지      Modified       초기화
  */
 
-import { Routes } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import Header from './layout/Header_woohyun';
+import Community from './pages/Community';
+import CommunityView from './pages/CommunityView';
+import CommunityWrite from './pages/CommunityWrite';
+
+
+
 import './App.css';
 
 function App() {
   return (
-    <Routes>
-      {/* <Route path='/' element={<Root />} /> */}
-      {/* <Route path='/my' element={<My />} /> */}
-    </Routes>
+    <Router>
+      <Header />
+      <Routes>
+        {/* <Route path='/' element={<Root />} /> */}
+        {/* <Route path='/my' element={<My />} /> */}
+        <Route path='/community' element={<Community />} />
+        <Route path='/communityWrite' element={<CommunityWrite />} />
+        <Route path='/communityView' element={<CommunityView />} />
+      </Routes>
+    </Router>
   );
 }
 
