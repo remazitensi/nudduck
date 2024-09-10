@@ -10,12 +10,12 @@
  * 2024.09.08    이승철      Modified    예외처리
  * 2024.09.09    이승철      Modified    로그인 성공 시 응답만 전달, 클라이언트에서 redirect
  * 2024.09.09    이승철      Modified    configService 삭제
+ * 2024.09.10    이승철      Modified    refreshToken 재발급 api 삭제, 만료시 클라이언트에서 재로그인 유도
  */
 
 import { AuthService } from '@_auth/auth.service';
-import { RefreshTokenDto } from '@_auth/dto/refresh-token.dto';
 import { UserDto } from '@_auth/dto/user.dto';
-import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -64,15 +64,5 @@ export class AuthController {
 
     await this.authService.socialLogin(userDto, res);
     res.status(200).send('Login successful'); // 성공 응답을 주고 클라이언트에서 redirect
-  }
-
-  @ApiOperation({ summary: '토큰 재발급' })
-  @Post('refresh-token')
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
-    if (!refreshTokenDto.refreshToken) {
-      throw new BadRequestException('리프레시 토큰이 제공되지 않았습니다.');
-    }
-    const accessToken = await this.authService.regenerateAccessToken(refreshTokenDto.refreshToken);
-    return { accessToken };
   }
 }
