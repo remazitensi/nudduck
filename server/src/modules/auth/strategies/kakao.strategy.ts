@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.08    이승철      Created
  * 2024.09.08    이승철      Modified    카카오 전략 추가
+ * 2024.09.10    이승철      Modified    user 객체 반환
  */
 
 import { OAuthUser } from '@_auth/interface/oauth-user.interface';
@@ -27,11 +28,12 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile): Promise<OAuthUser> {
-    return {
+    const user = {
       provider: 'kakao',
       providerId: profile.id,
       email: profile._json.kakao_account.email,
       name: profile.displayName,
     };
+    return user;
   }
 }

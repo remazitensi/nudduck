@@ -26,6 +26,11 @@ export class AuthRepository {
     return this.userRepository.findUserByProvider(provider, providerId);
   }
 
+  // 사용자 ID로 조회
+  async findUserById(id: number): Promise<User> {
+    return this.userRepository.findUserById(id);
+  }
+
   // 사용자 닉네임으로 사용자 조회 (닉네임 중복 확인용)
   async findUserByNickname(nickName: string): Promise<User | null> {
     return this.userRepository.findUserByNickname(nickName);
@@ -34,6 +39,11 @@ export class AuthRepository {
   // 사용자 생성
   async createUser(userDto: UserDto): Promise<User> {
     return this.userRepository.createUser(userDto);
+  }
+
+  // 사용자 업데이트 (탈퇴한 계정 재가입 시 사용)
+  async updateUser(user: User): Promise<void> {
+    await this.userRepository.updateUser(user);
   }
 
   // 리프레시 토큰 업데이트

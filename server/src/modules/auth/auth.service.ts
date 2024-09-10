@@ -13,13 +13,13 @@
  * 2024.09.09    이승철      Modified    쿠키에 sameSite:lax(CSRF 방지) 추가
  * 2024.09.10    이승철      Modified    refreshToken 재발급 로직 삭제 및 유효기간 3일로 변경
  * 2024.09.10    이승철      Modified    회원가입 시, 기본이미지 설정 로직 추가
+ * 2024.09.10    이승철      Modified    회원탈퇴 후, 재가입 로직 구현
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
 import { UserDto } from '@_auth/dto/user.dto';
 import { FileUploadService } from '@_file-upload/file-upload.service';
 import { User } from '@_user/entity/user.entity';
-import { UserRepository } from '@_user/user.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -30,7 +30,6 @@ import { customAlphabet } from 'nanoid';
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
-    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly fileUploadService: FileUploadService,
@@ -38,17 +37,27 @@ export class AuthService {
 
   // 구글/카카오 로그인 처리
   async socialLogin(userDto: UserDto, res: Response): Promise<void> {
+    // 기존 사용자 확인
     const existingUser = await this.authRepository.findUserByProvider(userDto.provider, userDto.providerId);
 
-    // 유저가 있으면 기존 유저, 없으면 새로운 유저 생성
-    const user = existingUser || (await this.createNewUser(userDto));
-
-    // 토큰 생성 및 리프레시 토큰 저장
-    const tokens = this.generateTokens(user);
-    await this.authRepository.updateRefreshToken(user.id, tokens.refreshToken);
-
-    // AccessToken, RefreshToken을 쿠키에 저장
-    this.setCookies(res, tokens);
+    if (existingUser) {
+      if (existingUser.deletedAt) {
+        // 탈퇴한 계정이라면 재가입 처리
+        existingUser.deletedAt = null;
+        await this.authRepository.updateUser(existingUser);
+      }
+      // 사용자 토큰 생성 및 쿠키 설정
+      const tokens = this.generateTokens(existingUser);
+      await this.authRepository.updateRefreshToken(existingUser.id, tokens.refreshToken);
+      this.setCookies(res, tokens);
+    } else {
+      // 신규 사용자 생성
+      const user = await this.createNewUser(userDto);
+      // 사용자 토큰 생성 및 쿠키 설정
+      const tokens = this.generateTokens(user);
+      await this.authRepository.updateRefreshToken(user.id, tokens.refreshToken);
+      this.setCookies(res, tokens);
+    }
   }
 
   // 신규 사용자 생성
@@ -64,7 +73,7 @@ export class AuthService {
   private async newUserNickname(): Promise<string> {
     const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     const NICKNAME_LENGTH = 6;
-    const nanoid = customAlphabet(alphabet, NICKNAME_LENGTH); // 6자리 닉네임 생성
+    const nanoid = customAlphabet(alphabet, NICKNAME_LENGTH);
 
     const nickname = nanoid();
     const existingNickname = await this.authRepository.findUserByNickname(nickname);
@@ -80,7 +89,7 @@ export class AuthService {
 
   // 사용자 ID로 조회
   async findUserById(id: number): Promise<User> {
-    const user = await this.userRepository.findUserById(id);
+    const user = await this.authRepository.findUserById(id);
     if (!user) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
@@ -89,7 +98,7 @@ export class AuthService {
 
   // 토큰 생성
   private generateTokens(user: User): { accessToken: string; refreshToken: string } {
-    const payload = { sub: user.id, provider: user.provider, email: user.email };
+    const payload = { sub: user.providerId, provider: user.provider, email: user.email };
 
     const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_SECRET'),

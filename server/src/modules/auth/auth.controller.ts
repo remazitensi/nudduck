@@ -11,6 +11,7 @@
  * 2024.09.09    이승철      Modified    로그인 성공 시 응답만 전달, 클라이언트에서 redirect
  * 2024.09.09    이승철      Modified    configService 삭제
  * 2024.09.10    이승철      Modified    refreshToken 재발급 api 삭제, 만료시 클라이언트에서 재로그인 유도
+ * 2024.09.10    이승철      Modified    userDto 구조분해할당
  */
 
 import { AuthService } from '@_auth/auth.service';
@@ -35,11 +36,13 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleCallback(@Req() req: { user: OAuthUser }, @Res() res: Response): Promise<void> {
+    const { provider, providerId, email, name } = req.user;
+
     const userDto: UserDto = {
-      provider: 'google',
-      providerId: req.user.providerId,
-      email: req.user.email,
-      name: req.user.name,
+      provider,
+      providerId,
+      email,
+      name,
     };
 
     await this.authService.socialLogin(userDto, res);
@@ -55,11 +58,13 @@ export class AuthController {
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoAuthCallback(@Req() req: { user: OAuthUser }, @Res() res: Response): Promise<void> {
+    const { provider, providerId, email, name } = req.user;
+
     const userDto: UserDto = {
-      provider: 'kakao',
-      providerId: req.user.providerId,
-      email: req.user.email,
-      name: req.user.name,
+      provider,
+      providerId,
+      email,
+      name,
     };
 
     await this.authService.socialLogin(userDto, res);
