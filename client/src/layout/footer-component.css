@@ -1,0 +1,18 @@
+/**
+ * File Name    : footer-component.css
+ * Description  : 푸터 컴포넌트 스타일 시트
+ * Author       : 황솜귤
+ * 
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.10    황솜귤      Created     푸터 컴포넌트 스타일 시트
+ */
+
+
+.footer-links a {
+    transition: font-weight 0.2s;
+  }
+  
+  .footer-links a:hover {
+    font-weight: bold;
+  }  

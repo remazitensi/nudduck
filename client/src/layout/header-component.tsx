@@ -75,6 +75,12 @@ const Header: React.FC = () => {
       </div>
 
       <div className="menu-container">
+            <nav>
+              <Link to="/ai-coach">AI 코치</Link>
+              <Link to="/expert-consultation">전문가 상담</Link>
+              <Link to="/community">커뮤니티</Link>
+              <Link to="/life-graph">인생 그래프</Link>
+            </nav>
         {/* 검색창 */}
         <div className="search-container">
           <input
@@ -96,12 +102,6 @@ const Header: React.FC = () => {
           </>
         ) : (
           <>
-            <nav>
-              <Link to="/ai-coach">AI 코치</Link>
-              <Link to="/expert-consultation">전문가 상담</Link>
-              <Link to="/community">커뮤니티</Link>
-              <Link to="/life-graph">인생 그래프</Link>
-            </nav>
             <div className="relative">
               <img
                 src={user.profileImage}

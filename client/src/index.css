@@ -2,11 +2,9 @@
   font-family: Pretendard, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  color-scheme: light;
+  color: rgba(0, 0, 0, 0.87); /* 기본 텍스트 색상 어둡게 설정 */
+  background-color: #ffffff; /* 배경 흰색으로 설정 */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,23 +13,33 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: #444; /* 기본 텍스트 색상 */
+  text-decoration: none; /* 기본 텍스트 데코레이션 제거 */
 }
 a:hover {
-  color: #535bf2;
+  font-weight: bold; /* 호버 시 볼드 처리 */
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  font-family: Pretendard, sans-serif;
+  background-color: #ffffff; /* 전체 배경 흰색으로 설정 */
+  color: #444; /* 기본 텍스트 색상 */
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100vh; /* 최소 높이 100vh로 설정 */
+}
+
+header, footer {
+  background-color: #ffffff;
+  color: #444;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 2.5rem; /* 헤더 크기 약간 축소 */
   line-height: 1.1;
 }
 
@@ -43,26 +51,78 @@ button {
   font-weight: 500;
   font-family: Pretendard;
   background-color: #1a1a1a;
+  color: white;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: border-color 0.25s, background-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #444;
+  background-color: #444;
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* 이미지 크기 조정 */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 헤더 및 푸터 스타일 */
+.header {
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: #444;
+  width: 1920px; /* 헤더 너비 1920px 설정 */
+}
+
+.footer {
+  padding: 20px;
+  background-color: #ffffff;
+  color: #444;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.footer-links a {
+  color: #b3b3b3; /* 링크 색상 연한 회색 */
+  margin: 0 15px;
+  text-decoration: none;
+}
+.footer-links a:hover {
+  color: #333;
+  font-weight: bold; /* 호버 시 볼드만 적용 */
+}
+
+.container {
+  max-width: 100%; /* 중앙 정렬 제거, 너비 100%로 설정 */
+  margin: 0; /* 중앙 정렬 제거 */
+  padding: 20px;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: #444;
     background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
+    font-weight: bold;
   }
   button {
     background-color: #f9f9f9;
+    color: #000;
+  }
+  header, footer {
+    background-color: #ffffff;
+    color: #444;
+  }
+  .footer-links a {
+    color: #444;
+  }
+  .footer-links a:hover {
+    color: #000;
+    font-weight: bold;
   }
 }

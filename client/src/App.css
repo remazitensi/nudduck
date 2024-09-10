@@ -9,10 +9,10 @@ body {
   box-sizing: border-box;
 }
 
-/* 중앙 컴포넌트 영역을 1340px로 설정 */
+/* 중앙 컴포넌트 영역을 1340px로 설정 (필요한 경우) */
 .container {
-  width: 1340px; /* 중앙 컴포넌트 영역 */
-  margin: 0 auto; /* 중앙 정렬 */
+  width: 1340px;
+  margin: 0 auto;
 }
 
 /* 기타 기본 스타일 */
@@ -32,4 +32,11 @@ button {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+}
+
+/* 이미지 크기를 고정 (강제로 적용) */
+img {
+  display: block;
+  max-width: 100%; /* 부모 요소의 너비를 넘지 않도록 제한 */
+  height: auto;    /* 이미지 비율을 유지 */
 }
