@@ -7,10 +7,12 @@
  * Date          Author      Status      Description
  * 2024.09.06    김재영      Created     애플리케이션 모듈 초기 생성
  * 2024.09.09    김재영      Modified    커뮤니티 모듈 추가
+ * 2024.09.10    김재영      Modified    TypeORM 및 RDS 설정 추가
  */
 
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatController } from 'modules/chat/chat-controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -24,23 +26,23 @@ import { UserController } from './modules/user/user-controller';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true, // 글로벌로 환경 변수 사용
     }),
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: (configService: ConfigService) => ({
-    //     type: 'mysql',
-    //     host: configService.get<string>('DB_HOST'),
-    //     port: configService.get<number>('DB_PORT'),
-    //     username: configService.get<string>('DB_USER'),
-    //     password: configService.get<string>('DB_PASSWORD'),
-    //     database: configService.get<string>('DB_NAME'),
-    //     entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    //     synchronize: true,
-    //   }),
-    // }),
-    CommunityModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule], // ConfigModule에서 환경 변수 가져오기
+      inject: [ConfigService], // ConfigService 의존성 주입
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'), // DB 호스트
+        port: configService.get<number>('DB_PORT'), // DB 포트
+        username: configService.get<string>('DB_USERNAME'), // DB 사용자명
+        password: configService.get<string>('DB_PASSWORD'), // DB 비밀번호
+        database: configService.get<string>('DB_DATABASE'), // DB 이름
+        entities: [__dirname + '/**/*.entity{.ts,.js}'], // 엔티티 경로 설정
+        synchronize: true, // 개발 환경에서만 true 배포 환경에서는 false로 설정
+      }),
+    }),
+    CommunityModule, // 커뮤니티 모듈
   ],
   controllers: [AppController, IntroController, UserController, SimulationController, ChatController, ExpertController, LifeGraphController],
   providers: [AppService],
