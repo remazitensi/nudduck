@@ -11,16 +11,17 @@
  * 2024.09.08    이승철      Modified    회원가입 시, 임의로 닉네임 추가
  * 2024.09.09    이승철      Modified    findUserById 메서드 user.repository로 경로 변경
  * 2024.09.09    이승철      Modified    쿠키에 sameSite:lax(CSRF 방지) 추가
- * 2024.09.10    이승철      Modified    refreshToken 재발급 로직 삭제 및 유효기간 3일로 변경
+ * 2024.09.10    이승철      Modified    accessToken 재발급 로직 삭제 및 유효기간 3일로 변경
  * 2024.09.10    이승철      Modified    회원가입 시, 기본이미지 설정 로직 추가
  * 2024.09.10    이승철      Modified    회원탈퇴 후, 재가입 로직 구현
+ * 2024.09.11    이승철      Modified    accessToken 재발급 로직 재추가
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
 import { UserDto } from '@_auth/dto/user.dto';
 import { FileUploadService } from '@_file-upload/file-upload.service';
 import { User } from '@_user/entity/user.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -126,6 +127,37 @@ export class AuthService {
       secure: true,
       sameSite: 'lax',
       maxAge: 3 * 24 * 60 * 60 * 1000, // 3일
+    });
+  }
+
+  // 리프레시 토큰 검증 및 AccessToken 재발급
+  async regenerateAccessToken(refreshToken: string, res: Response): Promise<void> {
+    const payload = this.jwtService.verify(refreshToken, {
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
+    });
+
+    const user = await this.authRepository.findUserByProvider(payload.provider, payload.sub);
+    if (!user) {
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+    }
+
+    if (user.refreshToken !== refreshToken) {
+      throw new ForbiddenException('리프레시 토큰이 일치하지 않습니다.');
+    }
+
+    const accessToken = this.jwtService.sign(
+      { sub: user.id, provider: user.provider, email: user.email },
+      {
+        secret: this.configService.get('JWT_ACCESS_SECRET'),
+        expiresIn: '1h',
+      },
+    );
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000,
     });
   }
 }
