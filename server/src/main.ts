@@ -7,15 +7,18 @@
  * Date          Author      Status      Description
  * 2024.09.07    김재영      Created
  * 2024.09.07    이승철      Modified    ValidationPipe 추가 및 cookieParser 설정
+ * 2024.09.10    이승철      Modified    트랜잭션 컨텍스트를 초기화
  */
 
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({

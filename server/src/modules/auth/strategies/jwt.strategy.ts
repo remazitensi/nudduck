@@ -8,12 +8,14 @@
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    jwt 전략 추가
  * 2024.09.08    이승철      Modified    메서드 중복 제거로 인한 authService => authRepository
+ * 2024.09.11    이승철      Modified    쿠키에서 accessToken 추출 로직
  */
 
 import { AuthRepository } from '@_auth/auth.repository';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
@@ -23,8 +25,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly authRepository: AuthRepository,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          const token = request?.cookies?.accessToken;
+          if (!token) {
+            return null;
+          }
+          return token;
+        },
+      ]),
       secretOrKey: configService.get<string>('JWT_ACCESS_SECRET'),
+      ignoreExpiration: false,
     });
   }
 
