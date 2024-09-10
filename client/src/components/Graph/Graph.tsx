@@ -1,12 +1,13 @@
 import { CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { lifeData } from '../../types/graph_type';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-// TODO : 옵션설정 : 범례 없애기, 0 중심줄 강조, 컬러, 선 둥글게, 선 두껍게, 툴팁 설정 등
+// TODO : 옵션설정 : 범례 없애기, 0 중심줄 강조, 컬러, 선 둥글게, 선 두껍게, 툴팁에 제목 나오게 등
 
 export const Graph: React.FC = ({ lifeData }) => {
   //data에서 age를 라벨 추출
-  const labels: number[] = lifeData.map((item) => item.age);
+  const labels: number[] = lifeData.map((item: lifeData) => item.age);
 
   //labels 에서 최소, 최댓값 추출 => 차트
   const age: { min: number; max: number } = {
@@ -127,7 +128,7 @@ export const Graph: React.FC = ({ lifeData }) => {
 
   return (
     <div>
-      <Line options={options} data={data} />
+      <Line options={options} data:lifeData={data} />
     </div>
   );
 };
