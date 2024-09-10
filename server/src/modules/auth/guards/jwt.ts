@@ -8,16 +8,18 @@
  * 2024.09.10    이승철      Created
  */
 
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class Jwt extends AuthGuard('jwt') {
   handleRequest(err, user, info, context: ExecutionContext) {
+    if (err || !user) {
+      throw err || new UnauthorizedException();
+    }
+
     const req = context.switchToHttp().getRequest();
-
-    req.user = user; // user 정보를 req.user에 설정
-
+    req.user = user;
     return user;
   }
 }

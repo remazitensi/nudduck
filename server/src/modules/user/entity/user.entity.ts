@@ -8,11 +8,13 @@
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    유저 엔티티 설정
  * 2024.09.08    이승철      Modified    nickName 추가
+ * 2024.09.10    이승철      Modified    @DeleteDateColumn() 으로 변경
  */
 
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 
 @Entity()
+@Unique(['provider', 'providerId'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -44,6 +46,6 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ type: 'datetime', nullable: true })
+  @DeleteDateColumn()
   deletedAt: Date | null;
 }
