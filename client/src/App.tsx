@@ -10,9 +10,9 @@
 //  * 2024.09.12    김민지      Modified     라우터 설계
 //  */
 
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// TODO: Layout 컴포넌트 만들기!
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+
+import './App.css';
 
 import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
 
@@ -39,7 +39,7 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         {/* Layout을 사용하여 Header와 Footer를 모든 페이지에 적용 */}
-        <Route path='/' element={<Layout />}> 
+        <Route path='/' element={<Layout />}>
           {/* 메인 페이지 */}
           <Route index element={<MainPage />} />
 
@@ -62,8 +62,8 @@ const App: React.FC = () => {
           <Route path='chat' element={<ChatRoom />} />
 
           {/* AI 코치 */}
-          <Route path="ai-coach/:id?" element={<AICoach />} />
-          
+          <Route path='ai-coach/:id?' element={<AICoach />} />
+
           {/* 인생 그래프 관련 라우트 */}
           <Route path='life-graph'>
             {/* 기본 경로에서 표시될 컴포넌트 */}
