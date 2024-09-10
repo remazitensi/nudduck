@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    구글 전략 추가
+ * 2024.09.10    이승철      Modified    user 객체 반환
  */
 
 import { OAuthUser } from '@_auth/interface/oauth-user.interface';
@@ -29,12 +30,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   async validate(accessToken: string, refreshToken: string, profile: Profile): Promise<OAuthUser> {
     const { id, name, emails } = profile;
     const fullName = name.familyName ? `${name.familyName}${name.givenName} ` : name.givenName;
-
-    return {
+    const user = {
       provider: 'google',
       providerId: id,
       email: emails[0].value,
       name: fullName,
     };
+
+    return user;
   }
 }
