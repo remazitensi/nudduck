@@ -1,42 +1,35 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* 전체 페이지의 최대 가로 너비를 1920px로 설정 */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto; /* 화면의 중앙에 위치시키기 위해 좌우 margin 자동 */
+  font-family: 'Pretendard', sans-serif; /* 전역 폰트 적용 */
+  box-sizing: border-box;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* 중앙 컴포넌트 영역을 1340px로 설정 */
+.container {
+  width: 1340px; /* 중앙 컴포넌트 영역 */
+  margin: 0 auto; /* 중앙 정렬 */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* 기타 기본 스타일 */
+h1, p {
+  margin: 0;
+  padding: 0;
 }
 
 .card {
-  padding: 2em;
+  background-color: #f7f7f7;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.read-the-docs {
-  color: #888;
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
 }

@@ -69,11 +69,27 @@ const Header: React.FC = () => {
   return (
     <header className="header">
       <div className="logo-container">
-        <img src="/logo.png" alt="Nudduck Logo" className="logo" />
-        <span>Nudduck</span>
+        {/* 절대 경로로 이미지 설정 (이미지가 public 폴더에 위치) */}
+        <img src="/logo.png" className="logo" alt="Nudduck Logo" />
+        <img src="/nudduck.png" className="logo" alt="Nudduck" />
       </div>
 
       <div className="menu-container">
+        {/* 검색창 */}
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder=" "
+            className="border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button className="ml-2">
+            <img src="/search.png" alt="검색" className="icon" />
+          </button>
+          <button className="ml-2">
+            <img src="/chat.png" alt="채팅" className="icon" />
+          </button>
+        </div>
+
         {!isLoggedIn ? (
           <>
             <Link to="/login" onClick={handleLoginClick}>로그인</Link> | <Link to="/signup">회원가입</Link>
