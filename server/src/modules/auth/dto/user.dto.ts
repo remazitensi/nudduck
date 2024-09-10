@@ -8,6 +8,7 @@
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    user dto 설정
  * 2024.09.08    이승철      Modified    nickname 추가
+ * 2024.09.10    이승철      Modified    imageUrl 필드 추가
  */
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -46,7 +47,6 @@ export class UserDto {
   @IsNotEmpty() // 이메일을 필수로 설정
   email: string;
 
-  // nickName 필드 추가
   @ApiProperty({
     description: '사용자 닉네임',
     example: 'RandomNick123',
@@ -54,4 +54,13 @@ export class UserDto {
   @IsOptional()
   @IsString()
   nickName?: string;
+
+  //imageUrl 필드 추가
+  @ApiProperty({
+    description: '프로필 이미지 URL',
+    example: 'https://example.com/profile/default.jpg',
+  })
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 }
