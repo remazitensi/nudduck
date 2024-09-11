@@ -26,4 +26,5 @@ export const baseApi = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL, // Vite 환경 변수로 설정된 URL
   timeout: 5000, // 5초 후 타임아웃
   withCredentials: true, // 자격 증명 포함
+  paramsSerializer: (parameters) => qs.stringify(parameters, { arrayFormat: 'repeat', encode: false }), // 쿼리파라미터 직렬화
 });
