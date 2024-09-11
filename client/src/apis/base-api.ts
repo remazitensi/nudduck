@@ -6,10 +6,11 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.10    김민지      Created      환경변수로 base-api 설정
- * 2024.09.11    김민지      Modified     withCredential : true
+ * 2024.09.11    김민지      Modified     baseApi 옵션 추가, import qs
  */
 
 import axios from 'axios';
+import qs from 'qs';
 
 export const api = {
   auth: '/auth',
