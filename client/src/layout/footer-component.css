@@ -6,13 +6,59 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.10    황솜귤      Created     푸터 컴포넌트 스타일 시트
+ * 2024.09.11    황솜귤      Modified    텍스트 마진 및 구분선 색상 수정
  */
 
+ .footer-container {
+  background-color: #ffffff;
+  color: #333;
+  padding: 36px 0;
+}
+
+.footer-links {
+  margin-bottom: 14px;
+}
 
 .footer-links a {
-    transition: font-weight 0.2s;
-  }
-  
-  .footer-links a:hover {
-    font-weight: bold;
-  }  
+  color: #444;
+  text-decoration: none;
+  transition: font-weight 0.2s;
+  margin: 0;
+  text-align: left;
+}
+
+.footer-links a:hover {
+  font-weight: bold;
+}
+
+.footer-details {
+  line-height: 1.6; /* 텍스트 간 간격을 적절하게 설정 */
+}
+
+.footer-copyright {
+  text-align: left;
+  margin-top: 20px;
+  font-size: 0.875rem;
+  color: #999;
+}
+
+.container {
+  max-width: 1340px;
+  margin: 0 auto;
+  padding-left: 0px; /* 좌측 패딩 제거 */
+  padding-right: 0px; /* 우측 패딩 제거 */
+}
+
+span.text-gray-500 {
+  color: #999; /* 문자 |를 회색으로 설정 */
+}
+
+.business-confirmation {
+  background-color: #b5b5b5 !important; /* 배경색을 회색으로 설정 */
+  color: #ffffff !important; /* 텍스트 색상을 흰색으로 설정 */
+  padding: 5px 10px !important; /* 텍스트 주위에 패딩을 추가 */
+  border-radius: 5px !important; /* 둥근 모서리 */
+  font-weight: bold !important; /* 텍스트를 굵게 설정 */
+  font-size: 0.875rem !important; /* 적절한 폰트 크기 설정 */
+  display: inline-block !important; /* inline-block으로 설정하여 크기 조절 */
+}

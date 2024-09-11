@@ -88,7 +88,7 @@ img {
 
 .footer-links a {
   color: #b3b3b3; /* 링크 색상 연한 회색 */
-  margin: 0 15px;
+  margin-right: 24px;
   text-decoration: none;
 }
 .footer-links a:hover {
