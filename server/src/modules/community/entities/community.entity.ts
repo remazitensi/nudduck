@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.08    김재영      Created     커뮤니티 게시글 엔티티 초기 생성
  * 2024.09.09    김재영      Modified    게시글 속성 및 설명 추가
+ * 2024.09.10    김재영      Modified    typeorm 추가
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';

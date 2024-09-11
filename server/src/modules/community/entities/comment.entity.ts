@@ -5,7 +5,8 @@
  *
  * History
  * Date          Author      Status      Description
- * 2024.09.07    김재영      Created     댓글 엔티티 초기 생성
+ * 2024.09.09    김재영      Created     댓글 엔티티 초기 생성
+ * 2024.09.10    김재영      Modified    typeorm 추가
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';

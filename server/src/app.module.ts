@@ -8,6 +8,7 @@
  * 2024.09.06    김재영      Created     애플리케이션 모듈 초기 생성
  * 2024.09.09    김재영      Modified    커뮤니티 모듈 추가
  * 2024.09.10    김재영      Modified    TypeORM 및 RDS 설정 추가
+ * 2024.09.11    김재영      Modified    SSL 제거
  */
 
 import { Module } from '@nestjs/common';
@@ -35,11 +36,14 @@ import { UserController } from './modules/user/user-controller';
         type: 'mysql',
         host: configService.get<string>('DB_HOST'), // DB 호스트
         port: configService.get<number>('DB_PORT'), // DB 포트
-        username: configService.get<string>('DB_USERNAME'), // DB 사용자명
+        username: configService.get<string>('DB_USER'), // DB 사용자명
         password: configService.get<string>('DB_PASSWORD'), // DB 비밀번호
-        database: configService.get<string>('DB_DATABASE'), // DB 이름
+        database: configService.get<string>('DB_NAME'), // DB 이름
         entities: [__dirname + '/**/*.entity{.ts,.js}'], // 엔티티 경로 설정
-        synchronize: true, // 개발 환경에서만 true 배포 환경에서는 false로 설정
+        synchronize: true, // 개발 환경에서만 true, 배포 환경에서는 false로 설정
+        connectTimeout: 60000, // 타임아웃 설정
+        extra: {}, // SSL 제외, 추가 설정 없음
+        logging: true, // 모든 쿼리 로그 활성화
       }),
     }),
     CommunityModule, // 커뮤니티 모듈
