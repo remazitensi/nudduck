@@ -9,6 +9,7 @@
  * 2024.09.09    김재영      Modified    게시글 CRUD 메서드 구현
  * 2024.09.10    김재영      Modified    댓글 관련 API 메서드 추가
  * 2024.09.10    김재영      Modified    TypeORM을 통한 데이터베이스 작업 처리 추가
+ * 2024.09.11    김재영      Modified    페이지네이션 기능 추가 및 개선
  */
 
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
@@ -21,6 +22,7 @@ import { CreateCommunityDto } from './dto/create-community.dto';
 import { UpdateCommunityDto } from './dto/update-community.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @Injectable()
 export class CommunityService {
@@ -33,10 +35,17 @@ export class CommunityService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  // 전체 게시글 조회
-  async findAll(): Promise<Community[]> {
-    this.logger.log('Fetching all posts');
-    return this.communityRepository.find();
+  // 전체 게시글 조회 (페이지네이션 적용)
+  async findAll(paginationQuery: PaginationQueryDto): Promise<Community[]> {
+    const { page = 1, pageSize = 10 } = paginationQuery;
+    const limit = pageSize;
+    const offset = (page - 1) * pageSize;
+
+    this.logger.log(`Fetching all posts with limit ${limit} and offset ${offset}`);
+    return this.communityRepository.find({
+      skip: offset,
+      take: limit,
+    });
   }
 
   // 특정 게시글 조회
@@ -45,10 +54,18 @@ export class CommunityService {
     return this.communityRepository.findOne({ where: { post_id: id } });
   }
 
-  // 카테고리별 게시글 조회
-  async findByCategory(category: Category): Promise<Community[]> {
-    this.logger.log(`Searching for posts in category ${category}`);
-    return this.communityRepository.find({ where: { category } });
+  // 카테고리별 게시글 조회 (페이지네이션 적용)
+  async findByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<Community[]> {
+    const { page = 1, pageSize = 10 } = paginationQuery;
+    const limit = pageSize;
+    const offset = (page - 1) * pageSize;
+
+    this.logger.log(`Fetching posts in category ${category} with limit ${limit} and offset ${offset}`);
+    return this.communityRepository.find({
+      where: { category },
+      skip: offset,
+      take: limit,
+    });
   }
 
   // 카테고리와 ID로 게시글 조회
