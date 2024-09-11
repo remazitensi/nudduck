@@ -9,6 +9,7 @@
  * 2024.09.09    김재영      Modified    커뮤니티 모듈 추가
  * 2024.09.10    김재영      Modified    TypeORM 및 RDS 설정 추가
  * 2024.09.11    김재영      Modified    SSL 제거
+ * 2024.09.11    김재영      Modified    SSH 터널링 설정 추가
  */
 
 import { Module } from '@nestjs/common';
@@ -34,10 +35,10 @@ import { UserController } from './modules/user/user-controller';
       inject: [ConfigService], // ConfigService 의존성 주입
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        host: configService.get<string>('DB_HOST'), // DB 호스트
-        port: configService.get<number>('DB_PORT'), // DB 포트
-        username: configService.get<string>('DB_USER'), // DB 사용자명
-        password: configService.get<string>('DB_PASSWORD'), // DB 비밀번호
+        host: configService.get<string>('DB_HOST'), // localhost로 설정
+        port: configService.get<number>('DB_PORT'), // 3307로 설정
+        username: configService.get<string>('DB_USER'), // RDS 사용자명
+        password: configService.get<string>('DB_PASSWORD'), // RDS 비밀번호
         database: configService.get<string>('DB_NAME'), // DB 이름
         entities: [__dirname + '/**/*.entity{.ts,.js}'], // 엔티티 경로 설정
         synchronize: true, // 개발 환경에서만 true, 배포 환경에서는 false로 설정
