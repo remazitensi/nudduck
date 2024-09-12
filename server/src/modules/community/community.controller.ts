@@ -14,8 +14,8 @@
  * 2024.09.12    김재영      Modified    좋아요 및 조회수 기능 추가
  */
 
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, NotFoundException, Logger, ParseIntPipe } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, Query, NotFoundException, Logger, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiQuery, ApiParam, ApiBody } from '@nestjs/swagger';
 import { CommunityService } from './community.service';
 import { CreateCommunityDto } from './dto/create-community.dto';
 import { UpdateCommunityDto } from './dto/update-community.dto';
@@ -34,8 +34,8 @@ export class CommunityController {
   constructor(private readonly communityService: CommunityService) {}
 
   @ApiOperation({ summary: '전체 커뮤니티 게시글 목록 조회 (페이지네이션 지원)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: '결과 수 제한 (기본값: 10)' })
-  @ApiQuery({ name: 'offset', required: false, type: Number, description: '결과 시작 지점 (기본값: 0)' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: '페이지 번호 (기본값: 1)' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: '페이지 당 결과 수 (기본값: 10)' })
   @Get()
   async getAllPosts(@Query() paginationQuery: PaginationQueryDto): Promise<Community[]> {
     this.logger.log('Fetching all posts with pagination');
@@ -43,8 +43,8 @@ export class CommunityController {
   }
 
   @ApiOperation({ summary: '카테고리별 게시글 조회 (페이지네이션 지원)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: '결과 수 제한 (기본값: 10)' })
-  @ApiQuery({ name: 'offset', required: false, type: Number, description: '결과 시작 지점 (기본값: 0)' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: '페이지 번호 (기본값: 1)' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: '페이지 당 결과 수 (기본값: 10)' })
   @Get(':category')
   async getPostsByCategory(@Param('category') category: string, @Query() paginationQuery: PaginationQueryDto): Promise<Community[]> {
     this.logger.log(`Fetching posts for category ${category} with pagination`);
@@ -121,7 +121,7 @@ export class CommunityController {
   }
 
   @ApiOperation({ summary: '댓글 수정' })
-  @Put(':postId/comments/:commentId')
+  @Patch(':postId/comments/:commentId')
   async updateComment(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number, @Body() updateCommentDto: UpdateCommentDto): Promise<Comment> {
     this.logger.log(`Updating comment with id ${commentId} on post ${postId}`);
     const updatedComment = await this.communityService.updateComment(postId, commentId, updateCommentDto);
@@ -139,10 +139,44 @@ export class CommunityController {
     await this.communityService.deleteComment(postId, commentId);
   }
 
+  @ApiOperation({ summary: '게시글에 달린 댓글 조회' })
+  @Get(':postId/comments')
+  async getCommentsByPostId(@Param('postId', ParseIntPipe) postId: number): Promise<Comment[]> {
+    this.logger.log(`Fetching comments for post with id ${postId}`);
+    return this.communityService.getCommentsByPostId(postId);
+  }
+
+  @ApiOperation({ summary: '대댓글 작성' })
+  @ApiParam({ name: 'postId', description: '게시글 ID', type: Number })
+  @ApiParam({ name: 'parentId', description: '부모 댓글 ID', type: Number })
+  @ApiBody({ type: CreateCommentDto })
+  @Post(':postId/comments/:parentId/replies')
+  async addReply(@Param('postId', ParseIntPipe) postId: number, @Param('parentId', ParseIntPipe) parentId: number, @Body() createCommentDto: CreateCommentDto): Promise<Comment> {
+    return this.communityService.addReply(postId, parentId, createCommentDto);
+  }
+
+  @ApiOperation({ summary: '대댓글 수정' })
+  @ApiParam({ name: 'postId', description: '게시글 ID', type: Number })
+  @ApiParam({ name: 'commentId', description: '대댓글 ID', type: Number })
+  @ApiBody({ type: UpdateCommentDto })
+  @Patch(':postId/comments/:commentId/replies')
+  async updateReply(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number, @Body() updateCommentDto: UpdateCommentDto): Promise<Comment> {
+    return this.communityService.updateReply(postId, commentId, updateCommentDto);
+  }
+
+  @ApiOperation({ summary: '대댓글 삭제' })
+  @ApiParam({ name: 'postId', description: '게시글 ID', type: Number })
+  @ApiParam({ name: 'commentId', description: '대댓글 ID', type: Number })
+  @Delete(':postId/comments/:commentId/replies')
+  async deleteReply(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number): Promise<void> {
+    return this.communityService.deleteReply(postId, commentId);
+  }
+
   @ApiOperation({ summary: '댓글의 대댓글 조회' })
+  @ApiParam({ name: 'postId', description: '게시글 ID', type: Number })
+  @ApiParam({ name: 'commentId', description: '댓글 ID', type: Number })
   @Get(':postId/comments/:commentId/replies')
   async getReplies(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number): Promise<Comment[]> {
-    this.logger.log(`Fetching replies for comment with id ${commentId} on post ${postId}`);
     return this.communityService.getReplies(postId, commentId);
   }
 
@@ -156,7 +190,7 @@ export class CommunityController {
   }
 
   @ApiOperation({ summary: '게시글 좋아요 수 감소' })
-  @Post(':id/likes/decrement')
+  @Delete(':id/likes')
   async decrementLikes(@Param('id', ParseIntPipe) id: number): Promise<Community> {
     this.logger.log(`Decrementing likes for post with id ${id}`);
     return this.communityService.decrementLikes(id);
@@ -165,7 +199,7 @@ export class CommunityController {
   // 조회수 관련 API
 
   @ApiOperation({ summary: '게시글 조회수 증가' })
-  @Get(':id/views')
+  @Post(':id/views')
   async incrementViews(@Param('id', ParseIntPipe) id: number): Promise<Community> {
     this.logger.log(`Incrementing views for post with id ${id}`);
     return this.communityService.incrementViews(id);
