@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 
 
 
-const Community: React.FC = () => {
+const CommunityPostList: React.FC = () => {
   return (
     <div className='community-titles flex w-[1920px] flex-col items-center'>
       <div className='mt-[140px]'>
@@ -172,4 +172,4 @@ const Community: React.FC = () => {
   );
 };
 
-export default Community;
+export default CommunityPostList;

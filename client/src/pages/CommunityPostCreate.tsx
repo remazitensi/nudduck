@@ -12,7 +12,7 @@ import React, { useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 
-const CommunityWrite: React.FC = () => {
+const CommunityPostCreate: React.FC = () => {
   const [view, setView] = useState(false);
   const [typing, setTyping] = useState('');
   const [message, setMessage] = useState('');
@@ -97,4 +97,4 @@ const CommunityWrite: React.FC = () => {
   );
 };
 
-export default CommunityWrite;
+export default CommunityPostCreate;

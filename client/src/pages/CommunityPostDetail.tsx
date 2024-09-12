@@ -11,7 +11,7 @@ import React from 'react';
 
 
 
-const CommunityView: React.FC = () => {
+const CommunityPostDetail: React.FC = () => {
   return (
     <div className='community-titles flex w-[1920px] flex-col items-center'>
       <div className='mt-[140px]'>
@@ -93,4 +93,4 @@ const CommunityView: React.FC = () => {
   );
 };
 
-export default CommunityView;
+export default CommunityPostDetail;
