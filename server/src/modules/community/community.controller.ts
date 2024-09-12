@@ -11,6 +11,7 @@
  * 2024.09.10    김재영      Modified    댓글 및 대댓글 관련 API 추가 및 수정
  * 2024.09.10    김재영      Modified    TypeORM을 통한 데이터베이스 작업 처리 추가
  * 2024.09.11    김재영      Modified    페이지네이션 기능
+ * 2024.09.12    김재영      Modified    좋아요 및 조회수 기능 추가
  */
 
 import { Controller, Get, Post, Put, Delete, Param, Body, Query, NotFoundException, Logger, ParseIntPipe } from '@nestjs/common';
@@ -143,5 +144,30 @@ export class CommunityController {
   async getReplies(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number): Promise<Comment[]> {
     this.logger.log(`Fetching replies for comment with id ${commentId} on post ${postId}`);
     return this.communityService.getReplies(postId, commentId);
+  }
+
+  // 좋아요 관련 API
+
+  @ApiOperation({ summary: '게시글 좋아요 수 증가' })
+  @Post(':id/likes')
+  async incrementLikes(@Param('id', ParseIntPipe) id: number): Promise<Community> {
+    this.logger.log(`Incrementing likes for post with id ${id}`);
+    return this.communityService.incrementLikes(id);
+  }
+
+  @ApiOperation({ summary: '게시글 좋아요 수 감소' })
+  @Post(':id/likes/decrement')
+  async decrementLikes(@Param('id', ParseIntPipe) id: number): Promise<Community> {
+    this.logger.log(`Decrementing likes for post with id ${id}`);
+    return this.communityService.decrementLikes(id);
+  }
+
+  // 조회수 관련 API
+
+  @ApiOperation({ summary: '게시글 조회수 증가' })
+  @Get(':id/views')
+  async incrementViews(@Param('id', ParseIntPipe) id: number): Promise<Community> {
+    this.logger.log(`Incrementing views for post with id ${id}`);
+    return this.communityService.incrementViews(id);
   }
 }

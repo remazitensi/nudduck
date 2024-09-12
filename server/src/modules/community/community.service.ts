@@ -11,6 +11,7 @@
  * 2024.09.10    김재영      Modified    TypeORM을 통한 데이터베이스 작업 처리 추가
  * 2024.09.11    김재영      Modified    페이지네이션 기능 추가 및 개선
  * 2024.09.12    김재영      Modified    게시글과 댓글의 대댓글 처리 로직 추가 및 리팩토링
+ * 2024.09.12    김재영      Modified    좋아요 및 조회수 기능 추가
  */
 
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
@@ -180,5 +181,49 @@ export class CommunityService {
   async getReplies(postId: number, commentId: number): Promise<Comment[]> {
     this.logger.log(`Fetching replies for comment ${commentId} on post ${postId}`);
     return this.commentRepository.find({ where: { parent_id: commentId, post_id: postId } });
+  }
+
+  // 좋아요 수 증가
+  async incrementLikes(id: number): Promise<Community | null> {
+    const post = await this.findOne(id);
+    if (!post) {
+      this.logger.error(`Post with id ${id} not found for incrementing likes`);
+      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
+    }
+
+    post.likes_count++;
+    this.logger.log(`Incrementing likes for post with id ${id}: ${post.likes_count}`);
+    return this.communityRepository.save(post);
+  }
+
+  // 좋아요 수 감소
+  async decrementLikes(id: number): Promise<Community | null> {
+    const post = await this.findOne(id);
+    if (!post) {
+      this.logger.error(`Post with id ${id} not found for decrementing likes`);
+      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
+    }
+
+    if (post.likes_count > 0) {
+      post.likes_count--;
+      this.logger.log(`Decrementing likes for post with id ${id}: ${post.likes_count}`);
+      return this.communityRepository.save(post);
+    }
+
+    this.logger.warn(`Post with id ${id} has no likes to remove`);
+    return post;
+  }
+
+  // 조회수 증가
+  async incrementViews(id: number): Promise<Community | null> {
+    const post = await this.findOne(id);
+    if (!post) {
+      this.logger.error(`Post with id ${id} not found for incrementing views`);
+      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
+    }
+
+    post.views_count++;
+    this.logger.log(`Incrementing views for post with id ${id}: ${post.views_count}`);
+    return this.communityRepository.save(post);
   }
 }
