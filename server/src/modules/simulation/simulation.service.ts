@@ -10,12 +10,16 @@
 
 import { AIChatMessage, AIChatSession } from '@_simulation/entity/ai-chat.entity';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { SimulationRepository } from './simulation.repository';
 
 @Injectable()
 export class SimulationService {
-  constructor(private readonly simulationRepository: SimulationRepository) {}
+  constructor(
+    private readonly simulationRepository: SimulationRepository,
+    private readonly configService: ConfigService,
+  ) {}
 
   // 특정 유저의 채팅 세션 조회
   async getUserSessions(userId: number): Promise<AIChatSession[]> {
@@ -32,7 +36,7 @@ export class SimulationService {
     if (startNewChat) {
       // 새로운 세션 시작
       const newSession = await this.createSession(userId);
-      await this.saveAIMessage(newSession.id, '어떤 도움이 필요하시나요?');
+      await this.saveAIMessage(newSession.id, this.configService.get('FIRST_AI_MSG'));
       return newSession;
     } else {
       // 이전 세션 이어받기
@@ -42,7 +46,7 @@ export class SimulationService {
       } else {
         // 세션이 없을 경우 새로 시작
         const newSession = await this.createSession(userId);
-        await this.saveAIMessage(newSession.id, '어떤 도움이 필요하시나요?');
+        await this.saveAIMessage(newSession.id, this.configService.get('FIRST_AI_MSG'));
         return newSession;
       }
     }
@@ -65,16 +69,16 @@ export class SimulationService {
 
   // AI 서버로 질문을 보내고 응답 받기
   async getAIResponse(query: string): Promise<{ Answer: string }> {
-    const response = await axios.post('http://localhost:5000/query', { query });
+    const response = await axios.post(this.configService.get('AI_QUERY_URL'), { query });
     return response.data;
   }
 
   // 유저의 첫 번째 메시지를 주제로 설정하고 메시지 저장
   async saveUserMessage(sessionId: number, message: string): Promise<void> {
     const messageCount = await this.simulationRepository.countMessagesBySessionId(sessionId);
-    const firstAIMessage = 1;
+    const firstAIMessageCount = 1;
 
-    if (messageCount === firstAIMessage) {
+    if (messageCount === firstAIMessageCount) {
       await this.simulationRepository.updateSessionTopic(sessionId, message);
     }
     await this.simulationRepository.saveMessage(sessionId, message, 'user');
