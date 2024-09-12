@@ -13,7 +13,7 @@
  * 2024.09.11    김재영      Modified    페이지네이션 기능
  */
 
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, NotFoundException, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, NotFoundException, Logger, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { CommunityService } from './community.service';
 import { CreateCommunityDto } from './dto/create-community.dto';
@@ -31,8 +31,6 @@ export class CommunityController {
   private readonly logger = new Logger(CommunityController.name);
 
   constructor(private readonly communityService: CommunityService) {}
-
-  // 커뮤니티 게시글 관련 API
 
   @ApiOperation({ summary: '전체 커뮤니티 게시글 목록 조회 (페이지네이션 지원)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: '결과 수 제한 (기본값: 10)' })
@@ -57,9 +55,21 @@ export class CommunityController {
     return this.communityService.findByCategory(categoryEnum, paginationQuery);
   }
 
+  @ApiOperation({ summary: '전체 게시글에서 특정 게시글 조회' })
+  @Get(':id')
+  async getPostById(@Param('id', ParseIntPipe) id: number): Promise<Community> {
+    this.logger.log(`Received request to get post with id ${id}`);
+    const post = await this.communityService.findOne(id);
+    if (!post) {
+      this.logger.error(`Post with id ${id} not found`);
+      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
+    }
+    return post;
+  }
+
   @ApiOperation({ summary: '카테고리 내 특정 게시글 조회' })
   @Get(':category/:id')
-  async getPostByCategoryAndId(@Param('category') category: string, @Param('id') id: number): Promise<Community> {
+  async getPostByCategoryAndId(@Param('category') category: string, @Param('id', ParseIntPipe) id: number): Promise<Community> {
     this.logger.log(`Received request to get post with id ${id} in category ${category}`);
     const categoryEnum = Category[category.toUpperCase() as keyof typeof Category];
     if (!categoryEnum) {
@@ -83,7 +93,7 @@ export class CommunityController {
 
   @ApiOperation({ summary: '게시글 수정' })
   @Put(':id')
-  async updatePost(@Param('id') id: number, @Body() updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+  async updatePost(@Param('id', ParseIntPipe) id: number, @Body() updateCommunityDto: UpdateCommunityDto): Promise<Community> {
     this.logger.log(`Updating post with id ${id}`);
     const updatedPost = await this.communityService.update(id, updateCommunityDto);
     if (!updatedPost) {
@@ -95,7 +105,7 @@ export class CommunityController {
 
   @ApiOperation({ summary: '게시글 삭제' })
   @Delete(':id')
-  async deletePost(@Param('id') id: number): Promise<void> {
+  async deletePost(@Param('id', ParseIntPipe) id: number): Promise<void> {
     this.logger.log(`Deleting post with id ${id}`);
     await this.communityService.remove(id);
   }
@@ -104,14 +114,14 @@ export class CommunityController {
 
   @ApiOperation({ summary: '댓글 작성' })
   @Post(':postId/comments')
-  async addComment(@Param('postId') postId: number, @Body() createCommentDto: CreateCommentDto): Promise<Comment> {
+  async addComment(@Param('postId', ParseIntPipe) postId: number, @Body() createCommentDto: CreateCommentDto): Promise<Comment> {
     this.logger.log(`Adding comment to post with id ${postId}`);
     return this.communityService.addComment(postId, createCommentDto);
   }
 
   @ApiOperation({ summary: '댓글 수정' })
   @Put(':postId/comments/:commentId')
-  async updateComment(@Param('postId') postId: number, @Param('commentId') commentId: number, @Body() updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async updateComment(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number, @Body() updateCommentDto: UpdateCommentDto): Promise<Comment> {
     this.logger.log(`Updating comment with id ${commentId} on post ${postId}`);
     const updatedComment = await this.communityService.updateComment(postId, commentId, updateCommentDto);
     if (!updatedComment) {
@@ -123,14 +133,14 @@ export class CommunityController {
 
   @ApiOperation({ summary: '댓글 삭제' })
   @Delete(':postId/comments/:commentId')
-  async deleteComment(@Param('postId') postId: number, @Param('commentId') commentId: number): Promise<void> {
+  async deleteComment(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number): Promise<void> {
     this.logger.log(`Deleting comment with id ${commentId} on post ${postId}`);
     await this.communityService.deleteComment(postId, commentId);
   }
 
   @ApiOperation({ summary: '댓글의 대댓글 조회' })
   @Get(':postId/comments/:commentId/replies')
-  async getReplies(@Param('postId') postId: number, @Param('commentId') commentId: number): Promise<Comment[]> {
+  async getReplies(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number): Promise<Comment[]> {
     this.logger.log(`Fetching replies for comment with id ${commentId} on post ${postId}`);
     return this.communityService.getReplies(postId, commentId);
   }

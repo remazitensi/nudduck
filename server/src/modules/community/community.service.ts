@@ -10,6 +10,7 @@
  * 2024.09.10    김재영      Modified    댓글 관련 API 메서드 추가
  * 2024.09.10    김재영      Modified    TypeORM을 통한 데이터베이스 작업 처리 추가
  * 2024.09.11    김재영      Modified    페이지네이션 기능 추가 및 개선
+ * 2024.09.12    김재영      Modified    게시글과 댓글의 대댓글 처리 로직 추가 및 리팩토링
  */
 
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
@@ -51,7 +52,12 @@ export class CommunityService {
   // 특정 게시글 조회
   async findOne(id: number): Promise<Community | null> {
     this.logger.log(`Fetching post with id ${id}`);
-    return this.communityRepository.findOne({ where: { post_id: id } });
+    const post = await this.communityRepository.findOne({ where: { post_id: id } });
+    if (!post) {
+      this.logger.error(`Post with id ${id} not found`);
+      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
+    }
+    return post;
   }
 
   // 카테고리별 게시글 조회 (페이지네이션 적용)
@@ -103,7 +109,7 @@ export class CommunityService {
 
   // 게시글 삭제
   async remove(id: number): Promise<void> {
-    const post = await this.communityRepository.findOne({ where: { post_id: id } });
+    const post = await this.findOne(id);
     if (!post) {
       this.logger.error(`Post with id ${id} not found for deletion`);
       throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
@@ -172,6 +178,7 @@ export class CommunityService {
 
   // 댓글의 대댓글 조회
   async getReplies(postId: number, commentId: number): Promise<Comment[]> {
+    this.logger.log(`Fetching replies for comment ${commentId} on post ${postId}`);
     return this.commentRepository.find({ where: { parent_id: commentId, post_id: postId } });
   }
 }
