@@ -18,7 +18,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "*": ["*"]
+      "@_auth/*": ["modules/auth/*"],
+      "@_user/*": ["modules/user/*"],
+      "@_file-upload/*": ["modules/file-upload/*"],
+      "@_simulation/*": ["modules/simulation/*"]
     }
   }
 }
