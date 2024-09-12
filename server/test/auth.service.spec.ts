@@ -1,35 +1,19 @@
-/**
- * File Name    : auth.service.spec.ts
- * Description  : auth 서비스 유닛테스트
- * Author       : 이승철
- *
- * History
- * Date          Author      Status      Description
- * 2024.09.07    이승철      Created
- * 2024.09.07    이승철      Modified    서비스 메서드 유닛테스트
- * 2024.09.08    이승철      Modified    통합 test폴더로 위치 변경
- * 2024.09.08    이승철      Modified    mockUser에 nickName 추가
- */
-
-import { AuthRepository } from '@_auth/auth.repository';
-import { AuthService } from '@_auth/auth.service';
+import { FileUploadService } from '@_file-upload/file-upload.service';
+import { User } from '@_user/entity/user.entity';
+import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
+import { AuthRepository } from '../src/modules/auth/auth.repository';
+import { AuthService } from '../src/modules/auth/auth.service';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let authRepository: AuthRepository;
   let jwtService: JwtService;
+  let fileUploadService: FileUploadService;
   let configService: ConfigService;
-
-  // Mock Response 객체
-  const mockResponse = (): Partial<Response> => {
-    return {
-      cookie: jest.fn(), // res.cookie 모의 처리
-    } as Partial<Response>;
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -39,21 +23,32 @@ describe('AuthService', () => {
           provide: AuthRepository,
           useValue: {
             findUserByProvider: jest.fn(),
-            createUser: jest.fn(),
+            updateUser: jest.fn(),
             updateRefreshToken: jest.fn(),
+            createUser: jest.fn(),
+            findUserById: jest.fn(),
+            findUserByNickname: jest.fn(),
           },
         },
         {
           provide: JwtService,
           useValue: {
             sign: jest.fn(),
-            verify: jest.fn(),
+          },
+        },
+        {
+          provide: FileUploadService,
+          useValue: {
+            getDefaultProfileImgURL: jest.fn().mockReturnValue('default-image-url'),
           },
         },
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn(),
+            get: jest.fn().mockImplementation((key) => {
+              if (key === 'JWT_ACCESS_SECRET') return 'access-secret';
+              if (key === 'JWT_REFRESH_SECRET') return 'refresh-secret';
+            }),
           },
         },
       ],
@@ -62,37 +57,138 @@ describe('AuthService', () => {
     authService = module.get<AuthService>(AuthService);
     authRepository = module.get<AuthRepository>(AuthRepository);
     jwtService = module.get<JwtService>(JwtService);
+    fileUploadService = module.get<FileUploadService>(FileUploadService);
     configService = module.get<ConfigService>(ConfigService);
   });
 
-  it('should call findUserByProvider on social login', async () => {
-    const mockUserDto = { provider: 'google', providerId: '12345', email: 'test@test.com', name: 'Test User' };
+  describe('socialLogin', () => {
+    it('should handle existing user login', async () => {
+      const mockUser: User = {
+        id: 1,
+        provider: 'google',
+        providerId: '1234567890',
+        email: 'test@example.com',
+        name: 'Test User',
+        nickName: 'test1',
+        imageUrl: 'test-url',
+        refreshToken: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      };
+      const userDto = { provider: 'google', providerId: '1234567890', email: 'test@example.com', name: 'Test User' };
+      const res = { cookie: jest.fn() } as unknown as Response;
 
-    const mockUser = {
-      id: 1,
-      provider: 'google',
-      providerId: '12345',
-      email: 'test@test.com',
-      name: 'Test User',
-      nickName: 'asdfg',
-      refreshToken: 'mockRefreshToken',
-      imageUrl: 'https://example.com/avatar.png',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: null,
-    };
+      jest.spyOn(authRepository, 'findUserByProvider').mockResolvedValue(mockUser);
+      jest.spyOn(authRepository, 'updateRefreshToken').mockResolvedValue(undefined);
 
-    const res = mockResponse() as Response;
+      // 직접 private 메서드를 스파이하지 않고 public 메서드에서 처리되는 로직을 검증
+      jest.spyOn(authService as any, 'generateTokens').mockReturnValue({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      });
 
-    jest.spyOn(authRepository, 'findUserByProvider').mockResolvedValueOnce(null);
-    jest.spyOn(authRepository, 'createUser').mockResolvedValueOnce(mockUser);
-    jest.spyOn(jwtService, 'sign').mockReturnValue('mockAccessToken');
+      await authService.socialLogin(userDto, res);
 
-    await authService.socialLogin(mockUserDto, res);
+      expect(authRepository.findUserByProvider).toHaveBeenCalledWith(userDto.provider, userDto.providerId);
+      expect(authRepository.updateRefreshToken).toHaveBeenCalledWith(mockUser.id, 'refresh-token');
+      expect(res.cookie).toHaveBeenCalledWith('accessToken', 'access-token', expect.any(Object));
+      expect(res.cookie).toHaveBeenCalledWith('refreshToken', 'refresh-token', expect.any(Object));
+    });
 
-    expect(authRepository.findUserByProvider).toHaveBeenCalledWith('google', '12345');
-    expect(authRepository.createUser).toHaveBeenCalledWith(mockUserDto);
-    expect(res.cookie).toHaveBeenCalledTimes(2); // 쿠키가 설정되었는지 확인
-    expect(res.cookie).toHaveBeenCalledWith('accessToken', 'mockAccessToken', expect.any(Object));
+    it('should create a new user if user does not exist', async () => {
+      const userDto = { provider: 'google', providerId: '1234567890', email: 'test@example.com', name: 'Test User' };
+      const res = { cookie: jest.fn() } as unknown as Response;
+      const mockNewUser: User = {
+        id: 1,
+        provider: 'google',
+        providerId: '1234567890',
+        email: 'test@example.com',
+        name: 'Test User',
+        nickName: 'new1',
+        imageUrl: 'default-image-url',
+        refreshToken: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      };
+
+      jest.spyOn(authRepository, 'findUserByProvider').mockResolvedValue(null);
+      // 'createNewUser'도 private이기 때문에 직접 테스트하지 않고 호출되는지 확인
+      jest.spyOn(authService as any, 'createNewUser').mockResolvedValue(mockNewUser);
+      jest.spyOn(authRepository, 'updateRefreshToken').mockResolvedValue(undefined);
+      jest.spyOn(authService as any, 'generateTokens').mockReturnValue({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      });
+
+      await authService.socialLogin(userDto, res);
+
+      expect(authRepository.findUserByProvider).toHaveBeenCalledWith(userDto.provider, userDto.providerId);
+      expect(authService['createNewUser']).toHaveBeenCalledWith(userDto);
+      expect(authRepository.updateRefreshToken).toHaveBeenCalledWith(mockNewUser.id, 'refresh-token');
+      expect(res.cookie).toHaveBeenCalledWith('accessToken', 'access-token', expect.any(Object));
+      expect(res.cookie).toHaveBeenCalledWith('refreshToken', 'refresh-token', expect.any(Object));
+    });
+  });
+
+  describe('findUserById', () => {
+    it('should return the user if found', async () => {
+      const mockUser: User = {
+        id: 1,
+        provider: 'google',
+        providerId: '1234567890',
+        email: 'test@example.com',
+        name: 'Test User',
+        nickName: 'test1',
+        imageUrl: 'test-url',
+        refreshToken: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      };
+
+      jest.spyOn(authRepository, 'findUserById').mockResolvedValue(mockUser);
+
+      const result = await authService.findUserById(1);
+
+      expect(authRepository.findUserById).toHaveBeenCalledWith(1);
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should throw NotFoundException if user is not found', async () => {
+      jest.spyOn(authRepository, 'findUserById').mockResolvedValue(null);
+
+      await expect(authService.findUserById(1)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('generateTokens', () => {
+    it('should generate access and refresh tokens', () => {
+      const mockUser: User = {
+        id: 1,
+        provider: 'google',
+        providerId: '1234567890',
+        email: 'test@example.com',
+        name: 'Test User',
+        nickName: 'test1',
+        imageUrl: 'test-url',
+        refreshToken: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      };
+
+      // JwtService의 sign 메서드를 모킹하여 실제 토큰을 생성하는 것처럼 처리
+      jest.spyOn(jwtService, 'sign').mockReturnValueOnce('access-token').mockReturnValueOnce('refresh-token');
+
+      const tokens = (authService as any).generateTokens(mockUser);
+
+      expect(jwtService.sign).toHaveBeenCalledTimes(2);
+      expect(tokens).toEqual({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+      });
+    });
   });
 });
