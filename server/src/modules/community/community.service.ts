@@ -40,18 +40,17 @@ export class CommunityService {
   // 전체 게시글 조회 (페이지네이션 적용)
   async findAll(paginationQuery: PaginationQueryDto): Promise<Community[]> {
     const { page = 1, pageSize = 10 } = paginationQuery;
-    const limit = pageSize;
-    const offset = (page - 1) * pageSize;
+    const skip = (page - 1) * pageSize;
 
-    this.logger.log(`Fetching all posts with limit ${limit} and offset ${offset}`);
+    this.logger.log(`Fetching all posts with page ${page} and pageSize ${pageSize}`);
     return this.communityRepository.find({
-      skip: offset,
-      take: limit,
+      skip,
+      take: pageSize,
     });
   }
 
   // 특정 게시글 조회
-  async findOne(id: number): Promise<Community | null> {
+  async findOne(id: number): Promise<Community> {
     this.logger.log(`Fetching post with id ${id}`);
     const post = await this.communityRepository.findOne({ where: { post_id: id } });
     if (!post) {
@@ -64,14 +63,13 @@ export class CommunityService {
   // 카테고리별 게시글 조회 (페이지네이션 적용)
   async findByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<Community[]> {
     const { page = 1, pageSize = 10 } = paginationQuery;
-    const limit = pageSize;
-    const offset = (page - 1) * pageSize;
+    const skip = (page - 1) * pageSize;
 
-    this.logger.log(`Fetching posts in category ${category} with limit ${limit} and offset ${offset}`);
+    this.logger.log(`Fetching posts in category ${category} with page ${page} and pageSize ${pageSize}`);
     return this.communityRepository.find({
       where: { category },
-      skip: offset,
-      take: limit,
+      skip,
+      take: pageSize,
     });
   }
 
@@ -96,26 +94,16 @@ export class CommunityService {
   }
 
   // 게시글 수정
-  async update(id: number, updateCommunityDto: UpdateCommunityDto): Promise<Community | null> {
-    const post = await this.communityRepository.findOne({ where: { post_id: id } });
-    if (!post) {
-      this.logger.error(`Post with id ${id} not found for update`);
-      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
-    }
-
-    const updatedPost = this.communityRepository.merge(post, updateCommunityDto, { updated_at: new Date() });
-    this.logger.log(`Updating post with id ${id}: ${JSON.stringify(updatedPost)}`);
-    return this.communityRepository.save(updatedPost);
+  async update(id: number, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+    const post = await this.findOne(id);
+    Object.assign(post, updateCommunityDto, { updated_at: new Date() });
+    this.logger.log(`Updating post with id ${id}: ${JSON.stringify(post)}`);
+    return this.communityRepository.save(post);
   }
 
   // 게시글 삭제
   async remove(id: number): Promise<void> {
     const post = await this.findOne(id);
-    if (!post) {
-      this.logger.error(`Post with id ${id} not found for deletion`);
-      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
-    }
-
     await this.communityRepository.remove(post);
     this.logger.log(`Deleted post with id ${id}`);
   }
@@ -123,11 +111,6 @@ export class CommunityService {
   // 댓글 작성
   async addComment(postId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
     const post = await this.findOne(postId);
-    if (!post) {
-      this.logger.error(`Post with id ${postId} not found for adding comment`);
-      throw new NotFoundException(`게시글 ${postId}를 찾을 수 없습니다.`);
-    }
-
     const newComment = this.commentRepository.create({
       ...createCommentDto,
       post_id: postId,
@@ -136,26 +119,26 @@ export class CommunityService {
     });
 
     this.logger.log(`Adding new comment: ${JSON.stringify(newComment)}`);
-    await this.commentRepository.save(newComment);
+    const savedComment = await this.commentRepository.save(newComment);
 
     // 게시글의 댓글 수 업데이트
     post.comments_count++;
     await this.communityRepository.save(post);
 
-    return newComment;
+    return savedComment;
   }
 
   // 댓글 수정
-  async updateComment(postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment | null> {
+  async updateComment(postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
     const comment = await this.commentRepository.findOne({ where: { comment_id: commentId, post_id: postId } });
     if (!comment) {
       this.logger.error(`Comment with id ${commentId} on post ${postId} not found for update`);
       throw new NotFoundException(`댓글 ${commentId}를 찾을 수 없습니다.`);
     }
 
-    const updatedComment = this.commentRepository.merge(comment, updateCommentDto, { updated_at: new Date() });
-    this.logger.log(`Updating comment with id ${commentId} on post ${postId}: ${JSON.stringify(updatedComment)}`);
-    return this.commentRepository.save(updatedComment);
+    Object.assign(comment, updateCommentDto, { updated_at: new Date() });
+    this.logger.log(`Updating comment with id ${commentId} on post ${postId}: ${JSON.stringify(comment)}`);
+    return this.commentRepository.save(comment);
   }
 
   // 댓글 삭제
@@ -177,6 +160,55 @@ export class CommunityService {
     }
   }
 
+  // 댓글 조회
+  async getCommentsByPostId(postId: number): Promise<Comment[]> {
+    this.logger.log(`Fetching comments for post with id ${postId}`);
+    return this.commentRepository.find({ where: { post_id: postId } });
+  }
+
+  // 대댓글 작성
+  async addReply(postId: number, parentId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
+    this.logger.log(`Adding reply to comment ${parentId} on post ${postId}`);
+
+    const parentComment = await this.commentRepository.findOne({ where: { comment_id: parentId, post_id: postId } });
+    if (!parentComment) {
+      throw new NotFoundException(`부모 댓글 ID ${parentId}를 찾을 수 없습니다.`);
+    }
+
+    const newReply = this.commentRepository.create({
+      ...createCommentDto,
+      parent_id: parentId,
+      post_id: postId,
+      created_at: new Date(),
+      updated_at: new Date(),
+    });
+
+    return this.commentRepository.save(newReply);
+  }
+
+  // 대댓글 수정
+  async updateReply(postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+    this.logger.log(`Updating reply ${commentId} on post ${postId}`);
+
+    const reply = await this.commentRepository.findOne({ where: { comment_id: commentId, post_id: postId } });
+    if (!reply) {
+      throw new NotFoundException(`대댓글 ID ${commentId}를 찾을 수 없습니다.`);
+    }
+
+    Object.assign(reply, updateCommentDto, { updated_at: new Date() });
+    return this.commentRepository.save(reply);
+  }
+
+  // 대댓글 삭제
+  async deleteReply(postId: number, commentId: number): Promise<void> {
+    this.logger.log(`Deleting reply ${commentId} on post ${postId}`);
+
+    const result = await this.commentRepository.delete({ comment_id: commentId, post_id: postId });
+    if (result.affected === 0) {
+      throw new NotFoundException(`대댓글 ID ${commentId}를 찾을 수 없습니다.`);
+    }
+  }
+
   // 댓글의 대댓글 조회
   async getReplies(postId: number, commentId: number): Promise<Comment[]> {
     this.logger.log(`Fetching replies for comment ${commentId} on post ${postId}`);
@@ -184,44 +216,28 @@ export class CommunityService {
   }
 
   // 좋아요 수 증가
-  async incrementLikes(id: number): Promise<Community | null> {
+  async incrementLikes(id: number): Promise<Community> {
     const post = await this.findOne(id);
-    if (!post) {
-      this.logger.error(`Post with id ${id} not found for incrementing likes`);
-      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
-    }
-
     post.likes_count++;
     this.logger.log(`Incrementing likes for post with id ${id}: ${post.likes_count}`);
     return this.communityRepository.save(post);
   }
 
   // 좋아요 수 감소
-  async decrementLikes(id: number): Promise<Community | null> {
+  async decrementLikes(id: number): Promise<Community> {
     const post = await this.findOne(id);
-    if (!post) {
-      this.logger.error(`Post with id ${id} not found for decrementing likes`);
-      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
-    }
-
     if (post.likes_count > 0) {
       post.likes_count--;
       this.logger.log(`Decrementing likes for post with id ${id}: ${post.likes_count}`);
       return this.communityRepository.save(post);
     }
-
     this.logger.warn(`Post with id ${id} has no likes to remove`);
     return post;
   }
 
   // 조회수 증가
-  async incrementViews(id: number): Promise<Community | null> {
+  async incrementViews(id: number): Promise<Community> {
     const post = await this.findOne(id);
-    if (!post) {
-      this.logger.error(`Post with id ${id} not found for incrementing views`);
-      throw new NotFoundException(`게시글 ${id}를 찾을 수 없습니다.`);
-    }
-
     post.views_count++;
     this.logger.log(`Incrementing views for post with id ${id}: ${post.views_count}`);
     return this.communityRepository.save(post);
