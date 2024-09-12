@@ -12,17 +12,6 @@
 
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
-<<<<<<< HEAD
-=======
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import Header from './layout/Header_woohyun';
-import Community from './pages/Community';
-import CommunityView from './pages/CommunityView';
-import CommunityWrite from './pages/CommunityWrite';
-
-
-
->>>>>>> 6a70df25bdcf97eb7c1e4198dea66dd8662e0fcb
 import './App.css';
 
 import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
@@ -48,7 +37,6 @@ import Unauthorized from './pages/Unauthorized';
 const App: React.FC = () => {
   return (
     <Router>
-<<<<<<< HEAD
       <Routes>
         {/* Layout을 사용하여 Header와 Footer를 모든 페이지에 적용 */}
         <Route path='/' element={<Layout />}>
@@ -98,15 +86,6 @@ const App: React.FC = () => {
           {/* 404 Not Found 페이지 */}
           <Route path='*' element={<NotFound />} />
         </Route>
-=======
-      <Header />
-      <Routes>
-        {/* <Route path='/' element={<Root />} /> */}
-        {/* <Route path='/my' element={<My />} /> */}
-        <Route path='/community' element={<Community />} />
-        <Route path='/communityWrite' element={<CommunityWrite />} />
-        <Route path='/communityView' element={<CommunityView />} />
->>>>>>> 6a70df25bdcf97eb7c1e4198dea66dd8662e0fcb
       </Routes>
     </Router>
   );

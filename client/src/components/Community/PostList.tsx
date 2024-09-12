@@ -15,17 +15,17 @@ export const PostList: React.FC = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    getPostList(
-      (page = 1),
-      (sort = 'latest'),
-      (response) => {
-        setPosts(response?.data);
+    const fetchPosts = async () => {
+      try {
+        const data = await getPostList({ category: '', page: 1, sort: 'latest' });
+        setPosts(data); // 받아온 데이터로 state 업데이트
         console.log(posts);
-      },
-      (error) => {
-        console.log(error);
-      },
-    );
+      } catch (error) {
+        console.error('Failed to fetch posts:', error.response.data.message); // 에러 처리
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return <div>{/* TODO : post 데이터를 받아가는 게시글 컴포넌트 */}</div>;
