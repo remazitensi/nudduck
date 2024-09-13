@@ -1,20 +1,45 @@
 /**
- * File Name    : Header.tsx
- * Description  : layout - 헤더 -
+ * File Name    : CommunityPostList.tsx
+ * Description  : Community 페이지, 게시글 랜더 기능
  * Author       : 김우현
  *
  * History
  * Date          Author      Status      Description
  * 2024.09.10    김우현      Created     커뮤니티 페이지 생성
+ * 2024.09.13    김민지      Modified    PostSection 동적 추가, 컴포넌트 분리, 카테고리 선택
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-
+import { getPostList } from '../apis/community-api';
+import { PostList } from '../components/Community/PostList';
+import { testPostList } from '../constants/community-test';
 
 const CommunityPostList: React.FC = () => {
+  const [category, setCategory] = useState<string>('');
+  const [posts, setPosts] = useState({ community: [] });
+
+  const fetchPosts = async (category: string) => {
+    const data = await getPostList({ category, page, sort }); //api get 실행
+    setPosts(data); // 받아온 데이터로 state 업데이트
+    console.log(posts);
+    //NOTE: data.community가 아닌 data로 저장하는 이유 : 다른 변수를 페이지네이션에 사용해야 해서
+  };
+  // console.log(testPostList);
+
+  // 페이지 로드시 테스트 데이터를 posts에 업데이트
+  useEffect(() => {
+    const testData = testPostList;
+    setPosts(testData); // 테스트 데이터 업데이트
+    console.log('useEffect executed, test data set');
+  }, []);
+
+  // posts 상태 변경 시 동작
+  useEffect(() => {
+    console.log('Posts state updated:', posts); // posts가 변경될 때마다 호출
+  }, [posts]);
+
   return (
-    <div className='community-titles flex w-[1920px] flex-col items-center'>
+    <div className='community-titles flex flex-col items-center'>
       <div className='mt-[140px]'>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[100px] border-b-2 border-[8D8B67]'></div>
@@ -22,11 +47,11 @@ const CommunityPostList: React.FC = () => {
       <div className='mt-[55px]'>
         <div className='flex items-center'>
           <div className='flex cursor-pointer gap-[80px] text-[20px]'>
-            <div>전체</div>
-            <div>#면접</div>
-            <div>#모임</div>
-            <div>#스터디</div>
-            <div>#잡답</div>
+            <div onClick={() => setCategory('')}>전체</div>
+            <div onClick={() => setCategory('interview')}>면접</div>
+            <div onClick={() => setCategory('meeting')}>모임</div>
+            <div onClick={() => setCategory('study')}>스터디</div>
+            <div onClick={() => setCategory('talk')}>잡답</div>
           </div>
           <div className='ml-[70px] flex items-center'>
             <div className='flex items-center gap-[20px]'>
@@ -56,115 +81,7 @@ const CommunityPostList: React.FC = () => {
         <div className='w-[700px]'>
           <div className='mb-[30px] flex flex-col'>
             <div className='mt-[10px] w-full border-b-2 border-[8D8B67]'></div>
-            <div className='mt-[30px]'>
-              <div className='flex w-full items-center gap-[70px]'>
-                <div className='h-[35px] w-[85px] cursor-pointer bg-[#FFC5C3] text-center text-[20px]'>#스터디</div>
-                <div className='text-[20px]'>1:1 대화방 및 스터디 구합니다</div>
-              </div>
-              <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
-                <img src='/clover-image.png' alt='cloverImg' />
-                <div>똑순이 권위자</div>
-              </div>
-              <div className='flex justify-end text-[20px]'>
-                <div className='flex'>
-                  <div className='text-[#AEAC9A]'>
-                    조회수 <span className='text-[#A1DFFF]'>50</span>
-                  </div>
-                  <div className='ml-[30px] text-[#AEAC9A]'>
-                    좋아요 <span className='text-[#FFC5C3]'>100</span>
-                  </div>
-                  <div className='ml-[175px] text-[#AEAC9A]'>작성일 2024-09-06</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
-                </div>
-              </div>
-            </div>
-
-            <div className='mt-[30px]'>
-              <div className='flex w-full items-center gap-[70px]'>
-                <div className='h-[35px] w-[85px] cursor-pointer bg-[#FFC5C3] text-center text-[20px]'>#스터디</div>
-                <div className='text-[20px]'>1:1 대화방 및 스터디 구합니다</div>
-              </div>
-              <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
-                <img src='/clover-image.png' alt='cloverImg' />
-                <div>똑순이 권위자</div>
-              </div>
-              <div className='flex justify-end text-[20px]'>
-                <div className='flex'>
-                  <div className='text-[#AEAC9A]'>
-                    조회수 <span className='text-[#A1DFFF]'>50</span>
-                  </div>
-                  <div className='ml-[30px] text-[#AEAC9A]'>
-                    좋아요 <span className='text-[#FFC5C3]'>100</span>
-                  </div>
-                  <div className='ml-[175px] text-[#AEAC9A]'>작성일 2024-09-06</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
-                </div>
-              </div>
-            </div>
-
-            <div className='mt-[30px]'>
-              <div className='flex w-full items-center gap-[70px]'>
-                <div className='h-[35px] w-[85px] cursor-pointer bg-[#FFC5C3] text-center text-[20px]'>#스터디</div>
-                <div className='text-[20px]'>1:1 대화방 및 스터디 구합니다</div>
-              </div>
-              <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
-                <img src='/clover-image.png' alt='cloverImg' />
-                <div>똑순이 권위자</div>
-              </div>
-              <div className='flex justify-end text-[20px]'>
-                <div className='flex'>
-                  <div className='text-[#AEAC9A]'>
-                    조회수 <span className='text-[#A1DFFF]'>50</span>
-                  </div>
-                  <div className='ml-[30px] text-[#AEAC9A]'>
-                    좋아요 <span className='text-[#FFC5C3]'>100</span>
-                  </div>
-                  <div className='ml-[175px] text-[#AEAC9A]'>작성일 2024-09-06</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
-                </div>
-              </div>
-            </div>
-
-            <div className='mt-[30px]'>
-              <div className='flex w-full items-center gap-[70px]'>
-                <div className='h-[35px] w-[85px] cursor-pointer bg-[#FFC5C3] text-center text-[20px]'>#스터디</div>
-                <div className='text-[20px]'>1:1 대화방 및 스터디 구합니다</div>
-              </div>
-              <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
-                <img src='/clover-image.png' alt='cloverImg' />
-                <div>똑순이 권위자</div>
-              </div>
-              <div className='flex justify-end text-[20px]'>
-                <div className='flex'>
-                  <div className='text-[#AEAC9A]'>
-                    조회수 <span className='text-[#A1DFFF]'>50</span>
-                  </div>
-                  <div className='ml-[30px] text-[#AEAC9A]'>
-                    좋아요 <span className='text-[#FFC5C3]'>100</span>
-                  </div>
-                  <div className='ml-[175px] text-[#AEAC9A]'>작성일 2024-09-06</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
-                </div>
-              </div>
-            </div>
-
-            <div className='mt-[30px]'>
-              <div className='flex w-full items-center gap-[70px]'>
-                <div className='h-[35px] w-[85px] cursor-pointer bg-[#FFC5C3] text-center text-[20px]'>#스터디</div>
-                <div className='text-[20px]'>1:1 대화방 및 스터디 구합니다</div>
-              </div>
-              <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
-                <img src='/clover-image.png' alt='cloverImg' />
-                <div>똑순이 권위자</div>
-              </div>
-              <div className='flex justify-end text-[20px]'>
-                <div className='flex'>
-                  <div className='text-[#AEAC9A]'>
-                    조회수 <span className='text-[#A1DFFF]'>50</span>
-                  </div>
-                  <div className='ml-[30px] text-[#AEAC9A]'>
-                    좋아요 <span className='text-[#FFC5C3]'>100</span>
-                  </div>
-                  <div className='ml-[175px] text-[#AEAC9A]'>작성일 2024-09-06</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
-                </div>
-              </div>
-            </div>
+            <PostList posts={posts.community} />
           </div>
         </div>
       </div>
