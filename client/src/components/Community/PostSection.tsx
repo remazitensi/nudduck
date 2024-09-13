@@ -30,7 +30,7 @@ const CategoryBtn: React.FC<ButtonProps> = ({ category }) => {
   const baseStyle = 'h-[35px] w-[85px] cursor-pointer text-center text-[20px]';
 
   // category에 따른 색상 적용
-  const categoryStyle = category === '스터디' ? 'bg-[#FFC5C3]' : category === '면접' ? 'bg-[#D6D3C0]' : category === '모임' ? 'bg-[#A1DFFF]' : 'bg-[#FFEABA]'; // 기본 스타일 (카테고리 없을 경우)
+  const categoryStyle = category === 'stydy' ? 'bg-[#FFC5C3]' : category === 'interview' ? 'bg-[#D6D3C0]' : category === 'meeting' ? 'bg-[#A1DFFF]' : 'bg-[#FFEABA]'; // 기본 스타일 (카테고리 없을 경우)
   return <div className={`${baseStyle} ${categoryStyle}`}>{category}</div>;
 };
 
