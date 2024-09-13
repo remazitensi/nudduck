@@ -24,7 +24,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: calc(100% - 610px); /* 양쪽 305px의 여백을 고려한 전체 너비 */
+  padding: 0 305px; /* 양쪽에 305px의 여백 추가 */
+  width: 100%; /* 전체 너비를 100%로 설정 */
   height: 100%;
 }
 
@@ -60,9 +61,10 @@
 }
 
 .search-container {
-  display: flex;
+  display: inline-flex;
   width: 240px;
   height: 36px;
+  align-items: center;
 }
 
 .search-input {
