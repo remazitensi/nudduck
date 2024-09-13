@@ -27,11 +27,21 @@ describe('CommunityService', () => {
         CommunityService,
         {
           provide: getRepositoryToken(Comment),
-          useClass: Repository,
+          useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+            find: jest.fn(),
+            findOne: jest.fn(),
+            remove: jest.fn(),
+            count: jest.fn(), // count 메서드 추가
+          },
         },
         {
           provide: getRepositoryToken(Community),
-          useClass: Repository,
+          useValue: {
+            findOne: jest.fn(),
+            save: jest.fn(),
+          },
         },
       ],
     }).compile();
@@ -102,6 +112,7 @@ describe('CommunityService', () => {
       },
     ];
     jest.spyOn(commentRepository, 'find').mockResolvedValue(comments);
+    jest.spyOn(commentRepository, 'count').mockResolvedValue(2); // count 메서드의 반환값 설정
 
     const result = await service.getCommentsByPostId(1);
     expect(result).toEqual(comments);
@@ -136,6 +147,7 @@ describe('CommunityService', () => {
       },
     ];
     jest.spyOn(commentRepository, 'find').mockResolvedValue(replies);
+    jest.spyOn(commentRepository, 'count').mockResolvedValue(2); // count 메서드의 반환값 설정
 
     const result = await service.getReplies(1, 1);
     expect(result).toEqual(replies);
