@@ -159,11 +159,18 @@ export class CommunityService {
       await this.communityRepository.save(post);
     }
   }
-
   // 댓글 조회
   async getCommentsByPostId(postId: number): Promise<Comment[]> {
     this.logger.log(`Fetching comments for post with id ${postId}`);
-    return this.commentRepository.find({ where: { post_id: postId } });
+
+    const comments = await this.commentRepository.find({ where: { post_id: postId } });
+
+    // 각 댓글에 대한 대댓글 개수 추가
+    for (const comment of comments) {
+      comment['repliesCount'] = await this.getRepliesCount(comment.comment_id, postId);
+    }
+
+    return comments;
   }
 
   // 대댓글 작성
@@ -183,6 +190,9 @@ export class CommunityService {
       updated_at: new Date(),
     });
 
+    // 부모 댓글의 대댓글 개수 업데이트
+    parentComment['repliesCount'] = await this.getRepliesCount(parentId, postId);
+
     return this.commentRepository.save(newReply);
   }
 
@@ -196,6 +206,14 @@ export class CommunityService {
     }
 
     Object.assign(reply, updateCommentDto, { updated_at: new Date() });
+
+    // 부모 댓글의 대댓글 개수 업데이트
+    const parentCommentId = reply.parent_id;
+    const parentComment = await this.commentRepository.findOne({ where: { comment_id: parentCommentId, post_id: postId } });
+    if (parentComment) {
+      parentComment['repliesCount'] = await this.getRepliesCount(parentCommentId, postId);
+    }
+
     return this.commentRepository.save(reply);
   }
 
@@ -203,16 +221,38 @@ export class CommunityService {
   async deleteReply(postId: number, commentId: number): Promise<void> {
     this.logger.log(`Deleting reply ${commentId} on post ${postId}`);
 
-    const result = await this.commentRepository.delete({ comment_id: commentId, post_id: postId });
-    if (result.affected === 0) {
+    const reply = await this.commentRepository.findOne({ where: { comment_id: commentId, post_id: postId } });
+    if (!reply) {
       throw new NotFoundException(`대댓글 ID ${commentId}를 찾을 수 없습니다.`);
+    }
+
+    await this.commentRepository.remove(reply);
+
+    // 부모 댓글의 대댓글 개수 업데이트
+    const parentCommentId = reply.parent_id;
+    const parentComment = await this.commentRepository.findOne({ where: { comment_id: parentCommentId, post_id: postId } });
+    if (parentComment) {
+      parentComment['repliesCount'] = await this.getRepliesCount(parentCommentId, postId);
     }
   }
 
   // 댓글의 대댓글 조회
   async getReplies(postId: number, commentId: number): Promise<Comment[]> {
     this.logger.log(`Fetching replies for comment ${commentId} on post ${postId}`);
-    return this.commentRepository.find({ where: { parent_id: commentId, post_id: postId } });
+
+    const replies = await this.commentRepository.find({ where: { parent_id: commentId, post_id: postId } });
+
+    // 각 대댓글에 대한 대댓글 개수 추가
+    for (const reply of replies) {
+      reply['repliesCount'] = await this.getRepliesCount(reply.comment_id, postId);
+    }
+
+    return replies;
+  }
+
+  // 대댓글 개수 계산
+  public async getRepliesCount(commentId: number, postId: number): Promise<number> {
+    return this.commentRepository.count({ where: { parent_id: commentId, post_id: postId } });
   }
 
   // 좋아요 수 증가

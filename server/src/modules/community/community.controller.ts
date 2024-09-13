@@ -143,7 +143,13 @@ export class CommunityController {
   @Get(':postId/comments')
   async getCommentsByPostId(@Param('postId', ParseIntPipe) postId: number): Promise<Comment[]> {
     this.logger.log(`Fetching comments for post with id ${postId}`);
-    return this.communityService.getCommentsByPostId(postId);
+
+    // 댓글 조회 시 repliesCount 필드 추가
+    const comments = await this.communityService.getCommentsByPostId(postId);
+    for (const comment of comments) {
+      comment['repliesCount'] = await this.communityService.getRepliesCount(comment.comment_id, postId);
+    }
+    return comments;
   }
 
   @ApiOperation({ summary: '대댓글 작성' })
@@ -177,7 +183,12 @@ export class CommunityController {
   @ApiParam({ name: 'commentId', description: '댓글 ID', type: Number })
   @Get(':postId/comments/:commentId/replies')
   async getReplies(@Param('postId', ParseIntPipe) postId: number, @Param('commentId', ParseIntPipe) commentId: number): Promise<Comment[]> {
-    return this.communityService.getReplies(postId, commentId);
+    // 대댓글 조회 시 repliesCount 필드 추가
+    const replies = await this.communityService.getReplies(postId, commentId);
+    for (const reply of replies) {
+      reply['repliesCount'] = await this.communityService.getRepliesCount(reply.comment_id, postId);
+    }
+    return replies;
   }
 
   // 좋아요 관련 API

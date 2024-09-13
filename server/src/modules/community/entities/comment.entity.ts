@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.09    김재영      Created     댓글 엔티티 초기 생성
  * 2024.09.10    김재영      Modified    typeorm 추가
+ * 2024.09.13    김재영      Modified    대댓글 개수 추가
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
@@ -46,4 +47,7 @@ export class Comment {
   // 대댓글 배열 (self-referencing relationship)
   @OneToMany(() => Comment, (comment) => comment.parent)
   replies?: Comment[];
+
+  // 대댓글 개수 계산
+  repliesCount?: number; // 실제로 DB에 저장되지 않고, 조회할 때 계산
 }

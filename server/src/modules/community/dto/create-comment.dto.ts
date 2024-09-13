@@ -30,3 +30,36 @@ export class CreateCommentDto {
   @IsOptional()
   parent_id?: number; // 대댓글일 경우, 부모 댓글 ID
 }
+
+// 조회 시 사용할 DTO
+export class CommentResponseDto {
+  @ApiProperty({
+    description: '댓글 ID',
+    example: 101,
+  })
+  comment_id: number;
+
+  @ApiProperty({
+    description: '댓글 내용',
+    example: '이 게시글에 대한 댓글입니다.',
+  })
+  content: string;
+
+  @ApiProperty({
+    description: '작성 일시',
+    example: '2024-09-12T12:00:00Z',
+  })
+  created_at: Date;
+
+  @ApiProperty({
+    description: '수정 일시',
+    example: '2024-09-12T12:05:00Z',
+  })
+  updated_at: Date;
+
+  @ApiProperty({
+    description: '대댓글 수',
+    example: 2,
+  })
+  repliesCount: number;
+}
