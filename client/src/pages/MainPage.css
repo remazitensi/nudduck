@@ -1,0 +1,99 @@
+/**
+ * File Name    : MainPage.css
+ * Description  : 메인페이지 스타일 시트
+ * Author       : 황솜귤
+ * 
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.13    황솜귤      Created     메인페이지 스타일 시트 생성
+ */
+
+
+/* 전체 컨테이너 */
+.main-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* 상단 배너 */
+  .banner {
+    background: linear-gradient(to bottom, #979e07, #ffffff);
+    text-align: center;
+    padding: 50px 20px;
+    color: #333;
+    width: 1920px;
+    height: 900px;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .banner-title {
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+  
+  /* 개별 텍스트 스타일링 */
+  .extrabold {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 800; /* ExtraBold */
+  }
+  
+  .semibold {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 600; /* SemiBold */
+  }
+  
+  .white-text {
+    color: #ffffff; /* 흰색 글씨 */
+  }
+  
+  /* Flex 컨테이너: h2와 img를 한 줄에 배치 */
+  .flex-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    row-gap: 20px; /* 세로 간격 */
+    column-gap: 800px; /* 가로 간격 */
+  }
+  
+  .flex-container h2 {
+    font-size: 24px;
+    color: #666;
+  }
+  
+  /* Arrow 이미지 크기 조정 및 여백 */
+  .arrow-down {
+    width: 166px;
+    height: 142px;
+    margin-top: 400px;
+    opacity: 0.5;
+  }
+  
+  /* CTA 영역 */
+  .cta-container {
+    margin-top: 50px; /* CTA 컨테이너 위쪽 여백 */
+    text-align: center;
+    padding-bottom: 20px; /* 컨테이너 아래쪽 여백 */
+  }
+  
+  .cta-container p {
+    font-size: 18px;
+    color: #333;
+    margin-right: 20px; /* 텍스트와 버튼 사이 여백 */
+    display: inline-block;
+  }
+  
+  .cta-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #909700;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-left: 10px; /* 버튼과 텍스트 간격 조절 */
+  }

@@ -64,7 +64,6 @@ img {
 
 /* 헤더 및 푸터 스타일 */
 .header {
-  padding: 10px 20px;
   background-color: #ffffff;
   color: #444;
   width: 1920px; /* 헤더 너비 1920px 설정 */

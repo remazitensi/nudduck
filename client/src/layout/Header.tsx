@@ -111,7 +111,7 @@ const handleLogin = () => {
         <div className="user-section">
           {!isLoggedIn ? (
             <div className="auth-links">
-              <button onClick={() => setIsModalOpen(true)}>로그인</button> | <button onClick={() => setIsModalOpen(true)}>회원가입</button>
+              <button onClick={() => setIsModalOpen(true)}>로그인</button>|<button onClick={() => setIsModalOpen(true)}>회원가입</button>
             </div>
           ) : (
             <div className="profile-container" onClick={handleProfileClick}>
