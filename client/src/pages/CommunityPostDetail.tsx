@@ -9,11 +9,9 @@
  */
 import React from 'react';
 
-
-
 const CommunityPostDetail: React.FC = () => {
   return (
-    <div className='community-titles flex w-[1920px] flex-col items-center'>
+    <div className='community-titles flex flex-col items-center'>
       <div className='mt-[140px]'>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[100px] border-b-2 border-[8D8B67]'></div>

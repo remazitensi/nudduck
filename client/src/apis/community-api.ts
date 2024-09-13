@@ -6,13 +6,27 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.10    김민지      Created      환경변수로 base-api 설정
- * 2024.09.13    김민지      Modified     게시글 get api 추가
+ * 2024.09.13    김민지      Modified     게시글 get api 추가, 경로 수정
  */
 
 import { postDetail, postList } from '../types/community-type';
 import { api, baseApi } from './base-api';
 
 // <------------------ 게시글 api ------------------>
+
+// import 한 테스트 데이터
+// const testPost = {
+//   post_id: 5,
+//   title: '제목입니다울랄라',
+//   content: '내용입니다.',
+//   user_id: '1004',
+//   category: 'study',
+//   created_at: '2024-09-12T12:34:56.789Z',
+//   updated_at: '2024-09-12T12:34:56.789Z',
+//   likes_count: 10,
+//   views_count: 100,
+//   comments_count: 5,
+// };
 
 // 게시글 리스트 get 요청
 export async function getPostList({ category = '', page = 1, sort = 'latest', search = '' }: postList): Promise<any> {
@@ -47,27 +61,14 @@ export async function getPostDetail({ category = '', id = '' }: postDetail): Pro
   }
 }
 
-const testPost = {
-  post_id: 5,
-  title: '제목입니다울랄라',
-  content: '내용입니다.',
-  user_id: '1004',
-  category: 'study',
-  created_at: '2024-09-12T12:34:56.789Z',
-  updated_at: '2024-09-12T12:34:56.789Z',
-  likes_count: 10,
-  views_count: 100,
-  comments_count: 5,
-};
-
 // 게시글 작성 post 요청
-export async function writePost({ testPost }) {
+export async function writePost({ post }) {
   try {
-    const res = await baseApi.post(api.community, { testPost });
+    // baseApi(url, { 백으로 보내야 할 정보를 담는 곳 })
+    const response = await baseApi.post(api.community, { post });
 
-    if (res.status === 201) {
-      const post_id = res.data.post_id;
-      window.location.href = `${api.community}/${post_id}`;
+    if (response.status === 201) {
+      window.location.href = `/community/${post.post_id}`;
     }
   } catch (error) {
     return console.error('Failed to fetch posts:', error.response.data.message); // 실패 시 error message
@@ -75,12 +76,12 @@ export async function writePost({ testPost }) {
 }
 
 // 게시글 수정 put 요청
-export async function editPost({ testPost }) {
+export async function editPost({ post }) {
   try {
-    const res = await baseApi.put(`${api.community}/${testPost.post_id}`, {});
+    const response = await baseApi.put(`${api.community}/${post.post_id}`, {});
 
-    if (res.status === 201) {
-      window.location.href = `${api.community}`;
+    if (response.status === 201) {
+      window.location.href = `api.community/${post.post_id}`;
     }
   } catch (error) {
     return console.error('Failed to fetch posts:', error.response.data.message); // 실패 시 error message
@@ -88,12 +89,12 @@ export async function editPost({ testPost }) {
 }
 
 // 게시글 삭제 delete 요청
-export async function deletePost({ testPost }) {
+export async function deletePost({ post }) {
   try {
-    const res = await baseApi.delete(`${api.community}/${testPost.post_id}`, {});
+    const response = await baseApi.delete(`${api.community}/${post.post_id}`, {});
 
-    if (res.status === 201) {
-      window.location.href = `${api.community}`;
+    if (response.status === 201) {
+      window.location.href = `api.community`;
     }
   } catch (error) {
     return console.error('Failed to fetch posts:', error.response.data.message); // 실패 시 error message

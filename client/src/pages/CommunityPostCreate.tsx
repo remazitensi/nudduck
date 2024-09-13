@@ -1,11 +1,12 @@
 /**
- * File Name    : Header.tsx
- * Description  : layout - 헤더 -
+ * File Name    : CommunityPostCreate.tsx
+ * Description  : 커뮤니티 게시글 작성 페이지
  * Author       : 김우현
  *
  * History
  * Date          Author      Status      Description
  * 2024.09.10    김우현      Created     커뮤니티 글쓰기 페이지 생성
+ * 2024.09.14    김민지      Modified    카테고리 선택 후 닫기 추가
  */
 import React, { useState } from 'react';
 
@@ -16,6 +17,7 @@ const CommunityPostCreate: React.FC = () => {
   const [view, setView] = useState(false);
   const [typing, setTyping] = useState('');
   const [message, setMessage] = useState('');
+  const [category, setCategory] = useState('선택');
 
   // 글지수 유효성 검사
   const onTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,8 +31,14 @@ const CommunityPostCreate: React.FC = () => {
     }
   };
 
+  // 카테고리를 변경하는 함수
+  const handleCategoryChange = (newCategory: string) => {
+    setCategory(newCategory);
+    setView(false); // 카테고리를 선택한 후 드롭다운 닫기
+  };
+
   return (
-    <div className='community-titles flex w-[1920px] flex-col items-center'>
+    <div className='community-titles flex flex-col items-center'>
       <div className='mt-[140px]'>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[100px] border-b-2 border-[8D8B67]'></div>
@@ -47,7 +55,7 @@ const CommunityPostCreate: React.FC = () => {
               className='flex cursor-pointer p-[5px]'
             >
               <li className='flex w-full items-center'>
-                전체
+                {category}
                 <img className='ml-auto' src={view ? 'down_arrow.png' : 'up_arrow.png'} alt='arrow' />
               </li>
             </ul>
@@ -60,9 +68,18 @@ const CommunityPostCreate: React.FC = () => {
                 - absolute: 부모 요소(relative)에 대해 위치 조정
                 - top-full: 클릭한 리스트 바로 아래로 표시되도록 설정 
               */}
-                <li className='p-[5px] hover:bg-gray-100'>모임</li>
-                <li className='p-[5px] hover:bg-gray-100'>스터디</li>
-                <li className='p-[5px] hover:bg-gray-100'>잡담</li>
+                <li onClick={() => handleCategoryChange('면접')} className='p-[5px] hover:bg-gray-100'>
+                  면접
+                </li>
+                <li onClick={() => handleCategoryChange('모임')} className='p-[5px] hover:bg-gray-100'>
+                  모임
+                </li>
+                <li onClick={() => handleCategoryChange('스터디')} className='p-[5px] hover:bg-gray-100'>
+                  스터디
+                </li>
+                <li onClick={() => handleCategoryChange('잡담')} className='p-[5px] hover:bg-gray-100'>
+                  잡담
+                </li>
               </ul>
             )}
           </div>
