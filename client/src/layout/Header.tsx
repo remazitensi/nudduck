@@ -1,5 +1,5 @@
 /**
- * File Name    : header-component.tsx
+ * File Name    : Header.tsx
  * Description  : 헤더 컴포넌트 - 로그인 전후 상태에 따라 상이한 UI
  * Author       : 황솜귤
  * 
@@ -7,13 +7,16 @@
  * Date          Author      Status      Description
  * 2024.09.05    황솜귤      Created     헤더 컴포넌트 생성
  * 2024.09.09    황솜귤      Modified    router 연결
- * 2024.09.11    황솜귤      Modified    배치 수정 
+ * 2024.09.11    황솜귤      Modified    loginModal 연동 및 상태 변경 처리
+ * 2024.09.12    황솜귤      Modified    소셜 로그인 및 사용자 정보 연동 처리
  */
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // useNavigate 추가
 import axios from 'axios';
-import './header-component.css';
+import './Header.css';
+import LoginModal from '../components/LoginModal';
+// import { getUserProfile } from '../api/user' // 사용자 프로필 api 추가
 
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,6 +26,8 @@ const Header: React.FC = () => {
     profileImage: ''
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+  const navigate = useNavigate(); // 홈페이지 이동을 위한 네비게이트 훅 추가
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -44,10 +49,14 @@ const Header: React.FC = () => {
     }
   };
 
-  const handleLoginClick = () => {
-    setIsLoggedIn(true);
-  };
+  // 로그인 상태 변경 핸들러(로그인 성공 시 홈페이지로 리다이렉트)
+const handleLogin = () => {
+  setIsLoggedIn(true);
+  setIsModalOpen(false); // 로그인 모달 닫기
+  navigate('/'); // 홈페이지로 리다이렉트
+};
 
+  // 로그아웃 상태 변경 핸들러
   const handleLogoutClick = () => {
     setIsLoggedIn(false);
     setUser({
@@ -75,10 +84,10 @@ const Header: React.FC = () => {
         {isLoggedIn && (
           <div className="menu-container">
             <nav className="flex space-x-12">
-              <Link to="/ai-coach">AI 코치</Link>
-              <Link to="/expert-consultation">전문가 상담</Link>
+              <Link to="/AICoach">AI 코치</Link>
+              <Link to="/ExpertsPage">전문가 상담</Link>
               <Link to="/community">커뮤니티</Link>
-              <Link to="/life-graph">인생 그래프</Link>
+              <Link to="/LifeGraphDetail">인생 그래프</Link>
             </nav>
           </div>
         )}
@@ -102,7 +111,7 @@ const Header: React.FC = () => {
         <div className="user-section">
           {!isLoggedIn ? (
             <div className="auth-links">
-              <Link to="/login" onClick={handleLoginClick}>로그인</Link> | <Link to="/signup">회원가입</Link>
+              <button onClick={() => setIsModalOpen(true)}>로그인</button> | <button onClick={() => setIsModalOpen(true)}>회원가입</button>
             </div>
           ) : (
             <div className="profile-container" onClick={handleProfileClick}>
@@ -119,6 +128,9 @@ const Header: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* 로그인 모달 */}
+      {isModalOpen && <LoginModal onLogin={handleLogin} onClose={() => setIsModalOpen(false)} />}
     </header>
   );
 };
@@ -127,7 +139,6 @@ export default Header;
 
 
 // TODO:
-// 로그인 페이지 작업 후 로그인, 로그아웃, 유저 프로필 기능이 추가될 것입니다.
 // 메인/홈페이지 작업 후 로고 링크 기능이 추가될 것입니다. 
 // 검색 아이콘, 채팅 아이콘 링크 기능은 추후에 구현될 것입니다.
 // 로고 이미지, 로고 텍스트, 검색창의 사이즈가 다듬어져야 합니다.

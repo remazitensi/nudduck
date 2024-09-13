@@ -1,5 +1,5 @@
 /**
- * File Name    : footer-component.tsx
+ * File Name    : Footer.tsx
  * Description  : 푸터 컴포넌트 - 사이트 하단에 정보 표시
  * Author       : 황솜귤
  * 
@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import './footer-component.css';
+import './Footer.css';
 
 const Footer: React.FC = () => {
   return (
@@ -44,3 +44,5 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
+// TODO: 스크롤 버튼 추가
