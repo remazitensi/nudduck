@@ -51,9 +51,9 @@ describe('CommunityService', () => {
       user_id: 1,
       created_at: new Date(),
       updated_at: new Date(),
-      community: null, // Adjust if needed
-      parent: null, // Adjust if needed
-      replies: [], // Adjust if needed
+      community: null,
+      parent: null,
+      replies: [],
     };
 
     jest.spyOn(commentRepository, 'create').mockReturnValue(savedComment as any);
@@ -85,9 +85,9 @@ describe('CommunityService', () => {
         user_id: 1,
         created_at: new Date(),
         updated_at: new Date(),
-        community: null, // Adjust if needed
-        parent: null, // Adjust if needed
-        replies: [], // Adjust if needed
+        community: null,
+        parent: null,
+        replies: [],
       },
       {
         comment_id: 2,
@@ -96,9 +96,9 @@ describe('CommunityService', () => {
         user_id: 2,
         created_at: new Date(),
         updated_at: new Date(),
-        community: null, // Adjust if needed
-        parent: null, // Adjust if needed
-        replies: [], // Adjust if needed
+        community: null,
+        parent: null,
+        replies: [],
       },
     ];
     jest.spyOn(commentRepository, 'find').mockResolvedValue(comments);
@@ -118,9 +118,9 @@ describe('CommunityService', () => {
         user_id: 2,
         created_at: new Date(),
         updated_at: new Date(),
-        community: null, // Adjust if needed
-        parent: null, // Adjust if needed
-        replies: [], // Adjust if needed
+        community: null,
+        parent: null,
+        replies: [],
       },
       {
         comment_id: 3,
@@ -130,9 +130,9 @@ describe('CommunityService', () => {
         user_id: 3,
         created_at: new Date(),
         updated_at: new Date(),
-        community: null, // Adjust if needed
-        parent: null, // Adjust if needed
-        replies: [], // Adjust if needed
+        community: null,
+        parent: null,
+        replies: [],
       },
     ];
     jest.spyOn(commentRepository, 'find').mockResolvedValue(replies);
@@ -150,9 +150,9 @@ describe('CommunityService', () => {
       user_id: 1,
       created_at: new Date(),
       updated_at: new Date(),
-      community: null, // Adjust if needed
-      parent: null, // Adjust if needed
-      replies: [], // Adjust if needed
+      community: null,
+      parent: null,
+      replies: [],
     };
 
     jest.spyOn(commentRepository, 'findOne').mockResolvedValue(comment);
