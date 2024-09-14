@@ -1,3 +1,4 @@
+version: '2'  # 버전 2 명시
 services:
   frontend:
     image: remazitensi/nudduck:frontend-latest
