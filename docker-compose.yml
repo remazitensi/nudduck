@@ -1,0 +1,14 @@
+services:
+  frontend:
+    image: remazitensi/nudduck:frontend-latest
+    ports:
+      - "80:80"
+    env_file:
+      - ./client/.env.production
+
+  backend:
+    image: remazitensi/nudduck:backend-latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./server/.env

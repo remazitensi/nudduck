@@ -5,6 +5,16 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // 환경 변수에서 CORS origin을 설정
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+  // CORS 설정
+  app.enableCors({
+    origin: frontendUrl,
+    methods: 'GET,POST,PUT,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
+
   // Swagger 설정
   const config = new DocumentBuilder()
     .setTitle('nudduck API')
