@@ -6,11 +6,12 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.10    이승철      Created
+ * 2024.09.16    이승철      Modified    절대경로 변경
  */
 
-import { Jwt } from '@_auth/guards/jwt';
-import { PresignedUrlDto } from '@_file-upload/dto/file-upload.dto';
-import { FileUploadService } from '@_file-upload/file-upload.service';
+import { Jwt } from '@_modules/auth/guards/jwt';
+import { PresignedUrlDto } from '@_modules/file-upload/dto/file-upload.dto';
+import { FileUploadService } from '@_modules/file-upload/file-upload.service';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 
 @Controller('presigned-url')

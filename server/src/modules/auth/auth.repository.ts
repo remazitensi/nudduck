@@ -10,11 +10,12 @@
  * 2024.09.08    이승철      Modified    닉네임 중복확인 로직
  * 2024.09.09    이승철      Modified    findUserById 메서드 user.repository로 경로 변경
  * 2024.09.10    이승철      Modified    AuthRepository의 사용자 관련 책임을 UserRepository로 이동
+ * 2024.09.16    이승철      Modified    findUserById 메서드 삭제, nickname으로 변경, 절대경로 변경
  */
 
-import { UserDto } from '@_auth/dto/user.dto';
-import { User } from '@_user/entity/user.entity';
-import { UserRepository } from '@_user/user.repository';
+import { UserDto } from '@_modules/auth/dto/user.dto';
+import { User } from '@_modules/user/entity/user.entity';
+import { UserRepository } from '@_modules/user/user.repository';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -26,14 +27,9 @@ export class AuthRepository {
     return this.userRepository.findUserByProvider(provider, providerId);
   }
 
-  // 사용자 ID로 조회
-  async findUserById(id: number): Promise<User> {
-    return this.userRepository.findUserById(id);
-  }
-
   // 사용자 닉네임으로 사용자 조회 (닉네임 중복 확인용)
-  async findUserByNickname(nickName: string): Promise<User | null> {
-    return this.userRepository.findUserByNickname(nickName);
+  async findUserByNickname(nickname: string): Promise<User | null> {
+    return this.userRepository.findUserByNickname(nickname);
   }
 
   // 사용자 생성

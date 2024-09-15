@@ -8,9 +8,10 @@
  * 2024.09.08    이승철      Created
  * 2024.09.08    이승철      Modified    카카오 전략 추가
  * 2024.09.10    이승철      Modified    user 객체 반환
+ * 2024.09.16    이승철      Modified    절대경로 변경
  */
 
-import { OAuthUser } from '@_auth/interface/oauth-user.interface';
+import { OAuthUser } from '@_modules/auth/utils/oauth-user.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';

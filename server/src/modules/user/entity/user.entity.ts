@@ -9,12 +9,14 @@
  * 2024.09.07    이승철      Modified    유저 엔티티 설정
  * 2024.09.08    이승철      Modified    nickName 추가
  * 2024.09.10    이승철      Modified    @DeleteDateColumn() 으로 변경
+ * 2024.09.16    이승철      Modified    절대경로 변경, 해시태그에 OneToMany decorator 적용
  */
 
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { UserHashtag } from '@_modules/user/entity/hashtag.entity';
 
 @Entity()
-@Unique(['provider', 'providerId'])
+@Unique(['provider', 'provider_id'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,7 +25,7 @@ export class User {
   provider: string;
 
   @Column({ type: 'varchar', length: 255 })
-  providerId: string;
+  provider_id: string;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -32,20 +34,24 @@ export class User {
   email: string;
 
   @Column({ type: 'varchar', length: 255 })
-  nickName: string;
+  nickname: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  refreshToken: string;
+  refresh_token: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  imageUrl: string;
+  image_url: string;
+
+  @OneToMany(() => UserHashtag, (userHashtag) => userHashtag.user)
+  hashtags: UserHashtag[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date | null;
+  deleted_at: Date | null;
 }
+

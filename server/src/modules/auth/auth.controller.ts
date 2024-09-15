@@ -13,16 +13,18 @@
  * 2024.09.10    이승철      Modified    accessToken 재발급 api 삭제, 만료시 클라이언트에서 재로그인 유도
  * 2024.09.10    이승철      Modified    userDto 구조분해할당
  * 2024.09.10    이승철      Modified    accessToken 재발급 api 재추가
+ * 2024.09.16    이승철      Modified    controller에서 쿠키 응답, 절대경로 변경
  */
 
-import { AuthService } from '@_auth/auth.service';
-import { RefreshTokenDto } from '@_auth/dto/refresh-token.dto';
-import { UserDto } from '@_auth/dto/user.dto';
-import { OAuthUser } from '@_auth/interface/oauth-user.interface';
+import { AuthService } from '@_modules/auth/auth.service';
+import { RefreshTokenDto } from '@_modules/auth/dto/refresh-token.dto';
+import { UserDto } from '@_modules/auth/dto/user.dto';
+import { OAuthUser } from '@_modules/auth/utils/oauth-user.interface';
 import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import { getAccessCookieOptions, getRefreshCookieOptions } from '@_modules/auth/utils/cookie-helper';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -47,7 +49,10 @@ export class AuthController {
       name,
     };
 
-    await this.authService.socialLogin(userDto, res);
+    const tokens = await this.authService.getSocialLogin(userDto);
+    
+    res.cookie('accessToken', tokens.accessToken, getAccessCookieOptions());
+    res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
     res.status(200).send('Login successful'); // 성공 응답을 주고 클라이언트에서 redirect
   }
 
@@ -69,20 +74,23 @@ export class AuthController {
       name,
     };
 
-    await this.authService.socialLogin(userDto, res);
+    const tokens = await this.authService.getSocialLogin(userDto);
+    
+    res.cookie('accessToken', tokens.accessToken, getAccessCookieOptions());
+    res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
     res.status(200).send('Login successful'); // 성공 응답을 주고 클라이언트에서 redirect
   }
 
   @ApiOperation({ summary: '엑세스 토큰 재발급' })
   @Post('access-token')
-  async accessToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response) {
+  async accessToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response): Promise<void> {
     if (!refreshTokenDto.refreshToken) {
       throw new BadRequestException('리프레시 토큰이 제공되지 않았습니다.');
     }
 
-    await this.authService.regenerateAccessToken(refreshTokenDto.refreshToken, res);
-
-    // 성공 응답만 반환
-    return res.status(200).json({ message: '엑세스 토큰이 재발급되었습니다.' });
+    const newAccessToken = await this.authService.regenerateAccessToken(refreshTokenDto.refreshToken);
+    
+    res.cookie('accessToken', newAccessToken, getAccessCookieOptions());
+    res.status(200).json({ message: '엑세스 토큰이 재발급되었습니다.' });
   }
 }

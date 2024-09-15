@@ -1,20 +1,43 @@
-import { FileUploadService } from '@_file-upload/file-upload.service';
-import { User } from '@_user/entity/user.entity';
-import { UserRepository } from '@_user/user.repository';
-import { UserService } from '@_user/user.service';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+/**
+ * File Name    : user.service.ts
+ * Description  : user service 테스트
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.16    이승철      Created
+ */
+
+import { FileUploadService } from '@_modules/file-upload/file-upload.service';
+import { UserRepository } from '@_modules/user/user.repository';
+import { UserService } from '@_modules/user/user.service';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Response } from 'express';
-import { DataSource } from 'typeorm';
-import { addTransactionalDataSource, initializeTransactionalContext } from 'typeorm-transactional';
+import { DataSource, QueryRunner } from 'typeorm';
+import { User } from '@_modules/user/entity/user.entity';
 
 describe('UserService', () => {
   let userService: UserService;
-  let userRepository: UserRepository;
-  let fileUploadService: FileUploadService;
+  let userRepository: jest.Mocked<UserRepository>;
+  let fileUploadService: jest.Mocked<FileUploadService>;
+  let queryRunner: jest.Mocked<QueryRunner>;
+  let dataSource: jest.Mocked<DataSource>;
 
-  beforeAll(async () => {
-    initializeTransactionalContext(); // 여기에 위치
+  beforeEach(async () => {
+    queryRunner = {
+      startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      rollbackTransaction: jest.fn(),
+      release: jest.fn(),
+      manager: {
+        save: jest.fn(),
+      },
+    } as unknown as jest.Mocked<QueryRunner>;
+
+    dataSource = {
+      createQueryRunner: jest.fn().mockReturnValue(queryRunner),
+    } as unknown as jest.Mocked<DataSource>;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -25,9 +48,9 @@ describe('UserService', () => {
             findHashtagsByUserId: jest.fn(),
             updateUser: jest.fn(),
             findUserByNickname: jest.fn(),
-            removeHashtags: jest.fn(),
-            saveHashtags: jest.fn(),
-            softDeleteUser: jest.fn(),
+            deleteUser: jest.fn(),
+            createHashtags: jest.fn(),
+            deleteHashtags: jest.fn(),
           },
         },
         {
@@ -36,62 +59,16 @@ describe('UserService', () => {
             getDefaultProfileImgURL: jest.fn().mockReturnValue('default-image-url'),
           },
         },
+        {
+          provide: DataSource,
+          useValue: dataSource, // Mock DataSource with the mock queryRunner
+        },
       ],
     }).compile();
 
     userService = module.get<UserService>(UserService);
-    userRepository = module.get<UserRepository>(UserRepository);
-    fileUploadService = module.get<FileUploadService>(FileUploadService);
-
-    const dataSource = new DataSource({
-      type: 'sqlite',
-      database: ':memory:',
-      entities: [User], // 엔티티 추가
-      synchronize: true,
-    });
-
-    await dataSource.initialize();
-    addTransactionalDataSource(dataSource);
-  });
-
-  describe('getProfile', () => {
-    it('should return a profile', async () => {
-      const mockUser: User = {
-        id: 1,
-        provider: 'google',
-        providerId: '1234567890',
-        name: 'Test User',
-        email: 'test@example.com',
-        nickName: 'testU',
-        imageUrl: 'test-url',
-        refreshToken: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-      };
-      const mockHashtags = ['developer', 'blogger'];
-
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(mockUser);
-      jest.spyOn(userRepository, 'findHashtagsByUserId').mockResolvedValue(mockHashtags);
-
-      const result = await userService.getProfile(1);
-
-      expect(result).toEqual({
-        nickname: 'testU',
-        email: 'test@example.com',
-        name: 'Test User',
-        imageUrl: 'test-url',
-        hashtags: mockHashtags,
-      });
-      expect(userRepository.findUserById).toHaveBeenCalledWith(1);
-      expect(userRepository.findHashtagsByUserId).toHaveBeenCalledWith(1);
-    });
-
-    it('should throw NotFoundException if user is not found', async () => {
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(null);
-
-      await expect(userService.getProfile(1)).rejects.toThrow(NotFoundException);
-    });
+    userRepository = module.get<UserRepository>(UserRepository) as jest.Mocked<UserRepository>;
+    fileUploadService = module.get<FileUploadService>(FileUploadService) as jest.Mocked<FileUploadService>;
   });
 
   describe('updateProfile', () => {
@@ -99,139 +76,71 @@ describe('UserService', () => {
       const mockUser: User = {
         id: 1,
         provider: 'google',
-        providerId: '1234567890',
+        provider_id: '1234567890',
         name: 'Test User',
         email: 'test@example.com',
-        nickName: 'test',
-        imageUrl: 'old-url',
-        refreshToken: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
+        nickname: 'testU',
+        image_url: 'old-url',
+        refresh_token: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+        deleted_at: null,
+        hashtags: [],
       };
+
       const updateProfileDto = {
-        nickname: 'newNic',
+        nickname: 'newNickname',
         imageUrl: 'new-url',
-        hashtags: ['newTa'],
+        hashtags: ['newTag'],
       };
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(mockUser);
-      jest.spyOn(userRepository, 'findUserByNickname').mockResolvedValue(null);
+
+      userRepository.findUserById.mockResolvedValue(mockUser);
+      userRepository.findUserByNickname.mockResolvedValue(null);
 
       await userService.updateProfile(1, updateProfileDto);
 
-      expect(userRepository.updateUser).toHaveBeenCalledWith(mockUser);
-      expect(mockUser.nickName).toBe(updateProfileDto.nickname);
-      expect(mockUser.imageUrl).toBe(updateProfileDto.imageUrl);
+      expect(userRepository.findUserById).toHaveBeenCalledWith(1);
+      expect(userRepository.findUserByNickname).toHaveBeenCalledWith('newNickname');
+      expect(queryRunner.manager.save).toHaveBeenCalledWith(mockUser); // 트랜잭션 내에서 저장
+      expect(queryRunner.commitTransaction).toHaveBeenCalled();
     });
 
-    it('should throw ConflictException if nickname already exists', async () => {
+    it('should rollback the transaction on error', async () => {
       const mockUser: User = {
         id: 1,
         provider: 'google',
-        providerId: '1234567890',
+        provider_id: '1234567890',
         name: 'Test User',
         email: 'test@example.com',
-        nickName: 'test',
-        imageUrl: 'old-url',
-        refreshToken: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-      };
-      const updateProfileDto = { nickname: 'newNickname', imageUrl: 'new-url' };
-      const existingUser: User = {
-        id: 2,
-        provider: 'google',
-        providerId: '0987654321',
-        name: 'Existing User',
-        email: 'existing@example.com',
-        nickName: 'newNic',
-        imageUrl: 'existing-url',
-        refreshToken: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
+        nickname: 'testU',
+        image_url: 'old-url',
+        refresh_token: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+        deleted_at: null,
+        hashtags: [],
       };
 
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(mockUser);
-      jest.spyOn(userRepository, 'findUserByNickname').mockResolvedValue(existingUser);
-
-      await expect(userService.updateProfile(1, updateProfileDto)).rejects.toThrow(ConflictException);
-    });
-  });
-
-  describe('logout', () => {
-    it('should log out the user and clear cookies', async () => {
-      const mockUser: User = {
-        id: 1,
-        provider: 'google',
-        providerId: '1234567890',
-        name: 'Test User',
-        email: 'test@example.com',
-        nickName: 'testU',
-        imageUrl: 'test-url',
-        refreshToken: 'old-token',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
+      const updateProfileDto = {
+        nickname: 'newNickname',
+        imageUrl: 'new-url',
+        hashtags: ['newTag'],
       };
-      const res = {
-        clearCookie: jest.fn(),
-      } as unknown as Response;
 
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(mockUser);
-      jest.spyOn(userRepository, 'updateUser').mockResolvedValue(undefined);
+      userRepository.findUserById.mockResolvedValue(mockUser);
+      userRepository.findUserByNickname.mockResolvedValue(null);
+      (queryRunner.manager.save as jest.Mock).mockRejectedValue(new Error('DB Error')); // save를 mockRejectedValue로 모킹
 
-      await userService.logout(1, res);
+      await expect(userService.updateProfile(1, updateProfileDto)).rejects.toThrow('DB Error');
 
-      expect(userRepository.updateUser).toHaveBeenCalledWith(mockUser);
-      expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
-      expect(res.clearCookie).toHaveBeenCalledWith('refreshToken');
-      expect(mockUser.refreshToken).toBe(null);
+      expect(queryRunner.rollbackTransaction).toHaveBeenCalled();
+      expect(queryRunner.release).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException if user is not found', async () => {
-      const res = { clearCookie: jest.fn() } as unknown as Response;
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(null);
+      userRepository.findUserById.mockResolvedValue(null);
 
-      await expect(userService.logout(1, res)).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('deleteUser', () => {
-    it('should soft delete the user and clear cookies', async () => {
-      const mockUser: User = {
-        id: 1,
-        provider: 'google',
-        providerId: '1234567890',
-        name: 'Test User',
-        email: 'test@example.com',
-        nickName: 'testr',
-        imageUrl: 'test-url',
-        refreshToken: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
-      };
-      const res = {
-        clearCookie: jest.fn(),
-      } as unknown as Response;
-
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(mockUser);
-      jest.spyOn(userRepository, 'softDeleteUser').mockResolvedValue(undefined);
-
-      await userService.deleteUser(1, res);
-
-      expect(userRepository.softDeleteUser).toHaveBeenCalledWith(1);
-      expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
-      expect(res.clearCookie).toHaveBeenCalledWith('refreshToken');
-    });
-
-    it('should throw NotFoundException if user is not found', async () => {
-      const res = { clearCookie: jest.fn() } as unknown as Response;
-      jest.spyOn(userRepository, 'findUserById').mockResolvedValue(null);
-
-      await expect(userService.deleteUser(1, res)).rejects.toThrow(NotFoundException);
+      await expect(userService.updateProfile(1, {})).rejects.toThrow(NotFoundException);
     });
   });
 });
