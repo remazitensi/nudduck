@@ -9,6 +9,7 @@
  * 2024.09.07    이승철      Modified    user dto 설정
  * 2024.09.08    이승철      Modified    nickname 추가
  * 2024.09.10    이승철      Modified    imageUrl 필드 추가
+ * 2024.09.16    이승철      Modified    nickname으로 변경
  */
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -53,7 +54,7 @@ export class UserDto {
   })
   @IsOptional()
   @IsString()
-  nickName?: string;
+  nickname?: string;
 
   //imageUrl 필드 추가
   @ApiProperty({

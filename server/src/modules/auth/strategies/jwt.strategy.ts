@@ -9,9 +9,10 @@
  * 2024.09.07    이승철      Modified    jwt 전략 추가
  * 2024.09.08    이승철      Modified    메서드 중복 제거로 인한 authService => authRepository
  * 2024.09.11    이승철      Modified    쿠키에서 accessToken 추출 로직
+ * 2024.09.16    이승철      Modified    절대경로 변경
  */
 
-import { AuthRepository } from '@_auth/auth.repository';
+import { AuthRepository } from '@_modules/auth/auth.repository';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';

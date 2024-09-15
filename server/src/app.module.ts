@@ -8,16 +8,15 @@
  * 2024.09.07    김재영      Created
  * 2024.09.07    이승철      Modified    db설정 및, 엔티티 경로 설정
  * 2024.09.10    이승철      Modified    FileUpload, User Module 추가, 트랜잭션 DataSource 추가
+ * 2024.09.16    이승철      Modified    트랜잭션 DataSource 삭제, 절대경로 변경
  */
 
-import { AuthModule } from '@_auth/auth.module';
-import { FileUploadModule } from '@_file-upload/file-upload.module';
-import { UserModule } from '@_user/user.module';
+import { AuthModule } from '@_modules/auth/auth.module';
+import { FileUploadModule } from '@_modules/file-upload/file-upload.module';
+import { UserModule } from '@_modules/user/user.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -40,11 +39,6 @@ import { AppService } from './app.service';
         keepConnectionAlive: true,
         synchronize: true,
       }),
-      async dataSourceFactory(option) {
-        if (!option) throw new Error('Invalid options passed');
-
-        return addTransactionalDataSource(new DataSource(option));
-      },
     }),
     AuthModule,
     UserModule,

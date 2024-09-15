@@ -1,35 +1,43 @@
-import { ProfileDto } from '@_user/dto/profile.dto';
-import { UpdateProfileDto } from '@_user/dto/update-profile.dto';
-import { UserController } from '@_user/user.controller';
-import { UserService } from '@_user/user.service';
+/**
+ * File Name    : user.controller.ts
+ * Description  : user controller 테스트
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.16    이승철      Created
+ */
+
+import { ProfileDto } from '@_modules/user/dto/profile.dto';
+import { UpdateProfileDto } from '@_modules/user/dto/update-profile.dto';
+import { UserController } from '@_modules/user/user.controller';
+import { UserService } from '@_modules/user/user.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Response } from 'express';
 
 describe('UserController', () => {
   let userController: UserController;
-  let userService: UserService;
+  let mockUserService: Partial<UserService>;
 
   beforeEach(async () => {
+    mockUserService = {
+      getProfile: jest.fn(),
+      updateProfile: jest.fn(),
+      logout: jest.fn(),
+      deleteUser: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
         {
           provide: UserService,
-          useValue: {
-            getProfile: jest.fn(),
-            updateProfile: jest.fn(),
-            logout: jest.fn(),
-            deleteUser: jest.fn(),
-          },
+          useValue: mockUserService,
         },
       ],
     }).compile();
 
     userController = module.get<UserController>(UserController);
-    userService = module.get<UserService>(UserService);
-  });
-
-  it('should be defined', () => {
-    expect(userController).toBeDefined();
   });
 
   describe('getProfile', () => {
@@ -39,15 +47,16 @@ describe('UserController', () => {
         email: 'test@example.com',
         name: 'Test User',
         imageUrl: 'http://example.com/test.jpg',
-        hashtags: ['deper', 'blog'],
+        hashtags: ['developer', 'blogger'],
       };
-      jest.spyOn(userService, 'getProfile').mockResolvedValue(mockProfile);
+
+      mockUserService.getProfile = jest.fn().mockResolvedValue(mockProfile);
 
       const req = { user: { id: 1 } };
       const result = await userController.getProfile(req);
 
       expect(result).toEqual(mockProfile);
-      expect(userService.getProfile).toHaveBeenCalledWith(1);
+      expect(mockUserService.getProfile).toHaveBeenCalledWith(1);
     });
   });
 
@@ -56,33 +65,35 @@ describe('UserController', () => {
       const mockUpdateProfileDto: UpdateProfileDto = {
         nickname: 'newNic',
         imageUrl: 'http://example.com/new.jpg',
-        hashtags: ['newTa'],
+        hashtags: ['newTag'],
       };
       const req = { user: { id: 1 } };
 
-      jest.spyOn(userService, 'updateProfile').mockResolvedValue(undefined);
+      mockUserService.updateProfile = jest.fn().mockResolvedValue(undefined);
 
       const result = await userController.updateProfile(req, mockUpdateProfileDto);
 
       expect(result).toEqual({ message: '회원정보가 수정되었습니다.' });
-      expect(userService.updateProfile).toHaveBeenCalledWith(1, mockUpdateProfileDto);
+      expect(mockUserService.updateProfile).toHaveBeenCalledWith(1, mockUpdateProfileDto);
     });
   });
 
   describe('logout', () => {
     it('should log out the user', async () => {
       const req = { user: { id: 1 } };
-      const res = {
+      const res: Partial<Response> = {  // Partial로 필요한 메서드만 정의
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
         clearCookie: jest.fn(),
       };
 
-      jest.spyOn(userService, 'logout').mockResolvedValue(undefined);
+      mockUserService.logout = jest.fn().mockResolvedValue(undefined);
 
-      await userController.logout(req, res as any);
+      await userController.logout(req, res as Response);
 
-      expect(userService.logout).toHaveBeenCalledWith(1, res);
+      expect(mockUserService.logout).toHaveBeenCalledWith(1);
+      expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
+      expect(res.clearCookie).toHaveBeenCalledWith('refreshToken');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: '로그아웃 되었습니다.' });
     });
@@ -91,17 +102,19 @@ describe('UserController', () => {
   describe('deleteAccount', () => {
     it('should delete the user account', async () => {
       const req = { user: { id: 1 } };
-      const res = {
+      const res: Partial<Response> = {  // Partial로 필요한 메서드만 정의
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
         clearCookie: jest.fn(),
       };
 
-      jest.spyOn(userService, 'deleteUser').mockResolvedValue(undefined);
+      mockUserService.deleteUser = jest.fn().mockResolvedValue(undefined);
 
-      await userController.deleteAccount(req, res as any);
+      await userController.deleteAccount(req, res as Response);
 
-      expect(userService.deleteUser).toHaveBeenCalledWith(1, res);
+      expect(mockUserService.deleteUser).toHaveBeenCalledWith(1);
+      expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
+      expect(res.clearCookie).toHaveBeenCalledWith('refreshToken');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: '회원탈퇴가 완료되었습니다.' });
     });

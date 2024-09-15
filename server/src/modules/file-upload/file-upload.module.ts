@@ -6,10 +6,11 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.10    이승철      Created
+ * 2024.09.16    이승철      Modified    절대경로 변경
  */
 
-import { FileUploadController } from '@_file-upload/file-upload.controller';
-import { FileUploadService } from '@_file-upload/file-upload.service';
+import { FileUploadController } from '@_modules/file-upload/file-upload.controller';
+import { FileUploadService } from '@_modules/file-upload/file-upload.service';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
