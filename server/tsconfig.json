@@ -18,7 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@_expert/*": ["modules/expert/*"]
+      "@_modules/*": ["modules/*"]
     }
   }
 }

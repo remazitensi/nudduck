@@ -6,18 +6,18 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.14    이승철      Created
+ * 2024.09.16    이승철      Modified    절대경로 변경
  */
 
-import { Expert } from '@_expert/entity/expert.entity';
+import { Expert } from '@_modules/expert/entity/expert.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExpertController } from './expert.controller';
-import { ExpertRepository } from './expert.repository';
-import { ExpertService } from './expert.service';
+import { ExpertController } from '@_modules/expert/expert.controller';
+import { ExpertService } from '@_modules/expert/expert.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Expert])],
   controllers: [ExpertController],
-  providers: [ExpertService, ExpertRepository],
+  providers: [ExpertService],
 })
 export class ExpertModule {}
