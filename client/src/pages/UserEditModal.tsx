@@ -9,23 +9,45 @@
  * 2024.09.11    김우현      Updated     모달 창 고도화()
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface UserEditModalProps {
+    data: {
+        id: string;
+        nickName: string;
+        imageUrl: string;
+        name: string;
+        email: string;
+        hashtags: string;
+        created_At: string;
+    };
     onClose: () => void;
-    currentImage: string; // 현재 이미지 경로
-    onSaveImage: (newImage: string) => void; // 저장버튼 클릭시 호출되는 함수 이미지 저장 함수
-    onSaveNickName: (newNickName: string) => void; // 닉네임 저장 함수
-    onSaveHashTag: (newHashTag: string) => void; // 해시테그 저장 함수
+    currentImage: string;
+    onSaveImage: (newImage: string) => void;
+    onSaveNickName: (newNickName: string) => void;
+    onSaveHashTag: (newHashTag: string) => void;
 }
 
-const UserEditModal: React.FC<UserEditModalProps> = ({ onClose, currentImage, onSaveImage, onSaveHashTag, onSaveNickName }) => {
-    const [image, setImage] = useState(currentImage); // 초기 이미지 설정
-    const [nickName, setNickName] = useState('');
-    const [hashTag, setHashTag] = useState('');
-    const [nickNameError, setNickNameError] = useState('');
-    const [hashTagError, setHashTagError] = useState('');
+const UserEditModal: React.FC<UserEditModalProps> = ({
+    data,
+    onClose,
+    currentImage,
+    onSaveImage,
+    onSaveNickName,
+    onSaveHashTag
+}) => {
+    const [image, setImage] = useState<string>(currentImage);
+    const [nickName, setNickName] = useState<string>(data.nickName || '');
+    const [hashTag, setHashTag] = useState<string>(data.hashtags || '');
+    const [nickNameError, setNickNameError] = useState<string>('');
+    const [hashTagError, setHashTagError] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+        setNickName(data.nickName || '');
+        setHashTag(data.hashtags || '');
+        setImage(data.imageUrl || '');
+    }, [data]);
 
     const validationNickName = (value: string): string | null => {
         const trimValue = value.trim();
@@ -61,35 +83,36 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ onClose, currentImage, on
     }
 
     const handleClickImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files || e.target.files.length === 0) return; // 파일이 없으면 중지
+        if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
                 if (reader.result) {
-                    setImage(reader.result as string);  // 이미지 상태 업데이트
+                    setImage(reader.result as string);
                 }
             }
-            reader.readAsDataURL(file); // 파일을 Base64로 읽기
+            reader.readAsDataURL(file);
         }
     }
 
-    // 이미지 삭제하는 함수
     const deleteFileImg = () => {
         setImage('/user_image.png');
     }
 
-    // 부모 컴포넌트에 이미지 전달
-    const handleSave = () => {
+    const handleSave = async () => {
         if (nickNameError || hashTagError) {
-            alert('유효성 검사가 완료되지 않았습니다.'); // 오류 메시지 표시
+            alert('유효성 검사가 완료되지 않았습니다.');
             return;
         }
+        console.log('Saving image:', image);
         onSaveImage(image); 
+        console.log('Saving nickname:', nickName);
         onSaveNickName(nickName);
+        console.log('Saving hashtag:', hashTag);
         onSaveHashTag(hashTag);
         alert('저장되었습니다.');
-        onClose(); // 모달닫기
+        onClose();
     }
 
     return (
@@ -104,17 +127,16 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ onClose, currentImage, on
                     <div className='relative flex flex-col pl-[80px] pt-[50px] justify-start'>
                         <div className='text-[#626146] text-[34px] font-bold text-center'>프로필 편집</div>
                         <img src={image} alt="userImg" className='w-[200px] h-[200px] mt-[10px] rounded-[100px]' />
-                        <img onClick={() => fileInputRef.current?.click()} // 카메라 이미지를 클릭하면 파일 선택 창 열기
+                        <img onClick={() => fileInputRef.current?.click()}
                         className='absolute bottom-[35px] right-[15px] right-[50px] w-[50px] h-[50px] cursor-pointer' 
                         src='/Camera.png' alt="cameraImg" />
 
-                        {/* 숨겨진 파일 입력 요소 */}
                         <input
                             ref={fileInputRef}
                             type="file"
                             accept="image/*"
-                            className="hidden" // 숨김 처리
-                            onChange={handleClickImg} // 파일 선택 시 처리 함수 호출
+                            className="hidden"
+                            onChange={handleClickImg}
                         />
 
                         <div onClick={deleteFileImg} className='flex justify-center text-[13px] text-[#999999] cursor-pointer'>이미지 삭제</div>
@@ -154,14 +176,14 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ onClose, currentImage, on
                         </div>
 
                         <div className='flex gap-[10px] mt-[60px]'>
-                            <button onClick={onClose} className='w-[160px] h-[50px] border rounded-xl text-[#8D8B67] font-bold'>취소하기</button>
-                            <button onClick={handleSave} className='w-[160px] h-[50px] border rounded-xl bg-[#909700] text-white font-bold'>저장하기</button>
+                            <button onClick={onClose} className='w-[160px] h-[50px] bg-[#F8F8F8] rounded border text-[#8D8B67]'>취소</button>
+                            <button onClick={handleSave} className='w-[160px] h-[50px] bg-[#8D8B67] rounded border text-white'>저장</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default UserEditModal;
