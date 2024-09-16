@@ -1,31 +1,85 @@
-// MyProfile.tsx
-import React from 'react';
-import UserEditModal from '../../pages/UserEditModal'
+import UserEditModal from '../../pages/UserEditModal';
+
+import React, { useState, useEffect } from 'react';
+
+import { fetchUserProfile, updateUserProfile, deleteUserImage } from '../../apis/mypage-api';
+
 
 // MyProfile 컴포넌트에 필요한 props 타입 정의
 interface MyProfileProps {
   open: boolean;
-  image: string;
-  nickName: string;
-  hashTag: string;
+  // image: string;
+  // nickName: string;
+  // // hashTag: string; api 사용으로 인하여 더이상 필요없음
   handleOpenModal: () => void;
   handleCloseModal: () => void;
   handleSaveImage: (newImage: string) => void;
   handleSaveNickName: (newNickName: string) => void;
   handleSaveHashTag: (newHashTag: string) => void;
+
+  id: string;
+  imageUrl: string;
+  nickName: string;
+  name: string;
+  email: string;
+  hashtags: string[];
+  created_At: string;
 }
 
 const MyProfile: React.FC<MyProfileProps> = ({
   open,
-  image,
-  nickName,
-  hashTag,
+  // image,
+  // nickName,
+  // hashTag, 여기도 api 사용으로 인해서 prop이 아닌 api로 연결
   handleOpenModal,
   handleCloseModal,
   handleSaveImage,
   handleSaveNickName,
   handleSaveHashTag,
 }) => {
+
+
+// // api 작업
+const [profile, setProfile] = useState({ 
+  id:'',
+  imageUrl: '',
+  nickName:'',
+  name:'',
+  email:'',
+  hashtags:[],
+  created_At:'',
+}); // get으로 받아온 새 정보
+
+const fetchProfile = async () => {
+  try {
+    const data = await fetchUserProfile();
+    setProfile(data);
+    console.log('Fetched profile:', data); // API 호출 후 데이터 로그 확인
+  } catch (error) {
+    console.error('Failed to fetch profile:', error);
+  }
+};
+
+
+// api 작업
+useEffect(() => {
+    // const updateProfile = async() => {
+    // const data = await fetchProfile();
+    // }
+    fetchProfile(); 
+}, [])
+
+
+// profile 상태가 업데이트되었을 때 로그를 출력하기 위한 useEffect
+  useEffect(() => {
+    console.log('Updated profile:', profile);
+  }, [profile]);
+
+// // api 끝
+
+
+
+
   return (
     <div>
       <div className='flex flex-col items-center mt-[140px]'>
@@ -41,8 +95,9 @@ const MyProfile: React.FC<MyProfileProps> = ({
               <img onClick={handleOpenModal} className="cursor-pointer" src='edit_button.svg' alt='editButton' />
               {open && (
                 <UserEditModal
+                  data={profile}
                   onClose={handleCloseModal}
-                  currentImage={image}
+                  currentImage={profile.imageUrl}
                   onSaveImage={handleSaveImage}
                   onSaveNickName={handleSaveNickName}
                   onSaveHashTag={handleSaveHashTag}
@@ -55,11 +110,11 @@ const MyProfile: React.FC<MyProfileProps> = ({
             </div>
           </div>
           <div className="flex justify-center">
-            <img className="w-[250px] h-[250px] rounded-[125px] mt-[20px]" src={image} alt='userImg' />
+            <img className="w-[250px] h-[250px] rounded-[125px] mt-[20px]" src={profile.imageUrl} alt='userImg' />
           </div>
 
           <div className="pl-[65px] mt-[60px]">
-            <div className="text-[20px] text-[#909700]">{hashTag}</div>
+            <div className="text-[20px] text-[#909700]">{profile.hashtags}</div>
 
             <div className="flex gap-[30px] text-[18px]">
               <div className="mt-[20px] leading-loose">
@@ -69,10 +124,10 @@ const MyProfile: React.FC<MyProfileProps> = ({
                 <div>가입일</div>
               </div>
               <div className="mt-[20px] leading-loose">
-                <p>{nickName}</p>
-                <p>해찌</p>
-                <p>elice@elice.io</p>
-                <p>2024-09-08</p>
+                <p>{profile.nickName}</p>
+                <p>{profile.name}</p>
+                <p>{profile.email}</p>
+                <p>{profile.created_At}</p>
               </div>
             </div>
           </div>

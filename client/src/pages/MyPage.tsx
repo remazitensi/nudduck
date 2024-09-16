@@ -1,24 +1,32 @@
 /**
- * File Name    : Header.tsx
+ * File Name    : MyPage.tsx
  * Description  : pages - 마이페이지 -
  * Author       : 김우현
  *
  * History
  * Date          Author      Status      Description
  * 2024.09.10    김우현      Created     마이 페이지 생성
+ * 2024.09.10    김우현      updated     api 업데이트
  */
 // MyPage.tsx
 import React, { useState } from 'react';
-
 import MyProfile from '../components/MyPage/MyProfile'; // MyProfile 컴포넌트 임포트
 import QuitModal from './QuitModal';
 
 const MyPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [quitOpen, setQuitOpen] = useState(false);
-  const [image, setImage] = useState('/user_image.png');
-  const [nickName, setNickName] = useState('');
-  const [hashTag, setHashTag] = useState('');
+  
+  // 사용자 프로필 상태 추가
+  const [profile, setProfile] = useState({
+    id: '',
+    imageUrl: '/user_image.png',
+    nickName: '',
+    name: '',
+    email: '',
+    hashtags: [],
+    created_At: '',
+  });
 
   // 모달 열기/닫기 핸들러
   const handleOpenModal = () => {
@@ -37,40 +45,39 @@ const MyPage: React.FC = () => {
     setQuitOpen(false);
   };
 
-  // 이미지, 닉네임, 해시태그 저장 핸들러
+  // 이미지 저장 핸들러
   const handleSaveImage = (newImage: string) => {
-    setImage(newImage); // 이미지 상태 업데이트
+    setProfile(prevProfile => ({ ...prevProfile, imageUrl: newImage }));
     handleCloseModal();
   };
 
+  // 닉네임 저장 핸들러
   const handleSaveNickName = (newNickName: string) => {
-    setNickName(newNickName);
+    setProfile(prevProfile => ({ ...prevProfile, nickName: newNickName }));
     handleCloseModal();
   };
 
-  const handleSaveHashTag = (newHashTag: string) => {
-    setHashTag(newHashTag);
+  // 해시태그 저장 핸들러
+  const handleSaveHashTag = (newHashTag: string[]) => {
+    setProfile(prevProfile => ({ ...prevProfile, hashtags: newHashTag }));
     handleCloseModal();
   };
 
   return (
     <div className='myPage-titles flex w-[1920px] flex-col items-center gap-[10px]'>
-      
-        {/* MyProfile 컴포넌트를 사용하고 상태와 핸들러들을 props로 전달 */}
-        <MyProfile
-          open={open}
-          image={image}
-          nickName={nickName}
-          hashTag={hashTag}
-          handleOpenModal={handleOpenModal}
-          handleCloseModal={handleCloseModal}
-          handleSaveImage={handleSaveImage}
-          handleSaveNickName={handleSaveNickName}
-          handleSaveHashTag={handleSaveHashTag}
-        />
+      {/* MyProfile 컴포넌트를 사용하고 상태와 핸들러들을 props로 전달 */}
+      <MyProfile
+        open={open}
+        handleOpenModal={handleOpenModal}
+        handleCloseModal={handleCloseModal}
+        handleSaveImage={handleSaveImage} // 수정된 핸들러 전달
+        handleSaveNickName={handleSaveNickName} // 수정된 핸들러 전달
+        handleSaveHashTag={handleSaveHashTag} // 수정된 핸들러 전달
+        profile={profile} // 추가된 props
+      />
 
       <div className='aaa w-[1200px] h-[780px] bg-[#fafafa] rounded-[20px] shadow-lg'>
-            인생그래프
+        인생그래프
       </div>
 
       {/* 탈퇴 모달 */}
