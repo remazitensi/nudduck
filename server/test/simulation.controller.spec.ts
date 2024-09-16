@@ -1,6 +1,18 @@
+/**
+ * File Name    : simulation.controller.spec.ts
+ * Description  : simulation 컨트롤러 테스트
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.16    이승철      Created
+ */
+
+import { AIChatHistoryDto } from '@_modules/simulation/dto/ai-chat-history.dto';
+import { AIChatMessageDto } from '@_modules/simulation/dto/ai-chat-message.dto';
+import { SimulationController } from '@_modules/simulation/simulation.controller';
+import { SimulationService } from '@_modules/simulation/simulation.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SimulationController } from '../src/modules/simulation/simulation.controller';
-import { SimulationService } from '../src/modules/simulation/simulation.service';
 
 describe('SimulationController', () => {
   let controller: SimulationController;
@@ -17,8 +29,8 @@ describe('SimulationController', () => {
             getSessionHistory: jest.fn(),
             handleSession: jest.fn(),
             getAIResponse: jest.fn(),
-            saveUserMessage: jest.fn(),
-            saveAIMessage: jest.fn(),
+            createUserMessage: jest.fn(),
+            createAIMessage: jest.fn(),
           },
         },
       ],
@@ -28,72 +40,56 @@ describe('SimulationController', () => {
     service = module.get<SimulationService>(SimulationService);
   });
 
-  it('유저의 채팅 세션 목록 조회', async () => {
-    const userSessionsMock = [
-      {
-        id: 1,
-        userId: 1,
-        topic: 'Mock Session',
-        createdAt: new Date(),
-      },
-    ];
-    jest.spyOn(service, 'getUserSessions').mockResolvedValue(userSessionsMock);
+  describe('getUserHistory', () => {
+    it('should return user chat session history', async () => {
+      const mockHistory = [{ id: 1, userId: 123, topic: '면접', createdAt: new Date() }];
+      service.getUserSessions = jest.fn().mockResolvedValue(mockHistory);
 
-    const req = { user: { id: 1 } };
-    const result = await controller.getUserHistory(req);
+      const req = { user: { id: 123 } };
+      const result: AIChatHistoryDto = await controller.getUserHistory(req);
 
-    expect(result.history).toEqual(userSessionsMock);
+      expect(service.getUserSessions).toHaveBeenCalledWith(123);
+      expect(result.history).toEqual(mockHistory);
+    });
   });
 
-  it('특정 채팅 세션의 대화 기록 조회', async () => {
-    const sessionMessagesMock = [
-      {
-        id: 1,
-        sessionId: 1,
-        message: 'Mock Message',
-        sender: 'user' as 'user',
-        createdAt: new Date(),
-      },
-      {
-        id: 2,
-        sessionId: 1,
-        message: 'Mock AI Response',
-        sender: 'ai' as 'ai',
-        createdAt: new Date(),
-      },
-    ];
-    jest.spyOn(service, 'getSessionHistory').mockResolvedValue(sessionMessagesMock);
+  describe('getSessionHistory', () => {
+    it('should return session chat messages', async () => {
+      const mockMessages = [{ id: 1, sessionId: 1, message: '랜덤 질문', sender: 'ai', createdAt: new Date() }];
+      service.getSessionHistory = jest.fn().mockResolvedValue(mockMessages);
 
-    const result = await controller.getSessionHistory(1);
-    expect(result.messages).toEqual(sessionMessagesMock);
+      const result: AIChatMessageDto = await controller.getSessionHistory(1);
+
+      expect(service.getSessionHistory).toHaveBeenCalledWith(1);
+      expect(result.messages).toEqual(mockMessages);
+    });
   });
 
-  it('새로운 세션 시작', async () => {
-    const sessionMock = {
-      id: 1,
-      userId: 1,
-      topic: null,
-      createdAt: new Date(),
-    };
-    jest.spyOn(service, 'handleSession').mockResolvedValue(sessionMock);
+  describe('startChat', () => {
+    it('should start a new chat session or return existing session', async () => {
+      const mockSession = { id: 1, userId: 123, topic: null, createdAt: new Date() };
+      service.handleSession = jest.fn().mockResolvedValue(mockSession);
 
-    const startAIDto = { startNewChat: true };
-    const req = { user: { id: 1 } };
-    const result = await controller.startChat(startAIDto, req);
+      const req = { user: { id: 123 } };
+      const result = await controller.startChat({ isNewChat: true }, req);
 
-    expect(result.sessionId).toEqual(sessionMock.id);
+      expect(service.handleSession).toHaveBeenCalledWith(123, true);
+      expect(result.sessionId).toEqual(1);
+    });
   });
 
-  it('AI 질문에 대한 응답 생성 및 저장', async () => {
-    const aiResponseMock = { Answer: 'Mock AI Answer' };
-    jest.spyOn(service, 'getAIResponse').mockResolvedValue(aiResponseMock);
-    jest.spyOn(service, 'saveUserMessage').mockResolvedValue(null);
-    jest.spyOn(service, 'saveAIMessage').mockResolvedValue(null);
+  describe('askAI', () => {
+    it('should return AI response and save user and AI messages', async () => {
+      const mockResponse = { Answer: 'My strength is persistence.' };
+      service.getAIResponse = jest.fn().mockResolvedValue(mockResponse);
 
-    const askAIDto = { query: 'Mock Query', sessionId: 1 };
-    const result = await controller.askAI(askAIDto);
+      const askAIDto = { query: 'What is your strength?', sessionId: 1 };
+      const result = await controller.askAI(askAIDto);
 
-    expect(result.query).toEqual(askAIDto.query);
-    expect(result.answer).toEqual(aiResponseMock.Answer);
+      expect(service.getAIResponse).toHaveBeenCalledWith('What is your strength?');
+      expect(service.createUserMessage).toHaveBeenCalledWith(1, 'What is your strength?');
+      expect(service.createAIMessage).toHaveBeenCalledWith(1, 'My strength is persistence.');
+      expect(result.answer).toEqual('My strength is persistence.');
+    });
   });
 });

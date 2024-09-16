@@ -1,12 +1,7 @@
-import { AuthModule } from '@_auth/auth.module';
-import { FileUploadModule } from '@_file-upload/file-upload.module';
-import { SimulationModule } from '@_simulation/simulation.module';
-import { UserModule } from '@_user/user.module';
+import { SimulationModule } from '@_modules/simulation/simulation.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -29,15 +24,7 @@ import { AppService } from './app.service';
         keepConnectionAlive: true,
         synchronize: true,
       }),
-      async dataSourceFactory(option) {
-        if (!option) throw new Error('Invalid options passed');
-
-        return addTransactionalDataSource(new DataSource(option));
-      },
     }),
-    AuthModule,
-    UserModule,
-    FileUploadModule,
     SimulationModule,
   ],
   controllers: [AppController],

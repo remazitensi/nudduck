@@ -6,12 +6,13 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.12    이승철      Created
+ * 2024.09.16    이승철      Modified    쿼리하는 Row 개수 제한
  */
 
-import { AIChatMessage, AIChatSession } from '@_simulation/entity/ai-chat.entity';
+import { AIChatMessage, AIChatSession } from '@_modules/simulation/entity/ai-chat.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 
 @Injectable()
 export class SimulationRepository {
@@ -23,20 +24,27 @@ export class SimulationRepository {
     private readonly messageRepository: Repository<AIChatMessage>,
   ) {}
 
-  // 특정 유저의 모든 세션 조회
-  async getUserSessions(userId: number): Promise<AIChatSession[]> {
+  // 특정 유저의 최근 7일 이내의 세션 조회
+  async findUserSessions(userId: number): Promise<AIChatSession[]> {
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
     return this.sessionRepository.find({
-      where: { userId },
+      where: { userId, createdAt: MoreThan(threeDaysAgo) },
       order: { createdAt: 'DESC' },
     });
   }
 
-  // 특정 세션의 메시지 조회
-  async getMessagesBySessionId(sessionId: number): Promise<AIChatMessage[]> {
-    return this.messageRepository.find({
+  // 특정 세션에서 최근 대화 20개를 가져와서 다시 최신순으로 정렬
+  async findMessagesBySessionId(sessionId: number): Promise<AIChatMessage[]> {
+    const messages = await this.messageRepository.find({
       where: { sessionId },
-      order: { createdAt: 'ASC' },
+      order: { createdAt: 'DESC' }, // 최신 대화부터 20개 가져옴
+      take: 20,
     });
+
+    // 가져온 메시지를 다시 오래된 순으로 정렬
+    return messages.reverse();
   }
 
   // 채팅 세션 생성 (처음엔 주제 없이 생성)
@@ -56,7 +64,7 @@ export class SimulationRepository {
   }
 
   // 특정 세션에 메시지 저장
-  async saveMessage(sessionId: number, message: string, sender: 'user' | 'ai'): Promise<AIChatMessage> {
+  async createMessage(sessionId: number, message: string, sender: 'user' | 'ai'): Promise<AIChatMessage> {
     const chatMessage = this.messageRepository.create({ sessionId, message, sender });
     return this.messageRepository.save(chatMessage);
   }

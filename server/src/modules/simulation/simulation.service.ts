@@ -6,13 +6,14 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.12    이승철      Created
+ * 2024.09.16    이승철      Modified    절대경로 변경
  */
 
-import { AIChatMessage, AIChatSession } from '@_simulation/entity/ai-chat.entity';
-import { Injectable } from '@nestjs/common';
+import { AIChatMessage, AIChatSession } from '@_modules/simulation/entity/ai-chat.entity';
+import { SimulationRepository } from '@_modules/simulation/simulation.repository';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { SimulationRepository } from './simulation.repository';
 
 @Injectable()
 export class SimulationService {
@@ -23,20 +24,20 @@ export class SimulationService {
 
   // 특정 유저의 채팅 세션 조회
   async getUserSessions(userId: number): Promise<AIChatSession[]> {
-    return this.simulationRepository.getUserSessions(userId);
+    return this.simulationRepository.findUserSessions(userId);
   }
 
   // 특정 세션의 대화 기록 조회
   async getSessionHistory(sessionId: number): Promise<AIChatMessage[]> {
-    return this.simulationRepository.getMessagesBySessionId(sessionId);
+    return this.simulationRepository.findMessagesBySessionId(sessionId);
   }
 
   // 세션이 없을 경우 새로 시작하도록 로직 추가
-  async handleSession(userId: number, startNewChat: boolean): Promise<AIChatSession> {
-    if (startNewChat) {
+  async handleSession(userId: number, isNewChat: boolean): Promise<AIChatSession> {
+    if (isNewChat) {
       // 새로운 세션 시작
       const newSession = await this.createSession(userId);
-      await this.saveAIMessage(newSession.id, this.configService.get('FIRST_AI_MSG'));
+      await this.createAIMessage(newSession.id, this.configService.get('FIRST_AI_MSG'));
       return newSession;
     } else {
       // 이전 세션 이어받기
@@ -46,7 +47,7 @@ export class SimulationService {
       } else {
         // 세션이 없을 경우 새로 시작
         const newSession = await this.createSession(userId);
-        await this.saveAIMessage(newSession.id, this.configService.get('FIRST_AI_MSG'));
+        await this.createAIMessage(newSession.id, this.configService.get('FIRST_AI_MSG'));
         return newSession;
       }
     }
@@ -59,7 +60,7 @@ export class SimulationService {
 
   // 최근 채팅 세션 조회 (이전 대화를 이어받을 때 사용)
   private async getLastSession(userId: number): Promise<AIChatSession | null> {
-    const sessions = await this.simulationRepository.getUserSessions(userId);
+    const sessions = await this.simulationRepository.findUserSessions(userId);
 
     if (sessions.length > 0) {
       return sessions[0]; // 가장 최근 세션 반환
@@ -67,25 +68,39 @@ export class SimulationService {
     return null;
   }
 
-  // AI 서버로 질문을 보내고 응답 받기
+  // AI 서버로 질문을 보내고 응답 받기 (예외 처리 추가)
   async getAIResponse(query: string): Promise<{ Answer: string }> {
-    const response = await axios.post(this.configService.get('AI_QUERY_URL'), { query });
-    return response.data;
+    try {
+      const response = await axios.post(this.configService.get('AI_QUERY_URL'), { query });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        // 서버가 4xx, 5xx 응답을 보낸 경우
+        if (error.response.status >= 400 && error.response.status < 500) {
+          throw new BadRequestException(`AI 서버 요청 실패: ${error.response.data.message || '잘못된 요청입니다.'}`);
+        } else {
+          throw new InternalServerErrorException(`AI 서버 에러: ${error.response.data.message || '서버에서 오류가 발생했습니다.'}`);
+        }
+      } else {
+        // 서버가 응답하지 않거나 네트워크 문제가 발생한 경우
+        throw new InternalServerErrorException('AI 서버와의 통신 오류가 발생했습니다.');
+      }
+    }
   }
 
   // 유저의 첫 번째 메시지를 주제로 설정하고 메시지 저장
-  async saveUserMessage(sessionId: number, message: string): Promise<void> {
+  async createUserMessage(sessionId: number, message: string): Promise<void> {
     const messageCount = await this.simulationRepository.countMessagesBySessionId(sessionId);
     const firstAIMessageCount = 1;
 
     if (messageCount === firstAIMessageCount) {
       await this.simulationRepository.updateSessionTopic(sessionId, message);
     }
-    await this.simulationRepository.saveMessage(sessionId, message, 'user');
+    await this.simulationRepository.createMessage(sessionId, message, 'user');
   }
 
   // AI 메시지 저장
-  async saveAIMessage(sessionId: number, message: string): Promise<void> {
-    await this.simulationRepository.saveMessage(sessionId, message, 'ai');
+  async createAIMessage(sessionId: number, message: string): Promise<void> {
+    await this.simulationRepository.createMessage(sessionId, message, 'ai');
   }
 }
