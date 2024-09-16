@@ -8,6 +8,7 @@
  * 2024.09.08    김재영      Created     커뮤니티 게시글 엔티티 초기 생성
  * 2024.09.09    김재영      Modified    게시글 속성 및 설명 추가
  * 2024.09.10    김재영      Modified    typeorm 추가
+ * 2024.09.16    김재영      Modified    camelcase로 변경
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
@@ -17,7 +18,7 @@ import { Comment } from './comment.entity';
 @Entity('community') // 테이블 이름 지정
 export class Community {
   @PrimaryGeneratedColumn() // 자동 생성되는 PK
-  post_id: number;
+  postId: number;
 
   @Column() // 기본 문자열 컬럼
   title: string;
@@ -26,25 +27,25 @@ export class Community {
   content: string;
 
   @Column() // 사용자 ID
-  user_id: number;
+  userId: number;
 
   @Column({ type: 'enum', enum: Category, nullable: true }) // enum을 사용한 카테고리 컬럼
   category?: Category;
 
   @CreateDateColumn({ type: 'timestamp' }) // 자동 생성되는 생성일 컬럼
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' }) // 자동 수정되는 수정일 컬럼
-  updated_at: Date;
+  updatedAt: Date;
 
   @Column({ default: 0 }) // 기본값 0인 좋아요 수
-  likes_count: number;
+  likeCount: number;
 
   @Column({ default: 0 }) // 기본값 0인 조회 수
-  views_count: number;
+  viewCount: number;
 
   @Column({ default: 0 }) // 기본값 0인 댓글 수
-  comments_count: number;
+  commentCount: number;
 
   @OneToMany(() => Comment, (comment) => comment.community, { cascade: true }) // 일대다 관계
   comments?: Comment[];

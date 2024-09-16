@@ -8,6 +8,7 @@
  * 2024.09.07    김재영      Created
  * 2024.09.09    김재영      Modified    필드 추가
  * 2024.09.12    김재영      Modified    Swagger 데코레이터 추가
+ * 2024.09.16    김재영      Modified    camelcase로 변경
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -36,15 +37,15 @@ export class UpdateCommunityDto {
   @ApiPropertyOptional({ description: '수정된 좋아요 수' })
   @IsOptional()
   @IsNumber()
-  likes_count?: number;
+  likeCount?: number;
 
   @ApiPropertyOptional({ description: '수정된 조회수' })
   @IsOptional()
   @IsNumber()
-  views_count?: number;
+  viewCount?: number;
 
   @ApiPropertyOptional({ description: '수정된 댓글 수' })
   @IsOptional()
   @IsNumber()
-  comments_count?: number;
+  commentCount?: number;
 }

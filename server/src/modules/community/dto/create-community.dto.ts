@@ -34,7 +34,7 @@ export class CreateCommunityDto {
     example: 123,
   })
   @IsNotEmpty()
-  user_id: number;
+  userId: number;
 
   @ApiPropertyOptional({
     description: '커뮤니티 게시글의 카테고리',
