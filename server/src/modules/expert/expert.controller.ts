@@ -7,11 +7,12 @@
  * Date          Author      Status      Description
  * 2024.09.14    이승철      Created
  * 2024.09.14    이승철      Modified    ApiResponse 추가
+ * 2024.09.16    이승철      Modified    절대경로 변경
  */
 
-import { ExpertPageDto } from '@_expert/dto/expert-page.dto';
-import { Expert } from '@_expert/entity/expert.entity';
-import { ExpertService } from '@_expert/expert.service';
+import { ExpertPageDto } from '@_modules/expert/dto/expert-page.dto';
+import { Expert } from '@_modules/expert/entity/expert.entity';
+import { ExpertService } from '@_modules/expert/expert.service';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 

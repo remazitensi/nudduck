@@ -6,39 +6,41 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.14    이승철      Created
+ * 2024.09.16    이승철      Modified    절대경로 변경, InjectRepository decorator를 사용해서 service에 주입
  */
 
-import { Expert } from '@_expert/entity/expert.entity';
-import { ExpertRepository } from '@_expert/expert.repository';
+import { Expert } from '@_modules/expert/entity/expert.entity';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ExpertService {
-  constructor(private readonly expertRepository: ExpertRepository) {}
+  constructor(
+    @InjectRepository(Expert) // 여기서 직접 Repository를 주입받음
+    private readonly expertRepository: Repository<Expert>,
+  ) {}
 
   // 전문가 리스트 조회 (페이지네이션 적용)
   async getExperts(page: number, limit: number): Promise<{ data: Expert[]; totalCount: number }> {
-    // page가 1보다 작은 경우 1로 설정
     page = Math.max(page, 1);
-
-    // 첫 번째로 전체 전문가 수를 가져옴
-    const totalCount = await this.expertRepository.findTotalCount();
+    const totalCount = await this.expertRepository.count();
     const totalPages = Math.ceil(totalCount / limit);
 
-    // 만약 page가 전체 페이지 수를 초과하면 마지막 페이지 데이터 반환
     if (page > totalPages) {
       page = totalPages;
     }
 
-    // 전문가 리스트를 가져옴
-    const data = await this.expertRepository.findExperts(page, limit);
+    const data = await this.expertRepository.find({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
-    // data와 totalCount 함께 반환
     return { data, totalCount };
   }
 
   // 전문가 상세 조회
   async getExpertById(id: number): Promise<Expert> {
-    return this.expertRepository.findExpertById(id);
+    return this.expertRepository.findOne({ where: { id } });
   }
 }

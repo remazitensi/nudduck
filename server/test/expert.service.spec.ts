@@ -1,66 +1,67 @@
-// expert.service.spec.ts
-import { Expert } from '@_expert/entity/expert.entity';
-import { ExpertRepository } from '@_expert/expert.repository';
-import { ExpertService } from '@_expert/expert.service';
+/**
+ * File Name    : expert.service.spec.ts
+ * Description  : expert 서비스 테스트
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.14    이승철      Created
+ */
+
+import { ExpertService } from '@_modules/expert/expert.service';
+import { Expert } from '@_modules/expert/entity/expert.entity';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('ExpertService', () => {
   let service: ExpertService;
-  let repository: ExpertRepository;
+  let expertRepository: Repository<Expert>;
 
   const mockExpertRepository = {
-    findTotalCount: jest.fn().mockResolvedValue(1),
-    findExperts: jest.fn().mockResolvedValue([]),
-    findExpertById: jest.fn().mockResolvedValue({}),
+    find: jest.fn(),
+    findOne: jest.fn(),
+    count: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExpertService,
-        {
-          provide: ExpertRepository,
-          useValue: mockExpertRepository,
-        },
+        { provide: getRepositoryToken(Expert), useValue: mockExpertRepository },
       ],
     }).compile();
 
     service = module.get<ExpertService>(ExpertService);
-    repository = module.get<ExpertRepository>(ExpertRepository);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+    expertRepository = module.get<Repository<Expert>>(getRepositoryToken(Expert));
   });
 
   describe('getExperts', () => {
-    it('should return a list of experts and total count', async () => {
-      const result = { data: [], totalCount: 1 };
-      jest.spyOn(repository, 'findExperts').mockResolvedValue([]);
-      jest.spyOn(repository, 'findTotalCount').mockResolvedValue(1);
+    it('should return a list of experts with total count', async () => {
+      const expert = new Expert();
+      const result = {
+        data: [expert],
+        totalCount: 1,
+      };
+
+      mockExpertRepository.find.mockResolvedValue([expert]);
+      mockExpertRepository.count.mockResolvedValue(1);
 
       expect(await service.getExperts(1, 10)).toEqual(result);
+      expect(expertRepository.find).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10,
+      });
     });
   });
 
   describe('getExpertById', () => {
-    it('should return a single expert by id', async () => {
-      const mockExpert: Expert = {
-        id: 1,
-        name: 'John Doe',
-        jobTitle: 'Doctor',
-        age: 40,
-        bio: 'Experienced doctor',
-        profileImage: 'image-url',
-        email: 'john.doe@example.com',
-        phone: '1234567890',
-        cost: 100,
-        hashtags: '#doctor',
-      };
+    it('should return an expert by id', async () => {
+      const expert = new Expert();
+      mockExpertRepository.findOne.mockResolvedValue(expert);
 
-      jest.spyOn(repository, 'findExpertById').mockResolvedValue(mockExpert);
-
-      expect(await service.getExpertById(1)).toEqual(mockExpert);
+      expect(await service.getExpertById(1)).toBe(expert);
+      expect(expertRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
     });
   });
 });

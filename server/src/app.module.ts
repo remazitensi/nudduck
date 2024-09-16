@@ -1,9 +1,8 @@
-import { ExpertModule } from '@_expert/expert.module';
+import { ExpertModule } from '@_modules/expert/expert.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { addTransactionalDataSource } from 'typeorm-transactional';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -25,12 +24,7 @@ import { AppService } from './app.service';
         autoLoadEntities: true,
         keepConnectionAlive: true,
         synchronize: true,
-      }),
-      async dataSourceFactory(option) {
-        if (!option) throw new Error('Invalid options passed');
-
-        return addTransactionalDataSource(new DataSource(option));
-      },
+      })
     }),
     ExpertModule,
   ],

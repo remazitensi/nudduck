@@ -86,7 +86,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@_expert/(.*)$": "<rootDir>/modules/expert/$1"
+      "^@_modules/(.*)$": "<rootDir>/modules/$1"
     }
   }
 }
