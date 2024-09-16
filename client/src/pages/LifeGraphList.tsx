@@ -15,6 +15,14 @@ const GraphOk:React.FC = () => {
     const [score, setScore] = useState<number>(0);
     const [event, setEvent] = useState('');
 
+    const [star, setStar] = useState('grayStar.png');
+
+
+    const changeStar = () => {
+        setStar((prev) => (prev === 'grayStar.png' ? 'yellowStar.png' : 'grayStar.png'));
+    };
+
+
 
     // 작성방법 버튼 클릭시 열기
     const handleOpenHowModal = () => {
@@ -85,7 +93,26 @@ const GraphOk:React.FC = () => {
                         </div>  
                     </div>
                     <div className='flex bg-[#F8F8F8] w-[380px] h-[320px]'>
-                        그래프 들어갈 곳
+                        <div className='mt-[30px]'>
+                            <div className='w-[380px] h-[220px] bg-gray-500'>
+                                그래프 자리
+                            </div>
+                            <div className='mt-[10px]'>
+                                <div className='pl-[15px] flex items-center justify-center gap-[160px]'>
+                                    <img src={`/${star}`} onClick={changeStar} className='cursor-pointer'/>
+                                    <div className=''>
+                                        <div className='flex gap-[20px] text-[#8D8B67]'>
+                                            <div>생성일</div>
+                                            <div>2024-09-06</div>
+                                        </div>
+                                        <div className='flex gap-[20px]'>
+                                            <div>수정일</div>
+                                            <div>2024-09-05</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -101,7 +128,26 @@ const GraphOk:React.FC = () => {
                         </div>  
                     </div>
                     <div className='flex bg-[#F8F8F8] w-[380px] h-[320px]'>
-                        그래프 들어갈 곳
+                    <div className='mt-[30px]'>
+                            <div className='w-[380px] h-[220px] bg-gray-500'>
+                                그래프 자리
+                            </div>
+                            <div className='mt-[10px]'>
+                                <div className='pl-[15px] flex items-center justify-center gap-[160px]'>
+                                    <img src={`/${star}`} onClick={changeStar} className='cursor-pointer'/>
+                                    <div className=''>
+                                        <div className='flex gap-[20px] text-[#8D8B67]'>
+                                            <div>생성일</div>
+                                            <div>2024-09-06</div>
+                                        </div>
+                                        <div className='flex gap-[20px]'>
+                                            <div>수정일</div>
+                                            <div>2024-09-05</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -117,7 +163,26 @@ const GraphOk:React.FC = () => {
                         </div>  
                     </div>
                     <div className='flex bg-[#F8F8F8] w-[380px] h-[320px]'>
-                        그래프 들어갈 곳
+                    <div className='mt-[30px]'>
+                            <div className='w-[380px] h-[220px] bg-gray-500'>
+                                그래프 자리
+                            </div>
+                            <div className='mt-[10px]'>
+                                <div className='pl-[15px] flex items-center justify-center gap-[160px]'>
+                                    <img src={`/${star}`} onClick={changeStar} className='cursor-pointer'/>
+                                    <div className=''>
+                                        <div className='flex gap-[20px] text-[#8D8B67]'>
+                                            <div>생성일</div>
+                                            <div>2024-09-06</div>
+                                        </div>
+                                        <div className='flex gap-[20px]'>
+                                            <div>수정일</div>
+                                            <div>2024-09-05</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className='flex flex-col w-[380px]'>
@@ -132,7 +197,26 @@ const GraphOk:React.FC = () => {
                         </div>  
                     </div>
                     <div className='flex bg-[#F8F8F8] w-[380px] h-[320px]'>
-                        그래프 들어갈 곳
+                    <div className='mt-[30px]'>
+                            <div className='w-[380px] h-[220px] bg-gray-500'>
+                                그래프 자리
+                            </div>
+                            <div className='mt-[10px]'>
+                                <div className='pl-[15px] flex items-center justify-center gap-[160px]'>
+                                    <img src={`/${star}`} onClick={changeStar} className='cursor-pointer'/>
+                                    <div className=''>
+                                        <div className='flex gap-[20px] text-[#8D8B67]'>
+                                            <div>생성일</div>
+                                            <div>2024-09-06</div>
+                                        </div>
+                                        <div className='flex gap-[20px]'>
+                                            <div>수정일</div>
+                                            <div>2024-09-05</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
