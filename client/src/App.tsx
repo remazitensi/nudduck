@@ -9,16 +9,17 @@
  * 2024.09.07    김민지      Modified       초기화
  */
 
-import { Routes } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
+import { ExpertsPage } from './pages/ExpertsPage';
 
 function App() {
   return (
-    <Routes>
-      {/* <Route path='/' element={<Root />} /> */}
-      {/* <Route path='/my' element={<My />} /> */}
-    </Routes>
+    <Router>
+      <Routes>
+        <Route path='/' element={<ExpertsPage />} />
+      </Routes>
+    </Router>
   );
 }
-
 export default App;
