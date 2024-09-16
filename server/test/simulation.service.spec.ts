@@ -1,12 +1,26 @@
+/**
+ * File Name    : simulation.service.spec.ts
+ * Description  : simulation 서비스 테스트
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.16    이승철      Created
+ */
+
+import { SimulationRepository } from '@_modules/simulation/simulation.repository';
+import { SimulationService } from '@_modules/simulation/simulation.service';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
-import { SimulationRepository } from '../src/modules/simulation/simulation.repository';
-import { SimulationService } from '../src/modules/simulation/simulation.service';
+
 jest.mock('axios');
 
 describe('SimulationService', () => {
   let service: SimulationService;
   let repository: SimulationRepository;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,12 +29,18 @@ describe('SimulationService', () => {
         {
           provide: SimulationRepository,
           useValue: {
-            getUserSessions: jest.fn(),
-            getMessagesBySessionId: jest.fn(),
+            findUserSessions: jest.fn(),
+            findMessagesBySessionId: jest.fn(),
             createSession: jest.fn(),
-            saveMessage: jest.fn(),
-            countMessagesBySessionId: jest.fn(),
+            createMessage: jest.fn(),
             updateSessionTopic: jest.fn(),
+            countMessagesBySessionId: jest.fn(),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockReturnValue('FIRST_AI_MSG'),
           },
         },
       ],
@@ -28,83 +48,73 @@ describe('SimulationService', () => {
 
     service = module.get<SimulationService>(SimulationService);
     repository = module.get<SimulationRepository>(SimulationRepository);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
-  it('유저의 채팅 세션 목록 조회', async () => {
-    const userSessionsMock = [
-      {
-        id: 1,
-        userId: 1,
-        topic: 'Mock Session',
-        createdAt: new Date(),
-      },
-    ];
-    jest.spyOn(repository, 'getUserSessions').mockResolvedValue(userSessionsMock);
+  describe('getUserSessions', () => {
+    it('should return user sessions', async () => {
+      const mockSessions = [{ id: 1, userId: 123, topic: '면접', createdAt: new Date() }];
+      repository.findUserSessions = jest.fn().mockResolvedValue(mockSessions);
 
-    const result = await service.getUserSessions(1);
-    expect(result).toEqual(userSessionsMock);
+      const result = await service.getUserSessions(123);
+
+      expect(repository.findUserSessions).toHaveBeenCalledWith(123);
+      expect(result).toEqual(mockSessions);
+    });
   });
 
-  it('특정 세션의 대화 기록 조회', async () => {
-    const sessionMessagesMock = [
-      {
-        id: 1,
-        sessionId: 1,
-        message: 'Mock Message',
-        sender: 'user' as 'user',
-        createdAt: new Date(),
-      },
-      {
-        id: 2,
-        sessionId: 1,
-        message: 'Mock AI Response',
-        sender: 'ai' as 'ai',
-        createdAt: new Date(),
-      },
-    ];
-    jest.spyOn(repository, 'getMessagesBySessionId').mockResolvedValue(sessionMessagesMock);
+  describe('getSessionHistory', () => {
+    it('should return session messages', async () => {
+      const mockMessages = [{ id: 1, sessionId: 1, message: 'Hello', sender: 'ai', createdAt: new Date() }];
+      repository.findMessagesBySessionId = jest.fn().mockResolvedValue(mockMessages);
 
-    const result = await service.getSessionHistory(1);
-    expect(result).toEqual(sessionMessagesMock);
+      const result = await service.getSessionHistory(1);
+
+      expect(repository.findMessagesBySessionId).toHaveBeenCalledWith(1);
+      expect(result).toEqual(mockMessages);
+    });
   });
 
-  it('새로운 세션 생성 후 AI 첫 응답 저장', async () => {
-    const sessionMock = {
-      id: 1,
-      userId: 1,
-      topic: null,
-      createdAt: new Date(),
-    };
-    jest.spyOn(repository, 'createSession').mockResolvedValue(sessionMock);
-    jest.spyOn(service, 'saveAIMessage').mockResolvedValue(null);
+  describe('getAIResponse', () => {
+    it('should return AI response', async () => {
+      const mockResponse = { data: { Answer: 'My strength is persistence.' } };
+      (axios.post as jest.Mock).mockResolvedValue(mockResponse);
 
-    const result = await service.handleSession(1, true);
-    expect(result).toEqual(sessionMock);
-    expect(service.saveAIMessage).toHaveBeenCalledWith(sessionMock.id, '어떤 도움이 필요하시나요?');
+      const result = await service.getAIResponse('What is your strength?');
+
+      expect(axios.post).toHaveBeenCalledWith('FIRST_AI_MSG', { query: 'What is your strength?' });
+      expect(result.Answer).toEqual('My strength is persistence.');
+    });
+
+    it('should throw BadRequestException for 4xx errors', async () => {
+      const mockError = {
+        response: { status: 400, data: { message: 'Invalid request' } },
+      };
+      (axios.post as jest.Mock).mockRejectedValue(mockError);
+
+      await expect(service.getAIResponse('Invalid query')).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw InternalServerErrorException for 5xx errors', async () => {
+      const mockError = {
+        response: { status: 500, data: { message: 'Server error' } },
+      };
+      (axios.post as jest.Mock).mockRejectedValue(mockError);
+
+      await expect(service.getAIResponse('Valid query')).rejects.toThrow(InternalServerErrorException);
+    });
   });
 
-  it('AI 서버로 질문을 보내고 응답 받기', async () => {
-    const aiResponseMock = { data: { Answer: 'Mock AI Answer' } };
-    (axios.post as jest.Mock).mockResolvedValue(aiResponseMock);
+  describe('createUserMessage', () => {
+    it('should set the first message as the session topic', async () => {
+      repository.countMessagesBySessionId = jest.fn().mockResolvedValue(1);
+      repository.updateSessionTopic = jest.fn().mockResolvedValue(undefined);
 
-    const result = await service.getAIResponse('Mock Query');
-    expect(result.Answer).toEqual(aiResponseMock.data.Answer);
-  });
+      await service.createUserMessage(1, 'First message');
 
-  it('첫 번째 유저 메시지를 주제로 설정하고 메시지 저장', async () => {
-    jest.spyOn(repository, 'countMessagesBySessionId').mockResolvedValue(1);
-    jest.spyOn(repository, 'updateSessionTopic').mockResolvedValue(null);
-    jest.spyOn(repository, 'saveMessage').mockResolvedValue(null);
-
-    await service.saveUserMessage(1, 'Mock User Message');
-    expect(repository.updateSessionTopic).toHaveBeenCalledWith(1, 'Mock User Message');
-    expect(repository.saveMessage).toHaveBeenCalledWith(1, 'Mock User Message', 'user');
-  });
-
-  it('AI 메시지 저장', async () => {
-    jest.spyOn(repository, 'saveMessage').mockResolvedValue(null);
-
-    await service.saveAIMessage(1, 'Mock AI Message');
-    expect(repository.saveMessage).toHaveBeenCalledWith(1, 'Mock AI Message', 'ai');
+      expect(repository.countMessagesBySessionId).toHaveBeenCalledWith(1);
+      expect(repository.updateSessionTopic).toHaveBeenCalledWith(1, 'First message');
+      expect(repository.createMessage).toHaveBeenCalledWith(1, 'First message', 'user');
+    });
   });
 });
