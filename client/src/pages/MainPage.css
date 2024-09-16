@@ -97,3 +97,28 @@
     font-size: 16px;
     margin-left: 10px; /* 버튼과 텍스트 간격 조절 */
   }
+
+  .ai-section {
+    position: relative; /* 텍스트를 이미지 위에 올리기 위한 부모 요소 설정 */
+    display: inline-block; /* 섹션을 이미지 크기에 맞추기 위해 사용 */
+  }
+  
+  .ai-section img {
+    display: block; /* 이미지가 섹션 내부에서 차지할 공간 */
+    width: 100%; /* 이미지가 섹션 너비에 맞춰지도록 조정 */
+  }
+  
+  .ai-section p {
+    position: absolute; /* 텍스트를 이미지 위에 배치하기 위해 절대 위치 사용 */
+    top: 20%; /* 이미지의 세로 중앙 */
+    left: 50%; /* 이미지의 가로 중앙 */
+    transform: translate(-50%, -50%); /* 중앙 정렬을 위한 변환 */
+    color: black; /* 텍스트 색상 */
+    font-size: 24px; /* 텍스트 크기 */
+    font-weight: 400; /* 텍스트 굵기 */
+    text-align: center; /* 텍스트 정렬 */
+  }
+
+  .ai-section p .highlight {
+    font-weight: 600; /* '인공지능' 부분에 semibold 적용 */
+  }

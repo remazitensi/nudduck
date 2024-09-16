@@ -55,8 +55,8 @@ const MainPage = () => {
 
       {/* 추가 섹션 (인공지능 소개) */}
       <section className="ai-section">
-        <img src="/path/to/image.jpg" alt="인공지능 이미지" />
-        <p>인공지능으로부터 해답을 찾아 보세요</p>
+        <img src="ai-solution.png" alt="인공지능 이미지" />
+        <p><strong>인공지능</strong>으로부터 해답을 찾아 보세요</p>
       </section>
 
       {/* 상담 봇 섹션 */}

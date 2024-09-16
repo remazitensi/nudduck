@@ -8,13 +8,33 @@
  * 2024.09.10    황솜귤      Created     푸터 컴포넌트 생성
  * 2024.09.11    황솜귤      Modified    텍스트 마진 및 구분선 색상 수정
  * 2024.09.13    황솜귤      Modified    스크롤 업 버튼 추가
+ * 2024.09.16    황솜귤      Modified    스크롤 업 버튼 최상단에서는 노출되지 않도록 수정
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Footer.css';
 
 const Footer: React.FC = () => {
-  
+  const [showScrollButton, setShowScrollButton] = useState(false); // 스크롤 버튼 표시 상태
+
+  // 스크롤 시 버튼을 표시할지 여부를 결정하는 함수
+  useEffect(() => {
+    const handleScroll = () => {
+      // 현재 스크롤 위치가 100px 이상일 경우 버튼을 보이도록 설정
+      if (window.scrollY > 100) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   // 스크롤 업 버튼 클릭 핸들러
   const handleScrollUp = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -47,9 +67,11 @@ const Footer: React.FC = () => {
         </div>
 
         {/* 스크롤 업 버튼 추가 */}
-        <div className="scroll-up-button" onClick={handleScrollUp}>
-          <img src="/scroll-up.png" alt="Scroll Up" className="scroll-up-icon" />
-        </div>
+        {showScrollButton && ( // 스크롤이 100px 이상일 때만 버튼을 보여줌
+          <div className="scroll-up-button" onClick={handleScrollUp}>
+            <img src="/scroll-up.png" alt="Scroll Up" className="scroll-up-icon" />
+          </div>
+        )}
       </div>
     </footer>
   );
