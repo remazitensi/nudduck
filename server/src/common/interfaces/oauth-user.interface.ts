@@ -8,6 +8,7 @@
  * 2024.09.07    이승철      Created
  * 2024.09.07    이승철      Modified    OauthUser 타입 interface 설정
  * 2024.09.16    이승철      Modified    utils 디렉토리로 변경
+ * 2024.09.17    이승철      Modified    interface 디렉토리로 변경
  */
 
 export interface OAuthUser {

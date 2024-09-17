@@ -9,6 +9,7 @@
  * 2024.09.07    이승철      Modified    db설정 및, 엔티티 경로 설정
  * 2024.09.10    이승철      Modified    FileUpload, User Module 추가, 트랜잭션 DataSource 추가
  * 2024.09.16    이승철      Modified    트랜잭션 DataSource 삭제, 절대경로 변경
+ * 2024.09.17    이승철      Modified    프로필 모듈 추가
  */
 
 import { AuthModule } from '@_modules/auth/auth.module';
@@ -19,6 +20,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ProfileModule } from '@_modules/profile/profile.module';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { AppService } from './app.service';
     AuthModule,
     UserModule,
     FileUploadModule,
+    ProfileModule
   ],
   controllers: [AppController],
   providers: [AppService],

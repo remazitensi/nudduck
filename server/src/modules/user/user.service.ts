@@ -8,6 +8,7 @@
  * 2024.09.10    이승철      Created
  * 2024.09.16    이승철      Modified    절대경로 변경, 쿠키삭제 로직 컨트롤러로 이전
  * 2024.09.16    이승철      Modified    수동 트랜잭션으로 변경, 프로필 수정(undefined, 기존과 동일의 경우) if 조건문 적용
+ * 2024.09.17    이승철      Modified    getMyProfile로 메서드 이름 변경 및 인생그래프 즐겨찾기 함께 조회
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
@@ -27,9 +28,9 @@ export class UserService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async getProfile(userId: number): Promise<ProfileDto> {
+  async getMyProfile(userId: number): Promise<ProfileDto> {
     // 유저 정보와 해시태그를 한 번에 조회
-    const user = await this.userRepository.findUserById(userId, ['hashtags']);
+    const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph', 'hashtags']);
     if (!user) {
       throw new NotFoundException('회원을 찾을 수 없습니다.');
     }
@@ -41,6 +42,7 @@ export class UserService {
       name: user.name,
       imageUrl: user.image_url,
       hashtags: user.hashtags.map((hashtag) => hashtag.name),
+      favoriteLifeGraph: user.favorite_life_graph ? user.favorite_life_graph.id : null
     };
   
     return profile;
@@ -119,7 +121,7 @@ export class UserService {
         userHashtag.name = tag;
         return userHashtag;
       });
-      await this.userRepository.createHashtags(userHashtagsToAdd); // bulk insert로 저장
+      await this.userRepository.createHashtags(userHashtagsToAdd);
     }
   }
 
