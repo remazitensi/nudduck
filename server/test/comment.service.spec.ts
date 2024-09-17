@@ -1,179 +1,99 @@
-/**
- * File Name    : comment.service.spec.ts
- * Description  : 댓글 및 대댓글에 대한 유닛 테스트
- * Author       : 김재영
- *
- * History
- * Date          Author      Status      Description
- * 2024.09.13    김재영      Created     댓글과 대댓글에 대한 유닛 테스트 케이스 작성
- */
-
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CommunityService } from '../src/modules/community/community.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { CommentRepository } from '../src/modules/community/repositories/comment.repository';
+import { PostRepository } from '../src/modules/community/repositories/post.repository';
+import { HttpException, NotFoundException } from '@nestjs/common';
+import { CreateCommentDto } from '../src/modules/community/dto/create-comment.dto';
 import { Comment } from '../src/modules/community/entities/comment.entity';
-import { Community } from '../src/modules/community/entities/community.entity';
-import { NotFoundException } from '@nestjs/common';
 
 describe('CommunityService', () => {
   let service: CommunityService;
-  let commentRepository: Repository<Comment>;
-  let communityRepository: Repository<Community>;
+  let mockCommentRepository: any;
+  let mockPostRepository: any;
 
   beforeEach(async () => {
+    mockCommentRepository = {
+      create: jest.fn(),
+      save: jest.fn(),
+      deleteCommentAndReplies: jest.fn(),
+    };
+
+    mockPostRepository = {
+      update: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CommunityService,
-        {
-          provide: getRepositoryToken(Comment),
-          useValue: {
-            create: jest.fn(),
-            save: jest.fn(),
-            find: jest.fn(),
-            findOne: jest.fn(),
-            remove: jest.fn(),
-            count: jest.fn(), // count 메서드 추가
-          },
-        },
-        {
-          provide: getRepositoryToken(Community),
-          useValue: {
-            findOne: jest.fn(),
-            save: jest.fn(),
-          },
-        },
-      ],
+      providers: [CommunityService, { provide: getRepositoryToken(CommentRepository), useValue: mockCommentRepository }, { provide: getRepositoryToken(PostRepository), useValue: mockPostRepository }],
     }).compile();
 
     service = module.get<CommunityService>(CommunityService);
-    commentRepository = module.get<Repository<Comment>>(getRepositoryToken(Comment));
-    communityRepository = module.get<Repository<Community>>(getRepositoryToken(Community));
   });
 
-  // 댓글 추가 테스트
-  it('should add a comment to a post', async () => {
-    const createCommentDto = { content: 'Test Comment', user_id: 1 };
-    const savedComment: Comment = {
-      comment_id: 1,
-      content: 'Test Comment',
-      post_id: 1,
-      user_id: 1,
-      created_at: new Date(),
-      updated_at: new Date(),
-      community: null,
-      parent: null,
-      replies: [],
-    };
+  describe('createComment', () => {
+    it('should create and return a comment', async () => {
+      const createCommentDto: CreateCommentDto = { content: 'Test Comment', postId: 1, userId: 1 };
+      const comment = { ...createCommentDto, id: 1, createdAt: new Date(), updatedAt: new Date() } as unknown as Comment;
 
-    jest.spyOn(commentRepository, 'create').mockReturnValue(savedComment as any);
-    jest.spyOn(commentRepository, 'save').mockResolvedValue(savedComment);
+      mockCommentRepository.create.mockReturnValue(comment);
+      mockCommentRepository.save.mockResolvedValue(comment);
+      mockPostRepository.update.mockResolvedValue({ affected: 1 }); // 댓글 수 업데이트 성공
 
-    jest.spyOn(communityRepository, 'findOne').mockResolvedValue({ post_id: 1, comments_count: 0 } as any);
-    jest.spyOn(communityRepository, 'save').mockResolvedValue({ post_id: 1, comments_count: 1 } as any);
+      const result = await service.createComment(createCommentDto.postId, createCommentDto);
 
-    const result = await service.addComment(1, createCommentDto);
-    expect(result).toEqual(savedComment);
+      expect(result).toEqual(comment);
+    });
+
+    it('should throw HttpException if post comment count update fails', async () => {
+      const createCommentDto: CreateCommentDto = { content: 'Test Comment', postId: 1, userId: 1 };
+
+      mockCommentRepository.create.mockReturnValue({});
+      mockCommentRepository.save.mockResolvedValue({});
+      mockPostRepository.update.mockResolvedValue({ affected: 0 }); // 댓글 수 업데이트 실패
+
+      await expect(service.createComment(createCommentDto.postId, createCommentDto)).rejects.toThrow(HttpException);
+    });
   });
 
-  // 댓글 추가 시 존재하지 않는 게시글에 댓글을 추가하려고 할 때 에러 발생 테스트
-  it('should throw error when trying to add a comment to a non-existent post', async () => {
-    jest.spyOn(communityRepository, 'findOne').mockResolvedValue(null);
+  describe('deleteComment', () => {
+    it('should delete a comment', async () => {
+      const postId = 1;
+      const commentId = 1;
 
-    const createCommentDto = { content: 'Test Comment', user_id: 1 };
+      mockCommentRepository.deleteCommentAndReplies.mockResolvedValue({ affected: 1 });
+      mockPostRepository.update.mockResolvedValue({ affected: 1 }); // 댓글 수 업데이트 성공
 
-    await expect(service.addComment(999, createCommentDto)).rejects.toThrow(NotFoundException);
+      await expect(service.deleteComment(postId, commentId)).resolves.not.toThrow();
+    });
+
+    it('should throw NotFoundException when comment does not exist', async () => {
+      const postId = 1;
+      const commentId = 1;
+
+      mockCommentRepository.deleteCommentAndReplies.mockResolvedValue({ affected: 0 }); // 댓글 삭제 실패
+      mockPostRepository.update.mockResolvedValue({ affected: 0 });
+
+      await expect(service.deleteComment(postId, commentId)).rejects.toThrow(NotFoundException);
+    });
   });
 
-  // 댓글 조회 테스트
-  it('should fetch comments for a post', async () => {
-    const comments: Comment[] = [
-      {
-        comment_id: 1,
-        content: 'Comment 1',
-        post_id: 1,
-        user_id: 1,
-        created_at: new Date(),
-        updated_at: new Date(),
-        community: null,
-        parent: null,
-        replies: [],
-      },
-      {
-        comment_id: 2,
-        content: 'Comment 2',
-        post_id: 1,
-        user_id: 2,
-        created_at: new Date(),
-        updated_at: new Date(),
-        community: null,
-        parent: null,
-        replies: [],
-      },
-    ];
-    jest.spyOn(commentRepository, 'find').mockResolvedValue(comments);
-    jest.spyOn(commentRepository, 'count').mockResolvedValue(2); // count 메서드의 반환값 설정
+  describe('deleteReply', () => {
+    it('should delete a reply', async () => {
+      const postId = 1;
+      const replyId = 2;
 
-    const result = await service.getCommentsByPostId(1);
-    expect(result).toEqual(comments);
-  });
+      mockCommentRepository.deleteCommentAndReplies.mockResolvedValue({ affected: 1 });
 
-  // 대댓글 조회 테스트
-  it('should fetch replies for a comment', async () => {
-    const replies: Comment[] = [
-      {
-        comment_id: 2,
-        content: 'Reply 1',
-        parent_id: 1,
-        post_id: 1,
-        user_id: 2,
-        created_at: new Date(),
-        updated_at: new Date(),
-        community: null,
-        parent: null,
-        replies: [],
-      },
-      {
-        comment_id: 3,
-        content: 'Reply 2',
-        parent_id: 1,
-        post_id: 1,
-        user_id: 3,
-        created_at: new Date(),
-        updated_at: new Date(),
-        community: null,
-        parent: null,
-        replies: [],
-      },
-    ];
-    jest.spyOn(commentRepository, 'find').mockResolvedValue(replies);
-    jest.spyOn(commentRepository, 'count').mockResolvedValue(2); // count 메서드의 반환값 설정
+      await expect(service.deleteReply(postId, replyId)).resolves.not.toThrow();
+    });
 
-    const result = await service.getReplies(1, 1);
-    expect(result).toEqual(replies);
-  });
+    it('should throw NotFoundException when reply does not exist', async () => {
+      const postId = 1;
+      const replyId = 2;
 
-  // 댓글 삭제 테스트
-  it('should delete a comment and update post comments count', async () => {
-    const comment: Comment = {
-      comment_id: 1,
-      content: 'Test Comment',
-      post_id: 1,
-      user_id: 1,
-      created_at: new Date(),
-      updated_at: new Date(),
-      community: null,
-      parent: null,
-      replies: [],
-    };
+      mockCommentRepository.deleteCommentAndReplies.mockResolvedValue({ affected: 0 }); // 답글 삭제 실패
 
-    jest.spyOn(commentRepository, 'findOne').mockResolvedValue(comment);
-    jest.spyOn(commentRepository, 'remove').mockResolvedValue(undefined);
-
-    jest.spyOn(communityRepository, 'findOne').mockResolvedValue({ post_id: 1, comments_count: 1 } as any);
-    jest.spyOn(communityRepository, 'save').mockResolvedValue({ post_id: 1, comments_count: 0 } as any);
-
-    await service.deleteComment(1, 1);
-    expect(commentRepository.remove).toHaveBeenCalledWith(comment);
+      await expect(service.deleteReply(postId, replyId)).rejects.toThrow(NotFoundException);
+    });
   });
 });
