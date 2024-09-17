@@ -14,12 +14,13 @@
  * 2024.09.10    이승철      Modified    userDto 구조분해할당
  * 2024.09.10    이승철      Modified    accessToken 재발급 api 재추가
  * 2024.09.16    이승철      Modified    controller에서 쿠키 응답, 절대경로 변경
+ * 2024.09.17    이승철      Modified    OAuthUser interface 디렉토리로 변경
  */
 
 import { AuthService } from '@_modules/auth/auth.service';
 import { RefreshTokenDto } from '@_modules/auth/dto/refresh-token.dto';
 import { UserDto } from '@_modules/auth/dto/user.dto';
-import { OAuthUser } from '@_modules/auth/utils/oauth-user.interface';
+import { OAuthUser } from 'common/interfaces/oauth-user.interface';
 import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';

@@ -6,13 +6,14 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.16    이승철      Created
+ * 2024.09.17    이승철      OAuthUser 디렉토리 변경
  */
 
 import { AuthService } from '@_modules/auth/auth.service';
 import { AuthController } from '@_modules/auth/auth.controller';
 import { RefreshTokenDto } from '@_modules/auth/dto/refresh-token.dto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OAuthUser } from '@_modules/auth/utils/oauth-user.interface';
+import { OAuthUser } from 'common/interfaces/oauth-user.interface';
 import { BadRequestException } from '@nestjs/common';
 import { getAccessCookieOptions, getRefreshCookieOptions } from '@_modules/auth/utils/cookie-helper';
 import { Response } from 'express';
