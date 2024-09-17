@@ -8,4 +8,14 @@ export default defineConfig({
   resolve: {
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
   },
+  server: {
+    proxy: {
+      '/socket.io': {
+        target: 'http://localhost:7000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/socket.io/, ''),
+      },
+    },
+  },
 });
