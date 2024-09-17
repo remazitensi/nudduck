@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.17    이승철      절대경로로 변경
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
@@ -14,9 +15,9 @@ import { LifeGraphRepository } from '@_modules/life-graph/life-graph.repository'
 import { UserRepository } from '@_modules/user/user.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, QueryRunner } from 'typeorm';
-import { EventDto } from './dto/event.dto';
-import { LifeGraphEvent } from './entity/life-graph-events.entity';
-import { LifeGraph } from './entity/life-graph.entity';
+import { EventDto } from '@_modules/life-graph/dto/event.dto';
+import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.entity';
+import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 
 @Injectable()
 export class LifeGraphService {
