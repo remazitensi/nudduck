@@ -1,3 +1,13 @@
+/**
+ * File Name    : life-graph.service.ts
+ * Description  : life-graph service 로직
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.17    이승철      Created
+ */
+
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
 import { LifeGraphRepository } from '@_modules/life-graph/life-graph.repository';

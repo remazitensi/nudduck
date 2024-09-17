@@ -1,3 +1,13 @@
+/**
+ * File Name    : life-graph.module.ts
+ * Description  : life-graph 모듈 로직
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.17    이승철      Created
+ */
+
 import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.entity';
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { LifeGraphController } from '@_modules/life-graph/life-graph.controller';

@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.17    이승철      Modified    인생그래프 즐겨찾기 함께 조회
  */
 
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -31,7 +32,7 @@ export class ProfileService {
       name: user.name,
       imageUrl: user.image_url,
       hashtags,
-      favoriteLifeGraph: user.favorite_life_graph,
+      favoriteLifeGraph: user.favorite_life_graph || null
     };
   }
 }

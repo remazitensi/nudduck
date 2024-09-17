@@ -29,20 +29,18 @@ export class UserService {
   ) {}
 
   async getMyProfile(userId: number): Promise<ProfileDto> {
-    // 유저 정보와 해시태그를 한 번에 조회
     const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph', 'hashtags']);
     if (!user) {
       throw new NotFoundException('회원을 찾을 수 없습니다.');
     }
   
-    // 해시태그 정보는 이미 유저 정보에 포함되어 있음
     const profile: ProfileDto = {
       nickname: user.nickname,
       email: user.email,
       name: user.name,
       imageUrl: user.image_url,
       hashtags: user.hashtags.map((hashtag) => hashtag.name),
-      favoriteLifeGraph: user.favorite_life_graph ? user.favorite_life_graph.id : null
+      favoriteLifeGraph: user.favorite_life_graph || null,
     };
   
     return profile;

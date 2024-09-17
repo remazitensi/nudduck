@@ -1,3 +1,13 @@
+/**
+ * File Name    : life-graph.repository.ts
+ * Description  : life-graph repository 로직
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.17    이승철      Created
+ */
+
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
