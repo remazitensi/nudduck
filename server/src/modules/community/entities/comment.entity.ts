@@ -8,6 +8,7 @@
  * 2024.09.09    김재영      Created     댓글 엔티티 초기 생성
  * 2024.09.10    김재영      Modified    typeorm 추가
  * 2024.09.13    김재영      Modified    대댓글 개수 추가
+ * 2024.09.17    김재영      Modified    주석 업데이트 및 설명 추가
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';

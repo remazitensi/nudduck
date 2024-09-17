@@ -9,6 +9,7 @@
  * 2024.09.09    김재영      Modified    게시글 속성 및 설명 추가
  * 2024.09.10    김재영      Modified    typeorm 추가
  * 2024.09.16    김재영      Modified    camelcase로 변경
+ * 2024.09.17    김재영      Modified    주석 업데이트 및 설명 추가
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';

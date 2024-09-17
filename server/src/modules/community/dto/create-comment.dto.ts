@@ -9,6 +9,7 @@
  * 2024.09.10    김재영      Modified    대댓글에 대한 parentId 속성 추가
  * 2024.09.12    김재영      Modified    Swagger 데코레이터 추가
  * 2024.09.16    김재영      Modified    camelcase로 변경
+ * 2024.09.17    김재영      Modified    postId와 userId 속성 추가
  */
 
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
@@ -22,6 +23,22 @@ export class CreateCommentDto {
   @IsString()
   @IsNotEmpty()
   content: string;
+
+  @ApiProperty({
+    description: '게시글 ID',
+    example: 10,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  postId: number; // 게시글 ID 추가
+
+  @ApiProperty({
+    description: '작성자 ID',
+    example: 1,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  userId: number; // 작성자 ID 추가
 
   @ApiPropertyOptional({
     description: '대댓글일 경우 부모 댓글의 ID',
