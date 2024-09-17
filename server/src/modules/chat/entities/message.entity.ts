@@ -26,7 +26,7 @@ export class Message {
     example: 101,
   })
   @Column()
-  senderId: number;
+  UserId: number;
 
   @ApiProperty({
     description: '메시지가 전송된 채팅방 ID',
