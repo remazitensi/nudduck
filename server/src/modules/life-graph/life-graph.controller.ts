@@ -6,17 +6,18 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.17    이승철      절대경로로 변경
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { UserRequest } from 'common/interfaces/user-request.interface';
-import { CreateLifeGraphDto } from './dto/create-life-graph.dto';
-import { FavoriteLifeGraphDto } from './dto/favorite-life-graph.dto';
-import { LifeGraphPageDto } from './dto/life-graph-page.dto';
-import { UpdateLifeGraphDto } from './dto/update-life-graph.dto';
-import { LifeGraph } from './entity/life-graph.entity';
-import { LifeGraphService } from './life-graph.service';
+import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
+import { FavoriteLifeGraphDto } from '@_modules/life-graph/dto/favorite-life-graph.dto';
+import { LifeGraphPageDto } from '@_modules/life-graph/dto/life-graph-page.dto';
+import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
+import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
+import { LifeGraphService } from '@_modules/life-graph/life-graph.service';
 
 @Controller('life-graph')
 @UseGuards(Jwt)
