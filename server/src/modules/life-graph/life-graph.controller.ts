@@ -1,3 +1,13 @@
+/**
+ * File Name    : life-graph.controller.ts
+ * Description  : life-graph 컨트롤러 로직
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.17    이승철      Created
+ */
+
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { UserRequest } from 'common/interfaces/user-request.interface';

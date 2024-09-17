@@ -1,3 +1,13 @@
+/**
+ * File Name    : life-graph-page.dto.ts
+ * Description  : 인생그래프 페이지네이션 dto
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.17    이승철      Created
+ */
+
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Min } from 'class-validator';

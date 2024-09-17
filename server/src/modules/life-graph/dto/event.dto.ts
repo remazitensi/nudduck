@@ -1,3 +1,13 @@
+/**
+ * File Name    : event.dto.ts
+ * Description  : 인생그래프 이벤트 dto
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.17    이승철      Created
+ */
+
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 

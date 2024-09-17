@@ -1,3 +1,13 @@
+/**
+ * File Name    : life-graph-events.entity.ts
+ * Description  : 인생그래프 이벤트 엔티티 설정
+ * Author       : 이승철
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.17    이승철      Created
+ */
+
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
