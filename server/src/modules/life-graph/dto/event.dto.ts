@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.18    이승철      Modified    이벤트 제목 추가
  */
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -27,6 +28,11 @@ export class EventDto {
   @Min(-5)
   @Max(5)
   score: number;
+
+  @ApiProperty({ example: 'Started school', description: '이벤트 제목' })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
   @ApiProperty({ example: 'Started school', description: '설명' })
   @IsString()

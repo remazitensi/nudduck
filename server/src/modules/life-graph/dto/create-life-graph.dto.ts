@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.18    이승철      Modified    이벤트 제목 추가
  */
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -26,8 +27,8 @@ export class CreateLifeGraphDto {
 
   @ApiProperty({
     example: [
-      { age: 10, score: 4, description: 'Started school' },
-      { age: 20, score: 3, description: 'Graduated college' },
+      { age: 10, score: 4, title: 'Started school', description: 'Started elementary school' },
+      { age: 20, score: 3, title: 'Graduated college', description: 'Graduated with a bachelor\'s degree' },
     ],
     description: '이벤트 목록',
   })
