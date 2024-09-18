@@ -3,6 +3,7 @@ import { FileUploadModule } from '@_modules/file-upload/file-upload.module';
 import { LifeGraphModule } from '@_modules/life-graph/life-graph.module';
 import { ProfileModule } from '@_modules/profile/profile.module';
 import { UserModule } from '@_modules/user/user.module';
+import { SimulationModule } from '@_modules/simulation/simulation.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -34,6 +35,7 @@ import { AppService } from './app.service';
     FileUploadModule,
     ProfileModule,
     LifeGraphModule,
+    SimulationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
