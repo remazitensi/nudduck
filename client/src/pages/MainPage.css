@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.13    황솜귤      Created     메인페이지 스타일 시트 생성
+ * 2024.09.17    황솜귤      Modified    이미지 섹션 동적 효과
  */
 
 
@@ -102,6 +103,12 @@
     position: relative; /* 텍스트를 이미지 위에 올리기 위한 부모 요소 설정 */
     display: inline-block; /* 섹션을 이미지 크기에 맞추기 위해 사용 */
   }
+
+  /* 스크롤로 활성화되면 보이도록 설정 */
+.ai-section.active {
+  opacity: 1;
+  transform: translateY(0);
+}
   
   .ai-section img {
     display: block; /* 이미지가 섹션 내부에서 차지할 공간 */
@@ -117,8 +124,16 @@
     font-size: 24px; /* 텍스트 크기 */
     font-weight: 400; /* 텍스트 굵기 */
     text-align: center; /* 텍스트 정렬 */
+    transition: opacity 3s ease-out, transform 1s ease-out;
   }
 
   .ai-section p .highlight {
     font-weight: 600; /* '인공지능' 부분에 semibold 적용 */
   }
+
+ 
+/* 뷰포트에 들어왔을 때 텍스트 표시 */
+.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}

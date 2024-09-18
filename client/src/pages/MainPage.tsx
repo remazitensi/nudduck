@@ -6,13 +6,41 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.12    황솜귤      Created     메인페이지 생성
+ * 2024.09.17    황솜귤      Modified    Intersection Observer(React)로 텍스트 애니메이션 효과 추가
  */
 
-
+import React, { useEffect, useRef } from 'react';
 import './MainPage.css';
 
-
 const MainPage = () => {
+  const textRef = useRef<HTMLParagraphElement>(null); // 텍스트를 참조할 useRef 생성
+
+  // Intersection Observer 사용
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in');
+          } else {
+            entry.target.classList.remove('fade-in');
+          }
+        });
+      },
+      { threshold: 0 } // 요소가 조금이라도 뷰포트에 들어오면 트리거
+    );
+
+    if (textRef.current) {
+      observer.observe(textRef.current); // 텍스트 요소 관찰 시작
+    }
+
+    return () => {
+      if (textRef.current) {
+        observer.unobserve(textRef.current); // 컴포넌트 언마운트 시 관찰 해제
+      }
+    };
+  }, []);
+
   const handleArrowClick = () => {
     window.scrollTo({
       top: window.scrollY + 800, // 현재 위치에서 800px 밑으로 스크롤
@@ -31,8 +59,8 @@ const MainPage = () => {
             <span className="extrabold">먹기</span>
             <span className="semibold">처럼 쉬운 면접 준비!</span>
           </h1>
-            <h2>“누떡”이 도와줄게~</h2>
-            <img
+          <h2>“누떡”이 도와줄게~</h2>
+          <img
             src="/main-page-arrow.png"
             alt="Arrow Down"
             className="arrow-down"
@@ -50,27 +78,29 @@ const MainPage = () => {
 
       {/* 이미지로 대체되는 그래프 섹션 */}
       <section className="image-section">
-        <img src="/path/to/graph-image.jpg" alt="그래프 섹션 이미지" className="full-width-image" />
+        <img src="/path/to/graph-image.jpg" alt="life-graph" className="full-width-image" />
       </section>
 
       {/* 추가 섹션 (인공지능 소개) */}
       <section className="ai-section">
-        <img src="ai-solution.png" alt="인공지능 이미지" />
-        <p><strong>인공지능</strong>으로부터 해답을 찾아 보세요</p>
+        <img src="ai-solution.png" alt="ai-solution" />
+        <p ref={textRef}>
+          <strong>인공지능</strong>으로부터 해답을 찾아 보세요
+        </p>
       </section>
 
       {/* 상담 봇 섹션 */}
       <section className="chatbot-section">
         <div className="chatbot-placeholder">
-          <img src="/path/to/chatbot-image.jpg" alt="상담 봇" />
+          <img src="scenario.png" alt="ai-scenario" />
         </div>
-        <p>누딱에서는 채팅으로 가상 면접을 진행할 수 있습니다.</p>
+        <p>누떡에서는 희망 직군의 가상 면접을 지원합니다</p>
       </section>
 
       {/* 하단 FAQ 섹션 */}
       <section className="faq-section">
         <h2>취업 준비를 쉽고 재미있게 할 수 있을까요?</h2>
-        <p>누딱에서는 취업 준비를 누구나 쉽게 할 수 있습니다!</p>
+        <p>누떡에서는 취업 준비를 누구나 쉽게 할 수 있습니다!</p>
         <div className="faq-grid">
           <div className="faq-item">AI 면접 컨설팅</div>
           <div className="faq-item">커뮤니티 공간</div>
