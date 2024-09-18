@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.16    이승철      Created
+ * 2024.09.18    이승철      Modified    mockUser 속성에 인생그래프 추가
  */
 
 import { AuthService } from '@_modules/auth/auth.service';
@@ -80,6 +81,8 @@ describe('AuthService', () => {
         updated_at: new Date(),
         deleted_at: null,
         hashtags: [],
+        favorite_life_graph: null,
+        life_graphs: [],
       };
       const userDto = { provider: 'google', providerId: '1234567890', email: 'test@example.com', name: 'Test User' };
 
@@ -115,6 +118,8 @@ describe('AuthService', () => {
         updated_at: new Date(),
         deleted_at: null,
         hashtags: [],
+        favorite_life_graph: null,
+        life_graphs: [], 
       };
 
       authRepository.findUserByProvider.mockResolvedValue(null);

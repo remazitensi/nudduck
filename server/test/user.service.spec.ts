@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.16    이승철      Created
+ * 2024.09.18    이승철      Modified    mockUser 속성에 인생그래프 추가
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
@@ -86,6 +87,8 @@ describe('UserService', () => {
         updated_at: new Date(),
         deleted_at: null,
         hashtags: [],
+        favorite_life_graph: null, 
+        life_graphs: [],
       };
 
       const updateProfileDto = {
@@ -119,6 +122,8 @@ describe('UserService', () => {
         updated_at: new Date(),
         deleted_at: null,
         hashtags: [],
+        favorite_life_graph: null,
+        life_graphs: [], 
       };
 
       const updateProfileDto = {
