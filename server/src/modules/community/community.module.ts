@@ -14,13 +14,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommunityService } from './community.service';
 import { CommunityController } from './community.controller';
-import { Community } from './entities/community.entity'; // Community 엔티티 추가
-import { Comment } from './entities/comment.entity'; // Comment 엔티티 추가
+import { Community } from './entities/community.entity';
+import { Comment } from './entities/comment.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Community, Comment]), // TypeORM 모듈에 엔티티 등록
-  ],
+  imports: [TypeOrmModule.forFeature([Community, Comment])],
   controllers: [CommunityController],
   providers: [CommunityService],
 })
