@@ -1,8 +1,13 @@
+import { AuthModule } from '@_modules/auth/auth.module';
+import { FileUploadModule } from '@_modules/file-upload/file-upload.module';
+import { LifeGraphModule } from '@_modules/life-graph/life-graph.module';
+import { ProfileModule } from '@_modules/profile/profile.module';
+import { UserModule } from '@_modules/user/user.module';
+import { SimulationModule } from '@_modules/simulation/simulation.module';
 import { ExpertModule } from '@_modules/expert/expert.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -24,8 +29,14 @@ import { AppService } from './app.service';
         autoLoadEntities: true,
         keepConnectionAlive: true,
         synchronize: true,
-      })
+      }),
     }),
+    AuthModule,
+    UserModule,
+    FileUploadModule,
+    ProfileModule,
+    LifeGraphModule,
+    SimulationModule,
     ExpertModule,
   ],
   controllers: [AppController],
