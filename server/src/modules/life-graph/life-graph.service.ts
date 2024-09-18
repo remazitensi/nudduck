@@ -8,6 +8,7 @@
  * 2024.09.17    이승철      Created
  * 2024.09.17    이승철      절대경로로 변경
  * 2024.09.18    이승철      Modified    이벤트 제목 추가
+ * 2024.09.18    이승철      Modified    예외처리
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
@@ -61,7 +62,13 @@ export class LifeGraphService {
   }
 
   async getOneLifeGraph(userId: number, graphId: number): Promise<LifeGraph | null> {
-    return this.lifeGraphRepository.findOneLifeGraph(userId, graphId, { relations: ['events'] });
+    const lifeGraph = await this.lifeGraphRepository.findOneLifeGraph(userId, graphId, { relations: ['events'] });
+  
+    if (!lifeGraph) {
+      throw new NotFoundException('LifeGraph를 찾을 수 없습니다.');
+    }
+  
+    return lifeGraph;
   }
 
   async updateLifeGraph(userId: number, graphId: number, updateLifeGraphDto: UpdateLifeGraphDto): Promise<void> {

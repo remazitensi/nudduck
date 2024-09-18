@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.16    이승철      Created
+ * 2024.09.18    이승철      Modified    Partial로 req 객체 모킹
  */
 
 import { ProfileDto } from '@_modules/user/dto/profile.dto';
@@ -14,6 +15,7 @@ import { UserController } from '@_modules/user/user.controller';
 import { UserService } from '@_modules/user/user.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
+import { UserRequest } from 'common/interfaces/user-request.interface';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -21,7 +23,7 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     mockUserService = {
-      getProfile: jest.fn(),
+      getMyProfile: jest.fn(),
       updateProfile: jest.fn(),
       logout: jest.fn(),
       deleteUser: jest.fn(),
@@ -40,7 +42,7 @@ describe('UserController', () => {
     userController = module.get<UserController>(UserController);
   });
 
-  describe('getProfile', () => {
+  describe('getMyProfile', () => {
     it('should return a profile', async () => {
       const mockProfile: ProfileDto = {
         nickname: 'tUser',
@@ -50,13 +52,13 @@ describe('UserController', () => {
         hashtags: ['developer', 'blogger'],
       };
 
-      mockUserService.getProfile = jest.fn().mockResolvedValue(mockProfile);
+      mockUserService.getMyProfile = jest.fn().mockResolvedValue(mockProfile);
 
-      const req = { user: { id: 1 } };
-      const result = await userController.getProfile(req);
+      const req = { user: { id: 1 } } as Partial<UserRequest>;  
+      const result = await userController.getMyProfile(req as UserRequest);
 
       expect(result).toEqual(mockProfile);
-      expect(mockUserService.getProfile).toHaveBeenCalledWith(1);
+      expect(mockUserService.getMyProfile).toHaveBeenCalledWith(1);
     });
   });
 
@@ -67,11 +69,11 @@ describe('UserController', () => {
         imageUrl: 'http://example.com/new.jpg',
         hashtags: ['newTag'],
       };
-      const req = { user: { id: 1 } };
+      const req = { user: { id: 1 } } as Partial<UserRequest>;
 
       mockUserService.updateProfile = jest.fn().mockResolvedValue(undefined);
 
-      const result = await userController.updateProfile(req, mockUpdateProfileDto);
+      const result = await userController.updateProfile(req as UserRequest, mockUpdateProfileDto);
 
       expect(result).toEqual({ message: '회원정보가 수정되었습니다.' });
       expect(mockUserService.updateProfile).toHaveBeenCalledWith(1, mockUpdateProfileDto);
@@ -80,8 +82,8 @@ describe('UserController', () => {
 
   describe('logout', () => {
     it('should log out the user', async () => {
-      const req = { user: { id: 1 } };
-      const res: Partial<Response> = {  // Partial로 필요한 메서드만 정의
+      const req = { user: { id: 1 } } as Partial<UserRequest>;  
+      const res: Partial<Response> = {  
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
         clearCookie: jest.fn(),
@@ -89,7 +91,7 @@ describe('UserController', () => {
 
       mockUserService.logout = jest.fn().mockResolvedValue(undefined);
 
-      await userController.logout(req, res as Response);
+      await userController.logout(req as UserRequest, res as Response);
 
       expect(mockUserService.logout).toHaveBeenCalledWith(1);
       expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
@@ -101,8 +103,8 @@ describe('UserController', () => {
 
   describe('deleteAccount', () => {
     it('should delete the user account', async () => {
-      const req = { user: { id: 1 } };
-      const res: Partial<Response> = {  // Partial로 필요한 메서드만 정의
+      const req = { user: { id: 1 } } as Partial<UserRequest>;  
+      const res: Partial<Response> = {  
         status: jest.fn().mockReturnThis(),
         json: jest.fn(),
         clearCookie: jest.fn(),
@@ -110,7 +112,7 @@ describe('UserController', () => {
 
       mockUserService.deleteUser = jest.fn().mockResolvedValue(undefined);
 
-      await userController.deleteAccount(req, res as Response);
+      await userController.deleteAccount(req as UserRequest, res as Response);
 
       expect(mockUserService.deleteUser).toHaveBeenCalledWith(1);
       expect(res.clearCookie).toHaveBeenCalledWith('accessToken');
