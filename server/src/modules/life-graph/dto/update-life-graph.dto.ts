@@ -7,12 +7,13 @@
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
  * 2024.09.18    이승철      Modified    이벤트 제목 추가
+ * 2024.09.18    이승철      Modified    삭제 이벤트 id 제거
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { EventDto } from './event.dto';
+import { EventDto } from '@_modules/life-graph/dto/event.dto';
 
 export class UpdateLifeGraphDto {
   @ApiPropertyOptional({ example: 26, description: '현재 나이' })
@@ -37,13 +38,4 @@ export class UpdateLifeGraphDto {
   @Type(() => EventDto)
   @IsOptional()
   events?: EventDto[];
-
-  // 삭제된 이벤트의 ID 목록을 관리하기 위한 필드 추가
-  @ApiPropertyOptional({
-    example: [1, 2, 3],
-    description: '삭제된 이벤트 ID 목록',
-  })
-  @IsArray()
-  @IsOptional()
-  deletedEventIds?: number[]; // 삭제할 이벤트의 ID
 }

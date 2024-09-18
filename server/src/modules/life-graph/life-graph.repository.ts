@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.18    이승철      Modified    트랜잭션에서 직접 db처리로 인해 update 로직 삭제
  */
 
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
@@ -26,10 +27,6 @@ export class LifeGraphRepository {
     });
 
     return this.lifeGraphRepository.save(newLifeGraph);
-  }
-
-  async updateLifeGraph(lifeGraph: LifeGraph) {
-    return this.lifeGraphRepository.save(lifeGraph);
   }
 
   async findLifeGraphs(userId: number, page: number, limit: number) {

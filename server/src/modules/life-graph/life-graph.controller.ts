@@ -8,6 +8,7 @@
  * 2024.09.17    이승철      Created
  * 2024.09.17    이승철      절대경로로 변경
  * 2024.09.18    이승철      메서드 반환타입 추가
+ * 2024.09.18    이승철      인생그래프 즐겨찾기 이름 변경
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
@@ -56,8 +57,8 @@ export class LifeGraphController {
   }
 
   @Post('favorite')
-  async addFavorite(@Req() req: UserRequest, @Body() favoriteDto: FavoriteLifeGraphDto): Promise<{ message: string }> {
-    await this.lifeGraphService.toggleFavorite(req.user.id, favoriteDto.graphId);
+  async createFavoriteLifeGraph(@Req() req: UserRequest, @Body() favoriteDto: FavoriteLifeGraphDto): Promise<{ message: string }> {
+    await this.lifeGraphService.createFavoriteLifeGraph(req.user.id, favoriteDto.graphId);
     return { message: '인생그래프가 즐겨찾기에 등록되었습니다.' };
   }
 }
