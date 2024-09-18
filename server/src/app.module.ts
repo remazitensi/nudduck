@@ -4,6 +4,7 @@ import { LifeGraphModule } from '@_modules/life-graph/life-graph.module';
 import { ProfileModule } from '@_modules/profile/profile.module';
 import { UserModule } from '@_modules/user/user.module';
 import { SimulationModule } from '@_modules/simulation/simulation.module';
+import { ExpertModule } from '@_modules/expert/expert.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -36,6 +37,7 @@ import { AppService } from './app.service';
     ProfileModule,
     LifeGraphModule,
     SimulationModule,
+    ExpertModule,
   ],
   controllers: [AppController],
   providers: [AppService],
