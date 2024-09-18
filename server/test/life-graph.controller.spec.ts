@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.18    이승철      Created
+ * 2024.09.18    이승철      인생그래프 즐겨찾기 이름 변경
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
@@ -27,7 +28,7 @@ describe('LifeGraphController', () => {
       getOneLifeGraph: jest.fn(),
       updateLifeGraph: jest.fn(),
       deleteLifeGraph: jest.fn(),
-      toggleFavorite: jest.fn(),
+      createFavoriteLifeGraph: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -103,8 +104,8 @@ describe('LifeGraphController', () => {
       const req = { user: { id: 1 } } as UserRequest;
       const favoriteDto = { graphId: 1 };
 
-      await controller.addFavorite(req, favoriteDto);
-      expect(mockLifeGraphService.toggleFavorite).toHaveBeenCalledWith(1, 1);
+      await controller.createFavoriteLifeGraph(req, favoriteDto);
+      expect(mockLifeGraphService.createFavoriteLifeGraph).toHaveBeenCalledWith(1, 1);
     });
   });
 });
