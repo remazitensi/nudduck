@@ -1,6 +1,23 @@
+/**
+ * File Name    : community.service.ts
+ * Description  : 커뮤니티 서비스
+ * Author       : 김재영
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    김재영      Created     커뮤니티 서비스 초기 생성
+ * 2024.09.09    김재영      Modified    게시글 CRUD 메서드 구현
+ * 2024.09.10    김재영      Modified    댓글 관련 API 메서드 추가
+ * 2024.09.10    김재영      Modified    TypeORM을 통한 데이터베이스 작업 처리 추가
+ * 2024.09.11    김재영      Modified    페이지네이션 기능 추가 및 개선
+ * 2024.09.12    김재영      Modified    게시글과 댓글의 대댓글 처리 로직 추가 및 리팩토링
+ * 2024.09.12    김재영      Modified    좋아요 및 조회수 기능 추가
+ * 2024.09.18    김재영      Modified    예외 처리 개선
+ */
+
 import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError } from 'typeorm';
+import { DataSource, QueryFailedError } from 'typeorm';
 import { Community } from './entities/community.entity';
 import { Comment } from './entities/comment.entity';
 import { CreateCommunityDto } from './dto/create-community.dto';
@@ -20,6 +37,8 @@ export class CommunityService {
 
     @InjectRepository(CommentRepository)
     private readonly commentRepository: CommentRepository,
+
+    private readonly dataSource: DataSource, // 트랜잭션 사용을 위한 데이터 소스
   ) {}
 
   // 게시글 생성
@@ -30,7 +49,7 @@ export class CommunityService {
 
   // 게시글 ID로 조회
   async getPostById(id: number): Promise<Community> {
-    const post = await this.postRepository.findOneBy({ postId: id }); // findOneBy로 수정
+    const post = await this.postRepository.findOneBy({ postId: id });
     if (!post) {
       throw new NotFoundException(`ID가 ${id}인 게시글을 찾을 수 없습니다.`);
     }
@@ -69,32 +88,61 @@ export class CommunityService {
 
   // 댓글 생성
   async createComment(postId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
-    const comment = this.commentRepository.create({
-      ...createCommentDto,
-      postId,
-    });
-    const savedComment = await this.commentRepository.save(comment);
-    // 게시글 댓글 수 업데이트
-    await this.updatePostCommentCount(postId);
-    return savedComment;
+    try {
+      return await this.dataSource.transaction(async (manager) => {
+        const comment = this.commentRepository.create({
+          ...createCommentDto,
+          postId,
+        });
+        const savedComment = await manager.save(Comment, comment);
+        // 게시글 댓글 수 업데이트
+        await this.updatePostCommentCount(postId, manager);
+        return savedComment;
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   // 댓글 업데이트
   async updateComment(postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
-    await this.commentRepository.update(commentId, updateCommentDto);
-    return this.commentRepository.findWithReplies(commentId);
+    return await this.dataSource.transaction(async (manager) => {
+      try {
+        await manager.update(Comment, commentId, updateCommentDto);
+        return await this.commentRepository.findWithReplies(commentId);
+      } catch (error) {
+        this.handleError(error);
+      }
+    });
   }
 
   // 댓글 삭제
   async deleteComment(postId: number, commentId: number): Promise<void> {
-    await this.commentRepository.deleteCommentAndReplies(commentId);
-    // 게시글 댓글 수 업데이트
-    await this.updatePostCommentCount(postId);
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        const result = await manager.delete(Comment, { id: commentId }); // 수정: { id: commentId }로 삭제 조건
+        if (result.affected === 0) {
+          throw new NotFoundException(`ID가 ${commentId}인 댓글을 찾을 수 없습니다.`);
+        }
+        // 게시글 댓글 수 업데이트
+        await this.updatePostCommentCount(postId, manager);
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   // 대댓글 생성
   async createReply(postId: number, parentId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
-    return this.commentRepository.createReply(createCommentDto.content, createCommentDto.userId, postId, parentId);
+    return await this.dataSource.transaction(async (manager) => {
+      try {
+        const reply = await this.commentRepository.createReply(createCommentDto.content, createCommentDto.userId, postId, parentId);
+        await manager.save(reply);
+        return reply;
+      } catch (error) {
+        this.handleError(error);
+      }
+    });
   }
 
   // 대댓글 업데이트
@@ -104,7 +152,7 @@ export class CommunityService {
 
   // 대댓글 삭제
   async deleteReply(postId: number, commentId: number): Promise<void> {
-    await this.commentRepository.deleteCommentAndReplies(commentId);
+    return await this.deleteComment(postId, commentId);
   }
 
   // 댓글의 대댓글 조회
@@ -116,25 +164,86 @@ export class CommunityService {
       }
       return comment.replies;
     } catch (error) {
-      if (error instanceof QueryFailedError) {
-        // 구체적인 쿼리 실패 오류 처리
-        throw new HttpException(`쿼리 실행 오류: ${error.message}`, HttpStatus.BAD_REQUEST);
-      }
-      throw new HttpException('댓글의 대댓글 조회 중 서버 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+      this.handleError(error);
     }
   }
 
-  // 게시글 댓글 수 업데이트
-  private async updatePostCommentCount(postId: number): Promise<void> {
+  // 게시글 댓글 수 업데이트 (트랜잭션 사용)
+  private async updatePostCommentCount(postId: number, manager: any): Promise<void> {
     try {
-      const commentCount = await this.commentRepository.countByPostId(postId);
-      await this.postRepository.update(postId, { commentCount });
+      const commentCount = await manager.count(Comment, { where: { postId } });
+      await manager.update(Community, postId, { commentCount });
     } catch (error) {
-      if (error instanceof QueryFailedError) {
-        // 구체적인 쿼리 실패 오류 처리
-        throw new HttpException(`쿼리 실행 오류: ${error.message}`, HttpStatus.BAD_REQUEST);
-      }
-      throw new HttpException('게시글 댓글 수 업데이트 중 서버 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+      this.handleError(error);
+    }
+  }
+
+  // 게시글 좋아요 수 증가
+  async incrementLikes(postId: number): Promise<void> {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        const post = await manager.findOne(Community, { where: { postId } });
+
+        if (!post) {
+          throw new NotFoundException(`ID가 ${postId}인 게시글을 찾을 수 없습니다.`);
+        }
+
+        post.likeCount += 1;
+        await manager.save(post);
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // 게시글 좋아요 수 감소
+  async decrementLikes(postId: number): Promise<void> {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        const post = await manager.findOne(Community, { where: { postId } });
+
+        if (!post) {
+          throw new NotFoundException(`ID가 ${postId}인 게시글을 찾을 수 없습니다.`);
+        }
+
+        if (post.likeCount > 0) {
+          post.likeCount -= 1;
+          await manager.save(post);
+        } else {
+          throw new HttpException('좋아요 수는 0보다 작을 수 없습니다.', HttpStatus.BAD_REQUEST);
+        }
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // 게시글 조회수 증가
+  async incrementViews(postId: number): Promise<void> {
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        const post = await manager.findOne(Community, { where: { postId } });
+
+        if (!post) {
+          throw new NotFoundException(`ID가 ${postId}인 게시글을 찾을 수 없습니다.`);
+        }
+
+        post.viewCount += 1;
+        await manager.save(post);
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // 에러 처리 메소드
+  private handleError(error: any): void {
+    if (error instanceof QueryFailedError) {
+      throw new HttpException(`쿼리 실행 오류: ${error.message}`, HttpStatus.BAD_REQUEST);
+    } else if (error instanceof NotFoundException) {
+      throw error; // NotFoundException을 그대로 던집니다.
+    } else {
+      throw new HttpException('서버 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
