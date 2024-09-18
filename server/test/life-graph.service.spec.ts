@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.18    이승철      Created
+ * 2024.09.18    이승철      Modified    인생그래프 이벤트 Full Replacement Update로 변경 반영
  */
 
 import { Test, TestingModule } from '@nestjs/testing';
@@ -16,12 +17,15 @@ import { NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
+import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.entity';
+import { LifeGraphEventService } from '@_modules/life-graph/life-graph-event.service';
 
 describe('LifeGraphService', () => {
   let service: LifeGraphService;
   let mockLifeGraphRepository: Partial<LifeGraphRepository>;
   let mockUserRepository: Partial<UserRepository>;
   let mockDataSource: Partial<DataSource>;
+  let mockLifeGraphEventService: Partial<LifeGraphEventService>;
 
   beforeEach(async () => {
     mockLifeGraphRepository = {
@@ -50,12 +54,18 @@ describe('LifeGraphService', () => {
       }),
     };
 
+    mockLifeGraphEventService = {
+      deleteAllEvents: jest.fn(),
+      createEvents: jest.fn().mockReturnValue([]),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LifeGraphService,
         { provide: LifeGraphRepository, useValue: mockLifeGraphRepository },
         { provide: UserRepository, useValue: mockUserRepository },
         { provide: DataSource, useValue: mockDataSource },
+        { provide: LifeGraphEventService, useValue: mockLifeGraphEventService }
       ],
     }).compile();
 
@@ -105,15 +115,22 @@ describe('LifeGraphService', () => {
   });
 
   describe('updateLifeGraph', () => {
-    it('should update a life graph', async () => {
+    it('should update a life graph with new events', async () => {
       const lifeGraph = { id: 1, title: 'My Life Graph', events: [] };
-      const updateLifeGraphDto: UpdateLifeGraphDto = { title: 'Updated Life Graph' };
-
+      const updateLifeGraphDto: UpdateLifeGraphDto = { title: 'Updated Life Graph', events: [{ age: 10, score: 4, title: 'New Event', description: 'Description of new event' }] };
+  
       (mockLifeGraphRepository.findOneLifeGraph as jest.Mock).mockResolvedValue(lifeGraph);
+      const queryRunner = mockDataSource.createQueryRunner();
 
+      queryRunner.manager.delete = jest.fn().mockResolvedValue(true);
+      queryRunner.manager.save = jest.fn().mockResolvedValue(true);
+  
       await service.updateLifeGraph(1, 1, updateLifeGraphDto);
 
-      expect(mockDataSource.createQueryRunner().manager.save).toHaveBeenCalled();
+      expect(mockLifeGraphEventService.deleteAllEvents).toHaveBeenCalledWith(lifeGraph, queryRunner);
+      expect(mockLifeGraphEventService.createEvents).toHaveBeenCalledWith(lifeGraph, updateLifeGraphDto.events);
+      expect(queryRunner.manager.save).toHaveBeenCalledWith(lifeGraph);
+      expect(queryRunner.commitTransaction).toHaveBeenCalled();
     });
   });
 
