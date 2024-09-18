@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
  * 2024.09.17    이승철      절대경로로 변경
+ * 2024.09.18    이승철      메서드 반환타입 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
@@ -25,26 +26,25 @@ export class LifeGraphController {
   constructor(private readonly lifeGraphService: LifeGraphService) {}
 
   @Post()
-  async createLifeGraph(@Req() req: UserRequest, @Body() createLifeGraphDto: CreateLifeGraphDto) {
+  async createLifeGraph(@Req() req: UserRequest, @Body() createLifeGraphDto: CreateLifeGraphDto): Promise<{ message: string }> {
     await this.lifeGraphService.createNewLifeGraph(req.user.id, createLifeGraphDto);
     return { message: '인생그래프가 생성되었습니다.' };
   }
 
   @Get()
-  async getAllLifeGraphs(@Req() req: UserRequest, @Query() lifeGraphPageDto: LifeGraphPageDto) {
+  async getAllLifeGraphs(@Req() req: UserRequest, @Query() lifeGraphPageDto: LifeGraphPageDto): Promise<{ data: LifeGraph[]; totalCount: number }> {
     const limit = 6;
-    return this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPageDto.page, limit);
+    return await this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPageDto.page, limit);
   }
 
   @Get(':id')
   async getOneLifeGraph(@Param('id') id: number, @Req() req: UserRequest): Promise<LifeGraph> {
     const userId = req.user.id;
-    const lifeGraph = await this.lifeGraphService.getOneLifeGraph(userId, id);
-    return lifeGraph;
+    return await this.lifeGraphService.getOneLifeGraph(userId, id);
   }
 
   @Patch(':id')
-  async updateLifeGraph(@Req() req: UserRequest, @Param('id') id: number, @Body() updateLifeGraphDto: UpdateLifeGraphDto) {
+  async updateLifeGraph(@Req() req: UserRequest, @Param('id') id: number, @Body() updateLifeGraphDto: UpdateLifeGraphDto): Promise<{ message: string }> {
     await this.lifeGraphService.updateLifeGraph(req.user.id, id, updateLifeGraphDto);
     return { message: '인생그래프가 수정되었습니다.' };
   }
@@ -56,7 +56,7 @@ export class LifeGraphController {
   }
 
   @Post('favorite')
-  async addFavorite(@Req() req: UserRequest, @Body() favoriteDto: FavoriteLifeGraphDto) {
+  async addFavorite(@Req() req: UserRequest, @Body() favoriteDto: FavoriteLifeGraphDto): Promise<{ message: string }> {
     await this.lifeGraphService.toggleFavorite(req.user.id, favoriteDto.graphId);
     return { message: '인생그래프가 즐겨찾기에 등록되었습니다.' };
   }

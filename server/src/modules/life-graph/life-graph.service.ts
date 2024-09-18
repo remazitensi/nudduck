@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
  * 2024.09.17    이승철      절대경로로 변경
+ * 2024.09.18    이승철      Modified    이벤트 제목 추가
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
@@ -38,6 +39,7 @@ export class LifeGraphService {
         const lifeGraphEvent = new LifeGraphEvent();
         lifeGraphEvent.age = eventDto.age;
         lifeGraphEvent.score = eventDto.score;
+        lifeGraphEvent.title = eventDto.title;
         lifeGraphEvent.description = eventDto.description;
         return lifeGraphEvent;
       }),
@@ -100,7 +102,7 @@ export class LifeGraphService {
   }
 
   // 제목과 나이 업데이트
-  private updateBasicInfo(lifeGraph: LifeGraph, updateLifeGraphDto: UpdateLifeGraphDto) {
+  private updateBasicInfo(lifeGraph: LifeGraph, updateLifeGraphDto: UpdateLifeGraphDto): void {
     if (updateLifeGraphDto.currentAge) {
       lifeGraph.current_age = updateLifeGraphDto.currentAge;
     }
@@ -129,6 +131,7 @@ export class LifeGraphService {
         newEvent.lifeGraph = lifeGraph;
         newEvent.age = event.age;
         newEvent.score = event.score;
+        newEvent.title = event.title;
         newEvent.description = event.description;
         return newEvent;
       }
@@ -136,6 +139,7 @@ export class LifeGraphService {
       // 기존 이벤트 또는 새 이벤트 업데이트
       existingEvent.age = event.age;
       existingEvent.score = event.score;
+      existingEvent.title = event.title;
       existingEvent.description = event.description;
       return existingEvent;
     });

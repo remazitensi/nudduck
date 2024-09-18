@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.18    이승철      Modified    이벤트 제목 추가
  */
 
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
@@ -26,6 +27,9 @@ export class LifeGraphEvent {
 
   @Column({ type: 'int' })
   score: number;
+
+  @Column({ type: 'varchar', length: 255 })
+  title: string;  
 
   @Column({ type: 'varchar', length: 255 })
   description: string;
