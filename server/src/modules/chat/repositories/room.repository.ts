@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * File Name    : room.repository.ts
  * Description  : Room 관련 데이터베이스 접근 로직을 처리하는 리포지토리
@@ -49,4 +50,37 @@ export class RoomRepository extends Repository<ChatRoom> {
   }
 
   // 기타 메서드 추가 가능
+=======
+import { Injectable } from '@nestjs/common';
+import { Repository, DataSource } from 'typeorm';
+import { Room } from '../entities/room.entity';
+import { User } from '../entities/user.entity';
+
+@Injectable()
+export class RoomRepository extends Repository<Room> {
+  constructor(private dataSource: DataSource) {
+    super(Room, dataSource.createEntityManager());
+  }
+
+  // 두 사용자 객체로 1:1 채팅방 찾기
+  async findByUsers(user1: User, user2: User): Promise<Room | undefined> {
+    return this.createQueryBuilder('room')
+      .innerJoinAndSelect('room.users', 'user')
+      .where(':user1Id = ANY(room.users)', { user1Id: user1.id })
+      .andWhere(':user2Id = ANY(room.users)', { user2Id: user2.id })
+      .getOne();
+  }
+
+  // 1:1 채팅방 생성
+  async createRoom(user1: User, user2: User): Promise<Room> {
+    const room = new Room();
+    room.users = [user1, user2];
+    return this.save(room);
+  }
+
+  // 방을 이름으로 찾기
+  async findByName(name: string): Promise<Room | undefined> {
+    return this.findOne({ where: { name } });
+  }
+>>>>>>> 6731737 (:sparkles: Feat: Redis 연동으로 실시간 메시지 전송 기능 구현)
 }
