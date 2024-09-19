@@ -8,6 +8,7 @@
  * 2024.09.14    이승철      Created
  * 2024.09.14    이승철      Modified    ApiResponse 추가
  * 2024.09.16    이승철      Modified    절대경로 변경
+ * 2024.09.19    이승철      Modified    ApiResponse 추가
  */
 
 import { ExpertPageDto } from '@_modules/expert/dto/expert-page.dto';
@@ -45,6 +46,10 @@ export class ExpertController {
       },
     },
   })
+  @ApiResponse({
+    status: 400,
+    description: '잘못된 요청입니다.',
+  })
   @Get()
   async getExperts(@Query() expertPageDto: ExpertPageDto): Promise<{ data: Expert[]; totalCount: number }> {
     const limit = 10; // 페이지 당 10개의 데이터 고정
@@ -70,6 +75,10 @@ export class ExpertController {
         hashtags: '의사소통,팀 갈등,대인관계',
       },
     },
+  })
+  @ApiResponse({
+    status: 404,
+    description: '전문가를 찾을 수 없습니다.',
   })
   @Get(':id')
   async getExpertById(@Param('id') id: number): Promise<Expert> {

@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.12    이승철      Created
  * 2024.09.16    이승철      Modified    절대경로 변경, ApiResponse 추가
+ * 2024.09.19    이승철      Modified    ApiResponse 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
@@ -44,6 +45,10 @@ export class SimulationController {
     description: '특정 세션의 대화 기록을 성공적으로 반환',
     type: AIChatMessageDto,
   })
+  @ApiResponse({
+    status: 404,
+    description: '해당 세션을 찾을 수 없습니다.',
+  })
   @Get('/:sessionId')
   async getSessionHistory(@Param('sessionId') sessionId: number): Promise<AIChatMessageDto> {
     const messages = await this.simulationService.getSessionHistory(sessionId);
@@ -58,6 +63,10 @@ export class SimulationController {
       example: { sessionId: 1 },
     },
   })
+  @ApiResponse({
+    status: 400,
+    description: '요청이 잘못되었습니다.',
+  })
   @Post('start-chat')
   async startChat(@Body() startAIDto: StartAIDto, @Req() req): Promise<{ sessionId: number }> {
     const userId = req.user.id;
@@ -70,6 +79,10 @@ export class SimulationController {
     status: 200,
     description: '유저 질문과 AI 응답을 성공적으로 처리하고 실시간으로 저장',
     type: AIChatResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: '잘못된 요청입니다.',
   })
   @Post('ask')
   async askAI(@Body() askAIDto: AskAIDto): Promise<AIChatResponseDto> {
