@@ -11,6 +11,7 @@ const ChatRoom: React.FC = () => {
   const [nickname, setNickName] = useState<string>(''); // 사용자 닉네임 상태
   const [chatHistory, setChatHistory] = useState<Array<{ name: string; msg: string; time: string }>>([]); // 채팅 메시지를 저장하는 배열
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // 이모티콘 선택기 표시 여부
+  const [hashTag, setHashTag] = useState('');
 
   const handleEmojiSelect = (emoji: any) => {
     setMessage((prevMessage) => prevMessage + emoji.native); // 선택한 이모티콘을 메시지에 추가

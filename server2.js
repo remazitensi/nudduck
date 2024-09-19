@@ -1,4 +1,4 @@
-// server.js 또는 app.js
+// // server.js 또는 app.js
 const express = require('express');
 const cors = require('cors');
 const http = require('http');

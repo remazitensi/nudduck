@@ -19,8 +19,8 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 // import HomePage from './pages/HomePage';
 // import MainPage from './pages/MainPage';
 
-// import AICoach from './pages/AICoach';
-// import ChatRoom from './pages/ChatRoom';
+import AICoach from './pages/AICoach';
+import ChatRoom from './pages/ChatRoom';
 // import CommunityPostCreate from './pages/CommunityPostCreate';
 // import CommunityPostDetail from './pages/CommunityPostDetail';
 // import CommunityPostEdit from './pages/CommunityPostEdit';
@@ -30,7 +30,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 // import LifeGraphList from './pages/LifeGraphList';
 // import MyPage from './pages/MyPage';
 
-import ChatRoom from './pages/ChatRoom';
+// import ChatRoom from './pages/ChatRoom';
 // import Chatting from './pages/Chatting';
 
 // import CustomerSupportPage from './pages/CustomerSupportPage';
@@ -66,7 +66,7 @@ const App: React.FC = () => {
         {/* <Route path='chatting' element={<Chatting />} /> */}
 
         {/* AI 코치 */}
-        {/* <Route path="ai-coach/:id?" element={<AICoach />} /> */}
+        <Route path="ai-coach/:id?" element={<AICoach />} />
 
         {/* 인생 그래프 관련 라우트 */}
         <Route path='life-graph'>
