@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.11    황솜귤      Created     로그인 모달 스타일 시트 생성
+ * 2024.09.20    황솜귤      Modified    모달 창 사이즈 조절
  */
 
 
@@ -25,7 +26,8 @@
   
   /* 모달 콘텐츠 */
   .modal-content {
-    width: 400px;
+    width: 500px;
+    height: 400px;
     padding: 40px;
     background-color: #fff;
     border-radius: 10px;
