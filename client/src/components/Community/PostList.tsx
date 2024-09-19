@@ -7,15 +7,17 @@
  * Date          Author      Status      Description
  * 2024.09.11    김민지      Created      getPostList 추가 : 로드시 get 요청
  * 2024.09.13    김민지      Modified     PostSection 동적 추가
+ * 2024.09.19    김민지      Modified     타입 지정
  */
 
+import { PostDetailData } from '../../types/community-type';
 import { PostSection } from './PostSection';
 
 export const PostList: React.FC<any> = ({ posts }) => {
   return (
     <div>
       {/* 각 게시글 데이터를 PostSection에 전달 */}
-      {posts.map((post) => (
+      {posts.map((post: PostDetailData) => (
         <PostSection key={post.post_id} data={post} />
       ))}
     </div>
