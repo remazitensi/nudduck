@@ -9,6 +9,7 @@
  * 2024.09.17    이승철      절대경로로 변경
  * 2024.09.18    이승철      메서드 반환타입 추가
  * 2024.09.18    이승철      인생그래프 즐겨찾기 이름 변경
+ * 2024.09.19    이승철      api tag 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
@@ -20,7 +21,9 @@ import { LifeGraphPageDto } from '@_modules/life-graph/dto/life-graph-page.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { LifeGraphService } from '@_modules/life-graph/life-graph.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('life-graph')
 @Controller('life-graph')
 @UseGuards(Jwt)
 export class LifeGraphController {
