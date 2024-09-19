@@ -15,15 +15,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChatController } from 'modules/chat/chat-controller';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommunityModule } from './modules/community/community.module';
-import { ExpertController } from './modules/expert/expert-controller';
-import { IntroController } from './modules/intro-controller';
-import { LifeGraphController } from './modules/lifeGraph/life-graph-controller';
-import { SimulationController } from './modules/simulation/simulation-controller';
-import { UserController } from './modules/user/user-controller';
+import { RedisModule } from 'modules/redis/redis.module';
+import { ChatModule } from 'modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -47,9 +43,11 @@ import { UserController } from './modules/user/user-controller';
         logging: true, // 모든 쿼리 로그 활성화
       }),
     }),
-    CommunityModule, // 커뮤니티 모듈
+    CommunityModule,
+    RedisModule,
+    ChatModule,
   ],
-  controllers: [AppController, IntroController, UserController, SimulationController, ChatController, ExpertController, LifeGraphController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

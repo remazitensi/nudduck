@@ -1,92 +1,96 @@
 import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from '../chat/entities/message.entity';
 import { ChatRoom } from '../chat/entities/chat-room.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { WsException } from '@nestjs/websockets';
-import dayjs from 'dayjs';
-//import { UserService } from '../user/user.service';
+import { RedisService } from '../redis/redis.service';
+import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
+
+// 커스텀 예외 클래스
+export class CustomWsException extends WsException {
+  constructor(message: string) {
+    super(message);
+  }
+}
 
 @Injectable()
 export class ChatService {
   constructor(
     @InjectRepository(ChatRoom) private readonly roomRepository: Repository<Room>,
     @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
-    private readonly userService: UserService, // 사용자 서비스 주입
+    private readonly userService: UserService,
+    private readonly redisService: RedisService,
   ) {}
 
-  /**
-   * 1대1 채팅방 생성
-   * @param user 현재 사용자
-   * @param recipientId 수신자 ID
-   * @returns 생성된 방의 이름
-   *
-   * TODO:
-   * - 사용자 존재 확인을 위해 UserService의 메서드 사용 여부 검토
-   * - 방 생성 시 중복 방 확인 로직 확인 및 개선
-   */
-  async createRoom(user: any, recipientId: number): Promise<string> {
+  // 1대1 방 생성 로직
+  async createRoom(user: User, recipientId: number): Promise<string> {
     try {
-      // 사용자 존재 확인
-      const foundUser = await this.userService.findUserbyId(user.id);
-      const recipient = await this.userService.findUserbyId(recipientId);
+      const foundUser = await this.userService.findUserById(user.id);
+      const recipient = await this.userService.findUserById(recipientId);
 
       if (!foundUser || !recipient) {
-        throw new WsException('사용자가 존재하지 않습니다.');
+        throw new CustomWsException('사용자가 존재하지 않습니다.');
       }
 
-      // 기존 방 확인
-      const existingRoomName = await this.findExistingRoom(user.id, recipientId);
-      if (existingRoomName) {
-        return existingRoomName;
+      // 기존 방이 있는지 확인
+      const foundRoom = await this.findExistRoom(user.id, recipientId);
+
+      if (foundRoom) {
+        return foundRoom;
       }
 
       // 새 방 생성
       const roomName = uuidv4();
-      const newRoom = this.roomRepository.create({ name: roomName });
-      await this.roomRepository.save(newRoom);
+      const room = new Room();
+      room.name = roomName;
+      room.users = [user, recipient];
+      await this.roomRepository.save(room);
 
-      return roomName;
+      return room.name;
     } catch (error) {
       throw error;
     }
   }
 
-  /**
-   * 메시지 저장
-   * @param user 현재 사용자
-   * @param roomId 방 ID
-   * @param content 메시지 내용
-   * @returns 저장된 메시지 정보
-   *
-   * TODO:
-   * - 메시지 저장 로직 검토 및 성능 최적화
-   * - 메시지 저장 실패 시의 예외 처리 추가
-   */
-  async saveMessage(user: any, roomId: number, content: string) {
-    try {
-      const userId = user.id;
-      const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss');
+  // 메시지 전송 로직
+  async saveMessage(user: User, roomId: number, content: string) {
+    // 메시지 유효성 검사 추가
+    if (!content || content.trim() === '') {
+      throw new CustomWsException('메시지 내용이 비어 있을 수 없습니다.');
+    }
 
-      const message = this.messageRepository.create({
-        sender: userId,
-        content,
-        room: { id: roomId }, // Room과의 관계 설정
-        timestamp,
-      });
+    try {
+      const message = new Message();
+      message.sender = user.id;
+      message.content = content;
+      message.room = { id: roomId } as Room; // Room 객체를 설정
+      message.timestamp = new Date(); // 현재 타임스탬프 저장
 
       const savedMessage = await this.messageRepository.save(message);
       if (!savedMessage) {
-        throw new WsException('메시지 저장 실패');
+        throw new CustomWsException('메시지 생성에 실패했습니다.');
       }
 
-      const senderName = await this.userService.findUserNameById(userId);
+      // Redis에 메시지 푸시
+      await this.redisService.publish(
+        'chat_channel',
+        JSON.stringify({
+          sender: await this.userService.findUserNameById(user.id),
+          content: savedMessage.content,
+          room: savedMessage.room.name,
+          read: false, // 읽음 상태 추가
+        }),
+      );
 
       return {
-        sender: senderName,
+        sender: await this.userService.findUserNameById(user.id),
         content: savedMessage.content,
-        timestamp: savedMessage.timestamp,
+        room: savedMessage.room.name,
+        read: false, // 읽음 상태 추가
       };
     } catch (error) {
       throw error;
@@ -107,8 +111,8 @@ export class ChatService {
     try {
       const room = await this.roomRepository
         .createQueryBuilder('room')
-        .innerJoin('room.participants', 'p1', 'p1.userId = :userId', { userId })
-        .innerJoin('room.participants', 'p2', 'p2.userId = :recipientId', { recipientId })
+        .innerJoin('room.users', 'u1', 'u1.id = :userId', { userId })
+        .innerJoin('room.users', 'u2', 'u2.id = :recipientId', { recipientId })
         .select('room.name')
         .getOne();
 
@@ -129,21 +133,24 @@ export class ChatService {
    */
   async findRoomMessages(roomName: string): Promise<any[]> {
     try {
-      const messages = await this.messageRepository.createQueryBuilder('message').where('message.room = :roomName', { roomName }).orderBy('message.timestamp', 'DESC').limit(50).getMany();
+      const room = await this.roomRepository.findOne({ where: { name: roomName } });
+      if (!room) {
+        throw new CustomWsException('방이 존재하지 않습니다.');
+      }
+
+      // 필요한 필드만 선택하여 최적화
+      const messages = await this.messageRepository.createQueryBuilder('message').where('message.roomId = :roomId', { roomId: room.id }).orderBy('message.timestamp', 'DESC').limit(50).getMany();
 
       if (!messages.length) {
-        throw new WsException('메시지가 없습니다.');
+        throw new CustomWsException('메시지가 없습니다.');
       }
 
       return Promise.all(
-        messages.map(async (msg) => {
-          const senderName = await this.userService.findUserNameById(msg.sender);
-          return {
-            sender: senderName,
-            content: msg.content,
-            timestamp: msg.timestamp,
-          };
-        }),
+        messages.map(async (msg) => ({
+          sender: await this.userService.findUserNameById(msg.sender),
+          content: msg.content,
+          read: msg.read || false, // 읽음 상태 추가
+        })),
       );
     } catch (error) {
       throw error;

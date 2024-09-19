@@ -42,10 +42,13 @@ export class Message {
   @Column('text')
   content: string;
 
-  @ApiProperty({
-    description: '메시지가 생성된 시간',
-    example: '2024-09-17T10:00:00Z',
-  })
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  timestamp: Date;
+
+  @ManyToOne(() => Room, (room) => room.messages)
+  @JoinColumn({ name: 'roomId' })
+  room: Room;
+
+  @Column({ default: false })
+  read: boolean;
 }
