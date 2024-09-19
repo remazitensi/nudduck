@@ -1,6 +1,24 @@
+/**
+ * File Name    : community.service.ts
+ * Description  : 커뮤니티 서비스
+ * Author       : 김재영
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.07    김재영      Created     커뮤니티 서비스 초기 생성
+ * 2024.09.09    김재영      Modified    게시글 CRUD 메서드 구현
+ * 2024.09.10    김재영      Modified    댓글 관련 API 메서드 추가
+ * 2024.09.10    김재영      Modified    TypeORM을 통한 데이터베이스 작업 처리 추가
+ * 2024.09.11    김재영      Modified    페이지네이션 기능 추가 및 개선
+ * 2024.09.12    김재영      Modified    게시글과 댓글의 대댓글 처리 로직 추가 및 리팩토링
+ * 2024.09.12    김재영      Modified    좋아요 및 조회수 기능 추가
+ * 2024.09.18    김재영      Modified    예외 처리 개선
+ * 2024.09.19    김재영      Modified    유저 권한 추가
+ */
+
 import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryFailedError, EntityManager } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { Community } from './entities/community.entity';
 import { Comment } from './entities/comment.entity';
 import { CreateCommunityDto } from './dto/create-community.dto';
@@ -10,13 +28,18 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { PaginationQueryDto } from './dto/pagination-query.dto';
 import { PostRepository } from './repositories/post.repository';
 import { CommentRepository } from './repositories/comment.repository';
+import { UserRepository } from '@_modules/user/user.repository';
 import { Category } from './enums/category.enum';
+import { User } from '@_modules/user/entity/user.entity';
 
 @Injectable()
 export class CommunityService {
   constructor(
     @InjectRepository(PostRepository)
     private readonly postRepository: PostRepository,
+
+    @InjectRepository(UserRepository)
+    private readonly userRepository: UserRepository,
 
     @InjectRepository(CommentRepository)
     private readonly commentRepository: CommentRepository,
@@ -37,24 +60,27 @@ export class CommunityService {
 
   // 페이지네이션을 포함한 모든 게시글 조회
   async getAllPosts(paginationQuery: PaginationQueryDto): Promise<Community[]> {
-    const { page = 1, pageSize = 10 } = paginationQuery;
-    const take = pageSize;
-    const skip = (page - 1) * pageSize;
-    return this.postRepository.find({ take, skip });
+    return this.postRepository.findAll(paginationQuery);
   }
 
   // 페이지네이션을 포함한 카테고리별 게시글 조회
   async getPostsByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<Community[]> {
-    const { page = 1, pageSize = 10 } = paginationQuery;
-    const take = pageSize;
-    const skip = (page - 1) * pageSize;
-    return this.postRepository.findByCategory(category, take, skip);
+    return this.postRepository.findByCategory(category, paginationQuery);
   }
 
   // 게시글 생성
-  async createPost(createCommunityDto: CreateCommunityDto): Promise<Community> {
+  async createPost(userId: number, createCommunityDto: CreateCommunityDto): Promise<Community> {
     try {
-      const post = this.postRepository.create({ ...createCommunityDto });
+      const user = await this.userRepository.findUserById(userId);
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const post = this.postRepository.create({
+        ...createCommunityDto,
+        user, // user 객체를 설정
+      });
+
       return await this.postRepository.save(post);
     } catch (error) {
       this.handleError(error);
@@ -63,10 +89,7 @@ export class CommunityService {
 
   // 게시글 조회
   async getPostById(id: number): Promise<Community> {
-    const post = await this.postRepository.findOne({
-      where: { postId: id },
-      relations: ['user'],
-    });
+    const post = await this.postRepository.findPostById(id);
     if (!post) {
       throw new NotFoundException(CommunityService.POST_NOT_FOUND_MSG(id));
     }
@@ -74,10 +97,11 @@ export class CommunityService {
   }
 
   // 게시글 수정
-  async updatePost(id: number, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
+  async updatePost(userId: number, id: number, updateCommunityDto: UpdateCommunityDto): Promise<Community> {
     try {
       const post = await this.getPostById(id);
-      await this.postRepository.update(id, updateCommunityDto);
+      this.checkOwnership(userId, post.user.id); // 권한 확인
+      await this.postRepository.updatePost(id, updateCommunityDto);
       return this.getPostById(id);
     } catch (error) {
       this.handleError(error);
@@ -85,49 +109,42 @@ export class CommunityService {
   }
 
   // 게시글 삭제
-  async deletePost(id: number): Promise<void> {
+  async deletePost(userId: number, id: number): Promise<void> {
     try {
       const post = await this.getPostById(id);
-      const result = await this.postRepository.delete(id);
-      if (result.affected === 0) {
-        throw new NotFoundException(CommunityService.POST_NOT_FOUND_MSG(id));
-      }
+      this.checkOwnership(userId, post.user.id); // 권한 확인
+      await this.postRepository.deletePost(id);
     } catch (error) {
       this.handleError(error);
     }
   }
 
   // 댓글 목록 조회 (페이징 처리)
-  async getComments(postId: number, page: number, limit: number): Promise<Comment[]> {
-    const take = limit;
-    const skip = (page - 1) * limit;
-    return this.commentRepository.find({
-      where: { postId, parent: null }, // 부모 댓글만 조회
-      take,
-      skip,
-      relations: ['user'],
-    });
+  async getComments(postId: number, paginationQuery: PaginationQueryDto): Promise<Comment[]> {
+    return this.commentRepository.getCommentsWithCounts(postId, paginationQuery);
   }
 
   // 특정 댓글에 대한 대댓글 목록 조회
-  async getReplies(postId: number, commentId: number): Promise<Comment[]> {
-    return this.commentRepository.find({
-      where: { postId, parent: { id: commentId } }, // 부모 댓글 ID로 대댓글 조회
-      relations: ['user'], // 대댓글 작성자 정보 포함
-    });
+  async getReplies(commentId: number): Promise<Comment[]> {
+    const comment = await this.commentRepository.findWithRepliesAndCounts(commentId);
+    if (!comment) {
+      throw new NotFoundException(CommunityService.COMMENT_NOT_FOUND_MSG(commentId));
+    }
+    return comment.replies;
   }
 
   // 댓글 생성
-  async createComment(postId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
+  async createComment(userId: number, postId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
     try {
-      return await this.dataSource.transaction(async (manager) => {
-        const comment = manager.create(Comment, {
-          ...createCommentDto,
-          postId,
-        });
-        const savedComment = await manager.save(Comment, comment);
+      return await this.dataSource.transaction(async (manager: EntityManager) => {
+        const user = await manager.findOne(User, { where: { id: userId } });
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+
+        const comment = await this.commentRepository.addComment(postId, createCommentDto, manager);
         await this.updatePostCommentCount(postId, manager);
-        return savedComment;
+        return comment;
       });
     } catch (error) {
       this.handleError(error);
@@ -135,20 +152,18 @@ export class CommunityService {
   }
 
   // 댓글 수정
-  async updateComment(postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async updateComment(userId: number, postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
     try {
-      return await this.dataSource.transaction(async (manager) => {
-        const comment = await manager.findOne(Comment, {
+      return await this.dataSource.transaction(async (manager: EntityManager) => {
+        const comment = await manager.findOneOrFail(Comment, {
           where: { id: commentId, postId },
           relations: ['user'],
         });
 
-        if (!comment) {
-          throw new NotFoundException(CommunityService.COMMENT_NOT_FOUND_MSG(commentId));
-        }
+        this.checkOwnership(userId, comment.user.id); // 권한 확인
 
         await manager.update(Comment, commentId, updateCommentDto);
-        return manager.findOne(Comment, { where: { id: commentId } });
+        return manager.findOneOrFail(Comment, { where: { id: commentId } });
       });
     } catch (error) {
       this.handleError(error);
@@ -156,22 +171,17 @@ export class CommunityService {
   }
 
   // 댓글 삭제
-  async deleteComment(postId: number, commentId: number): Promise<void> {
+  async deleteComment(userId: number, postId: number, commentId: number): Promise<void> {
     try {
-      return await this.dataSource.transaction(async (manager) => {
-        const comment = await manager.findOne(Comment, {
+      return await this.dataSource.transaction(async (manager: EntityManager) => {
+        const comment = await manager.findOneOrFail(Comment, {
           where: { id: commentId, postId },
           relations: ['user'],
         });
 
-        if (!comment) {
-          throw new NotFoundException(CommunityService.COMMENT_NOT_FOUND_MSG(commentId));
-        }
+        this.checkOwnership(userId, comment.user.id); // 권한 확인
 
-        const result = await manager.delete(Comment, commentId);
-        if (result.affected === 0) {
-          throw new NotFoundException(CommunityService.COMMENT_NOT_FOUND_MSG(commentId));
-        }
+        await this.commentRepository.deleteCommentAndReplies(commentId, manager);
         await this.updatePostCommentCount(postId, manager);
       });
     } catch (error) {
@@ -180,17 +190,17 @@ export class CommunityService {
   }
 
   // 대댓글 생성
-  async createReply(postId: number, parentId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
+  async createReply(userId: number, postId: number, parentId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
     try {
-      return await this.dataSource.transaction(async (manager) => {
-        const reply = manager.create(Comment, {
-          ...createCommentDto,
-          postId,
-          parent: { id: parentId },
-        });
-        const savedReply = await manager.save(Comment, reply);
+      return await this.dataSource.transaction(async (manager: EntityManager) => {
+        const user = await manager.findOne(User, { where: { id: userId } });
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+
+        const reply = await this.commentRepository.addReply(parentId, createCommentDto, manager);
         await this.updateReplyCount(parentId, manager);
-        return savedReply;
+        return reply;
       });
     } catch (error) {
       this.handleError(error);
@@ -198,19 +208,17 @@ export class CommunityService {
   }
 
   // 대댓글 수정
-  async updateReply(postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async updateReply(userId: number, postId: number, commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
     try {
-      return await this.dataSource.transaction(async (manager) => {
-        const reply = await manager.findOne(Comment, {
-          where: { id: commentId, postId, parent: { id: commentId } },
+      return await this.dataSource.transaction(async (manager: EntityManager) => {
+        const reply = await manager.findOneOrFail(Comment, {
+          where: { id: commentId, postId, parentId: commentId },
         });
 
-        if (!reply) {
-          throw new NotFoundException(CommunityService.COMMENT_NOT_FOUND_MSG(commentId));
-        }
+        this.checkOwnership(userId, reply.user.id); // 권한 확인
 
         await manager.update(Comment, commentId, updateCommentDto);
-        return manager.findOne(Comment, { where: { id: commentId } });
+        return manager.findOneOrFail(Comment, { where: { id: commentId } });
       });
     } catch (error) {
       this.handleError(error);
@@ -218,69 +226,60 @@ export class CommunityService {
   }
 
   // 대댓글 삭제
-  async deleteReply(postId: number, commentId: number): Promise<void> {
+  async deleteReply(userId: number, postId: number, commentId: number): Promise<void> {
     try {
-      return await this.dataSource.transaction(async (manager) => {
-        const reply = await manager.findOne(Comment, {
+      return await this.dataSource.transaction(async (manager: EntityManager) => {
+        const reply = await manager.findOneOrFail(Comment, {
           where: { id: commentId, postId },
           relations: ['parent'],
         });
 
-        if (!reply) {
-          throw new NotFoundException(CommunityService.COMMENT_NOT_FOUND_MSG(commentId));
-        }
+        this.checkOwnership(userId, reply.user.id); // 권한 확인
 
-        const result = await manager.delete(Comment, commentId);
-        if (result.affected === 0) {
-          throw new NotFoundException(CommunityService.COMMENT_NOT_FOUND_MSG(commentId));
+        await this.commentRepository.deleteCommentAndReplies(commentId, manager);
+        if (reply.parentId) {
+          await this.updateReplyCount(reply.parentId, manager);
         }
-        await this.updateReplyCount(reply.parent.id, manager);
       });
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  // 게시글 댓글 수 업데이트
+  // 게시글의 댓글 수 업데이트
   private async updatePostCommentCount(postId: number, manager: EntityManager): Promise<void> {
-    const commentCount = await manager.count(Comment, { where: { postId, parent: null } });
-    await manager.update(Community, { id: postId }, { commentCount });
+    const count = await manager.count(Comment, { where: { postId, parentId: null } });
+    await manager.update(Community, { postId }, { commentCount: count });
   }
 
-  // 댓글의 대댓글 수 업데이트
-  private async updateReplyCount(parentId: number, manager: EntityManager): Promise<void> {
-    const replyCount = await manager.count(Comment, { where: { parent: { id: parentId } } });
-    await manager.update(Comment, parentId, { replyCount });
+  // 대댓글 수 업데이트
+  private async updateReplyCount(commentId: number, manager: EntityManager): Promise<void> {
+    const count = await manager.count(Comment, { where: { parentId: commentId } });
+    await manager.update(Comment, { id: commentId }, { replyCount: count });
   }
 
-  // 게시글 좋아요 수 증가
-  async incrementLikes(postId: number): Promise<void> {
+  // 게시글의 좋아요 수 증가
+  async incrementLike(postId: number): Promise<void> {
     try {
-      const post = await this.getPostById(postId);
-      post.likeCount += 1;
-      await this.postRepository.save(post);
+      await this.postRepository.incrementLikeCount(postId);
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  // 게시글 좋아요 수 감소
-  async decrementLikes(postId: number): Promise<void> {
+  // 게시글의 좋아요 수 감소
+  async decrementLike(postId: number): Promise<void> {
     try {
-      const post = await this.getPostById(postId);
-      post.likeCount -= 1;
-      await this.postRepository.save(post);
+      await this.postRepository.decrementLikeCount(postId);
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  // 게시글 조회수 증가
-  async incrementViews(postId: number): Promise<void> {
+  // 게시글의 조회 수 증가
+  async incrementView(postId: number): Promise<void> {
     try {
-      const post = await this.getPostById(postId);
-      post.viewCount += 1;
-      await this.postRepository.save(post);
+      await this.postRepository.incrementViewCount(postId);
     } catch (error) {
       this.handleError(error);
     }
@@ -288,12 +287,9 @@ export class CommunityService {
 
   // 오류 처리 메소드
   private handleError(error: any): void {
-    if (error instanceof QueryFailedError) {
-      // SQL 오류 처리
-      throw new HttpException('데이터베이스 작업 중 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
-    } else {
-      // 기타 오류 처리
-      throw new HttpException('알 수 없는 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+    if (error instanceof HttpException) {
+      throw error;
     }
+    throw new HttpException('서버 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
