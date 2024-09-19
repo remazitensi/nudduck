@@ -11,11 +11,14 @@
  * 2024.09.10    이승철      Modified    @DeleteDateColumn() 으로 변경
  * 2024.09.16    이승철      Modified    절대경로 변경, 해시태그에 OneToMany decorator 적용
  * 2024.09.16    이승철      Modified    인생그래프, 인생그래프 즐겨찾기 적용
+ * 2024.09.19    김재영      Modified    커뮤니티 적용
  */
 
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn, JoinColumn } from 'typeorm';
 import { UserHashtag } from '@_modules/user/entity/hashtag.entity';
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
+import { Community } from '@_modules/community/entities/community.entity';
+import { Comment } from '@_modules/community/entities/comment.entity';
 
 @Entity()
 @Unique(['provider', 'provider_id'])
@@ -64,4 +67,10 @@ export class User {
 
   @DeleteDateColumn()
   deleted_at: Date | null;
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
+
+  @OneToMany(() => Community, (community) => community.user)
+  communities: Community[];
 }
