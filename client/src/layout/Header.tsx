@@ -14,9 +14,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // useNavigate 추가
 import axios from 'axios';
-import './Header.css';
 import LoginModal from '../components/LoginModal';
-// import { getUserProfile } from '../api/user' // 사용자 프로필 api 추가
 
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -50,11 +48,11 @@ const Header: React.FC = () => {
   };
 
   // 로그인 상태 변경 핸들러(로그인 성공 시 홈페이지로 리다이렉트)
-const handleLogin = () => {
-  setIsLoggedIn(true);
-  setIsModalOpen(false); // 로그인 모달 닫기
-  navigate('/'); // 홈페이지로 리다이렉트
-};
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    setIsModalOpen(false); // 로그인 모달 닫기
+    navigate('/'); // 홈페이지로 리다이렉트
+  };
 
   // 로그아웃 상태 변경 핸들러
   const handleLogoutClick = () => {
@@ -72,56 +70,57 @@ const handleLogin = () => {
   };
 
   return (
-    <header className="header">
-      <div className="header-inner">
+    <header className="w-full bg-white shadow-md">
+      <div className="container mx-auto flex justify-between items-center py-4 px-8">
         {/* 로고 및 사이트명 */}
-        <div className="logo-container">
-          <img src="/logo.png" className="logo" alt="Nudduck Logo" />
-          <span className="logo-text">NUDDUCK</span>
+        <div className="flex items-center">
+          <img src="/logo.png" className="w-[66px] h-[66px] mr-4" alt="Nudduck Logo" />
+          <span className="text-4xl font-bold text-gray-800">NUDDUCK</span>
         </div>
 
         {/* 로그인 후에만 메뉴 표시 */}
         {isLoggedIn && (
-          <div className="menu-container">
-            <nav className="flex space-x-12">
-              <Link to="/AICoach">AI 코치</Link>
-              <Link to="/ExpertsPage">전문가 상담</Link>
-              <Link to="/community">커뮤니티</Link>
-              <Link to="/LifeGraphDetail">인생 그래프</Link>
-            </nav>
-          </div>
+          <nav className="flex space-x-6">
+            <Link to="/AICoach" className="hover:text-gray-700">AI 코치</Link>
+            <Link to="/ExpertsPage" className="hover:text-gray-700">전문가 상담</Link>
+            <Link to="/community" className="hover:text-gray-700">커뮤니티</Link>
+            <Link to="/LifeGraphDetail" className="hover:text-gray-700">인생 그래프</Link>
+          </nav>
         )}
 
         {/* 검색창 */}
-        <div className="search-container">
+        <div className="flex items-center space-x-4">
           <input
             type="text"
             placeholder=""
-            className="search-input"
+            className="px-4 py-2 border border-gray-300 rounded-full w-[240px]"
           />
           <button>
-            <img src="/search.png" alt="검색" className="w-[36px] h-[36px]" />
+            <img src="/search.png" alt="검색" className="w-9 h-9" />
           </button>
           <button>
-            <img src="/chat.png" alt="채팅" className="w-[24px] h-[24px]" />
+            <img src="/chat.png" alt="채팅" className="w-6 h-6" />
           </button>
         </div>
 
         {/* 로그인 여부에 따른 사용자 정보 표시 */}
-        <div className="user-section">
+        <div className="flex items-center space-x-4">
           {!isLoggedIn ? (
-            <div className="auth-links">
-              <button onClick={() => setIsModalOpen(true)}>로그인</button>|<button onClick={() => setIsModalOpen(true)}>회원가입</button>
+            <div className="space-x-2">
+              <button onClick={() => setIsModalOpen(true)} className="hover:underline">로그인</button>
+              <span>|</span>
+              <button onClick={() => setIsModalOpen(true)} className="hover:underline">회원가입</button>
             </div>
           ) : (
-            <div className="profile-container" onClick={handleProfileClick}>
-              <img src={user.profileImage} alt="Profile" className="profile-image" />
-              <div className="profile-name">{user.name}</div>
+            <div className="relative" onClick={handleProfileClick}>
+              <img src={user.profileImage} alt="Profile" className="w-8 h-8 rounded-full cursor-pointer" />
+              <div className="text-sm font-semibold">{user.name}</div>
               {dropdownOpen && (
-                <div className="dropdown">
-                  <p>{user.name} 님</p>
-                  <p>{user.email}</p>
-                  <Link to="/mypage">마이페이지</Link> | <a href="#" onClick={handleLogoutClick}>로그아웃</a>
+                <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20">
+                  <p className="px-4 py-2 text-gray-700">{user.name} 님</p>
+                  <p className="px-4 py-2 text-gray-700">{user.email}</p>
+                  <Link to="/mypage" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">마이페이지</Link>
+                  <a href="#" onClick={handleLogoutClick} className="block px-4 py-2 text-gray-800 hover:bg-gray-200">로그아웃</a>
                 </div>
               )}
             </div>
@@ -136,6 +135,7 @@ const handleLogin = () => {
 };
 
 export default Header;
+
 
 
 // TODO:
