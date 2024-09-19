@@ -137,3 +137,117 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+.qna-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 20px;
+  background-color: #fff;
+}
+
+.qna-item {
+  max-width: 800px;
+  text-align: center;
+}
+
+.qna-question {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.qna-answer {
+  font-size: 20px;
+  font-weight: normal;
+  color: #444;
+}
+
+.qna-answer .highlight {
+  font-weight: bold;
+  color: #909700;
+}
+
+.chatbot-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0; /* 상하단 여백을 위한 패딩 */
+}
+
+.chatbot-placeholder {
+  position: relative;
+  display: inline-block;
+  width: 100%; /* 이미지의 크기에 맞춰 조정 */
+  text-align: center;
+}
+
+.chatbot-image {
+  width: 100%;
+  height: auto;
+}
+
+.chatbot-text {
+  position: absolute;
+  bottom: 615px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #333; /* 글자 색상 */
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.faq-section {
+  text-align: center;
+  padding: 50px 0;
+  margin-left: 10%;
+  margin-right: 10%;
+  background-color: #fff; /* 배경색을 사진과 유사하게 설정 */
+}
+
+.faq-title {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.faq-description {
+  font-size: 16px;
+  margin-bottom: 40px;
+  color: #444;
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 세 개의 박스를 1열에 나란히 배치 */
+  gap: 20px;
+}
+
+.faq-item {
+  background-color: #DAD7B9; /* 박스 배경색 설정 */
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.box-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px; /* 아이콘과 제목 사이 여백 */
+}
+
+.faq-item h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.faq-item ul {
+  list-style: none;
+  padding: 0;
+}
+
+.faq-item li {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}

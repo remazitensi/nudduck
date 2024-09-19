@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.12    황솜귤      Created     메인페이지 생성
  * 2024.09.17    황솜귤      Modified    Intersection Observer(React)로 텍스트 애니메이션 효과 추가
+ * 2024.09.19    황솜귤      Modified    전체 섹션 레이아웃 배치
  */
 
 import React, { useEffect, useRef } from 'react';
@@ -76,9 +77,12 @@ const MainPage = () => {
         </div>
       </div>
 
+      <h2 className="text-center text-xl font-bold"> 나의 인생을 그래프로 요약하고,</h2>
+
+
       {/* 이미지로 대체되는 그래프 섹션 */}
       <section className="image-section">
-        <img src="/path/to/graph-image.jpg" alt="life-graph" className="full-width-image" />
+        <img src="graph-sample.png" alt="life-graph" className="full-width-image" />
       </section>
 
       {/* 추가 섹션 (인공지능 소개) */}
@@ -92,21 +96,59 @@ const MainPage = () => {
       {/* 상담 봇 섹션 */}
       <section className="chatbot-section">
         <div className="chatbot-placeholder">
-          <img src="scenario.png" alt="ai-scenario" />
+          <img src="ai-simulation.png" alt="ai-simulation" className="chatbot-image" />
+            <p className="chatbot-text">
+            <strong>누떡</strong>에서는 희망 직군의 가상 면접을 지원합니다</p>
         </div>
-        <p>누떡에서는 희망 직군의 가상 면접을 지원합니다</p>
       </section>
 
-      {/* 하단 FAQ 섹션 */}
-      <section className="faq-section">
-        <h2>취업 준비를 쉽고 재미있게 할 수 있을까요?</h2>
-        <p>누떡에서는 취업 준비를 누구나 쉽게 할 수 있습니다!</p>
-        <div className="faq-grid">
-          <div className="faq-item">AI 면접 컨설팅</div>
-          <div className="faq-item">커뮤니티 공간</div>
-          <div className="faq-item">인생 그래프</div>
+      {/* 하단 설명 섹션 (QnA 형식) */}
+      <section className="qna-section my-8">
+        <div className="qna-item flex justify-between items-start">
+          <h2 className="qna-question w-1/2 text-left">
+            <strong>Q.</strong> 취업 준비를 쉽고 재미있게 할 수 있을까?
+          </h2>
+            <p className="qna-answer w-1/2 text-right">
+            <strong>A.</strong> 당연하죠! <span className="highlight">누떡</span>에서는 취업 준비를 누워서 떡 먹듯 할 수 있습니다!
+          </p>
         </div>
       </section>
+
+
+      {/* 하단 설명 섹션 */}
+<section className="faq-section">
+  <div className="faq-grid">
+    <div className="faq-item">
+      <img src="/box-icon-1.png" alt="AI 면접 컨설팅 아이콘" className="box-icon"/>
+      <h3>AI 면접 컨설팅</h3>
+      <ul>
+        <li>1. 온라인으로 언제 어디서나</li>
+        <li>2. AI를 통한 실전과 유사한 면접 프로세스</li>
+        <li>3. 가상 면접 종료 후 즉각적 피드백</li>
+      </ul>
+    </div>
+
+    <div className="faq-item">
+      <img src="/box-icon-2.png" alt="커뮤니티 공간 아이콘" className="box-icon"/>
+      <h3>커뮤니티 공간</h3>
+      <ul>
+        <li>1. 게시판을 활용한 글쓰기</li>
+        <li>2. 원하는 주제로 적합한 상대와 온라인 미팅</li>
+        <li>3. 유저들과 활발한 정보 공유</li>
+      </ul>
+    </div>
+
+    <div className="faq-item">
+      <img src="/box-icon-3.png" alt="인생 그래프 아이콘" className="box-icon"/>
+      <h3>인생 그래프</h3>
+      <ul>
+        <li>1. 유저 정보 기반의 그래프 작성</li>
+        <li>2. 일대기를 그래프로 표시</li>
+        <li>3. 향후 방향성 및 목표 설계</li>
+      </ul>
+    </div>
+  </div>
+</section>
     </div>
   );
 };
