@@ -10,6 +10,7 @@
  * 2024.09.10    김재영      Modified    typeorm 추가
  * 2024.09.16    김재영      Modified    camelcase로 변경
  * 2024.09.17    김재영      Modified    주석 업데이트 및 설명 추가
+ * 2024.09.19    김재영      Modified    유저 아이디 추가
  */
 
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
@@ -28,7 +29,7 @@ export class Community {
   @Column('text') // 긴 텍스트를 위한 컬럼
   content: string;
 
-  @ManyToOne(() => User, (user) => user.communities)  // 게시글 작성자
+  @ManyToOne(() => User, (user) => user.communities) // 게시글 작성자
   user: User;
 
   @Column({ type: 'enum', enum: Category, nullable: true }) // enum을 사용한 카테고리 컬럼
