@@ -7,17 +7,23 @@
  * Date          Author      Status      Description
  * 2024.09.10    김우현      Created     커뮤니티 글쓰기 페이지 생성
  * 2024.09.14    김민지      Modified    카테고리 선택 후 닫기 추가
+ * 2024.09.20    김민지      Modified    post api 저장하기
  */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
+import { useNavigate } from 'react-router-dom';
+import { createPost } from '../apis/community-api';
 
 const CommunityPostCreate: React.FC = () => {
+  const navigate = useNavigate();
+  const editorRef = useRef<any>(null); // useRef로 Editor의 값을 참조
+
   const [view, setView] = useState(false);
   const [typing, setTyping] = useState('');
   const [message, setMessage] = useState('');
-  const [category, setCategory] = useState('선택');
+  const [category, setCategory] = useState('카테고리 선택');
 
   // 글지수 유효성 검사
   const onTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,11 +43,29 @@ const CommunityPostCreate: React.FC = () => {
     setView(false); // 카테고리를 선택한 후 드롭다운 닫기
   };
 
+  // 게시글을 저장하는 함수
+  const savePost = async () => {
+    const content = editorRef.current?.getInstance().getMarkdown(); // Editor의 markdown 가져오기
+    const post = {
+      title: typing,
+      content: content,
+      category: category,
+    };
+    await createPost({
+      post: post,
+    });
+  };
+
+  const toolbarItems = [
+    ['heading', 'bold', 'italic', 'strike'],
+    ['ul', 'ol', 'task', 'link'],
+  ];
+
   return (
     <div className='community-titles flex flex-col items-center'>
-      <div className='mt-[140px]'>
+      <div className='mt-[140px]' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
-        <div className='mt-[10px] w-[100px] border-b-2 border-[8D8B67]'></div>
+        <div className='mt-[10px] w-[100px] border-b-2 border-[#8D8B67]'></div>
       </div>
 
       <div className='mt-[120px] flex w-[1300px]'>
@@ -56,7 +80,7 @@ const CommunityPostCreate: React.FC = () => {
             >
               <li className='flex w-full items-center'>
                 {category}
-                <img className='ml-auto' src={view ? 'down_arrow.png' : 'up_arrow.png'} alt='arrow' />
+                <img className='ml-auto' src={view ? '/up_arrow.png' : '/down_arrow.png'} alt='arrow' />
               </li>
             </ul>
             {view && (
@@ -99,14 +123,18 @@ const CommunityPostCreate: React.FC = () => {
         <div className='mx-auto mt-[37px] h-[600px] w-[1200px]'>
           <Editor
             // weight='100%'
+            ref={editorRef}
             height='100%'
             initialEditType='wysiwyg'
             previewStyle='vertical'
             initialValue=' '
+            toolbarItems={toolbarItems}
           />
           <div className='mt-[80px] flex justify-end gap-[23px]'>
             <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-white'>취소</button>
-            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9]'>저장</button>
+            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9]' onClick={savePost}>
+              저장
+            </button>
           </div>
         </div>
       </div>
