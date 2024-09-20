@@ -11,18 +11,19 @@
  * 2024.09.18    이승철      인생그래프 즐겨찾기 이름 변경
  * 2024.09.19    이승철      api tag 추가
  * 2024.09.21    이승철      Modified    응답 dto 추가
+ * 2024.09.21    이승철      Modified    절대경로 변경
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
 import { FavoriteLifeGraphDto } from '@_modules/life-graph/dto/favorite-life-graph.dto';
 import { LifeGraphPageDto } from '@_modules/life-graph/dto/life-graph-page.dto';
+import { LifeGraphListResponseDto, LifeGraphResponseDto } from '@_modules/life-graph/dto/life-graph-response.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
 import { LifeGraphService } from '@_modules/life-graph/life-graph.service';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRequest } from 'common/interfaces/user-request.interface';
-import { LifeGraphListResponseDto, LifeGraphResponseDto } from './dto/life-graph-response.dto';
 
 @ApiTags('life-graph')
 @Controller('life-graph')
