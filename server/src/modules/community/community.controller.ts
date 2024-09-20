@@ -28,7 +28,7 @@ import { Category } from './enums/category.enum';
 import { Request } from 'express';
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { User } from '@_modules/user/entity/user.entity';
-import { CommunityDto } from './dto/community.dto';
+import { PostsResponseDto } from './dto/posts-response.dto';
 
 @ApiTags('Community')
 @Controller('community')
@@ -38,20 +38,22 @@ export class CommunityController {
   @Get()
   @ApiOperation({ summary: '게시글 목록 조회 (페이지네이션 포함)' })
   @ApiQuery({ name: 'page', type: 'number', required: false, description: '페이지 번호' })
-  @ApiQuery({ name: 'limit', type: 'number', required: false, description: '페이지당 항목 수' })
-  @ApiResponse({ status: 200, description: '게시글 목록을 조회합니다.', type: [CommunityDto] })
-  async getPosts(@Query() paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
-    return this.communityService.getAllPosts(paginationQuery);
+  @ApiQuery({ name: 'pageSize', type: 'number', required: false, description: '페이지당 항목 수' })
+  @ApiResponse({ status: 200, description: '게시글 목록을 조회합니다.', type: PostsResponseDto })
+  async getPosts(@Query() paginationQuery: PaginationQueryDto): Promise<PostsResponseDto> {
+    const { posts, total } = await this.communityService.getAllPosts(paginationQuery);
+    return new PostsResponseDto(total, posts);
   }
 
   @Get(':category')
   @ApiOperation({ summary: '카테고리별 게시글 조회 (페이지네이션 포함)' })
   @ApiParam({ name: 'category', type: 'string', description: '카테고리' })
   @ApiQuery({ name: 'page', type: 'number', required: false, description: '페이지 번호' })
-  @ApiQuery({ name: 'limit', type: 'number', required: false, description: '페이지당 항목 수' })
-  @ApiResponse({ status: 200, description: '카테고리별 게시글 목록을 조회합니다.', type: [CommunityDto] })
-  async getPostsByCategory(@Param('category') category: Category, @Query() paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
-    return this.communityService.getPostsByCategory(category, paginationQuery);
+  @ApiQuery({ name: 'pageSize', type: 'number', required: false, description: '페이지당 항목 수' })
+  @ApiResponse({ status: 200, description: '카테고리별 게시글 목록을 조회합니다.', type: PostsResponseDto })
+  async getPostsByCategory(@Param('category') category: Category, @Query() paginationQuery: PaginationQueryDto): Promise<PostsResponseDto> {
+    const { posts, total } = await this.communityService.getPostsByCategory(category, paginationQuery);
+    return new PostsResponseDto(total, posts);
   }
 
   @Post()

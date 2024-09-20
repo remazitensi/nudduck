@@ -31,7 +31,7 @@ import { CommentRepository } from './repositories/comment.repository';
 import { UserRepository } from '@_modules/user/user.repository';
 import { Category } from './enums/category.enum';
 import { User } from '@_modules/user/entity/user.entity';
-import { CommunityDto } from './dto/community.dto';
+import { PostsResponseDto } from './dto/posts-response.dto';
 
 @Injectable()
 export class CommunityService {
@@ -63,21 +63,15 @@ export class CommunityService {
   }
 
   // 페이지네이션을 포함한 모든 게시글 조회
-  async getAllPosts(paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
-    try {
-      return await this.postRepository.findAll(paginationQuery);
-    } catch {
-      this.handleError();
-    }
+  async getAllPosts(paginationQuery: PaginationQueryDto): Promise<PostsResponseDto> {
+    const [posts, total] = await this.postRepository.findAll(paginationQuery);
+    return new PostsResponseDto(total, posts);
   }
 
   // 페이지네이션을 포함한 카테고리별 게시글 조회
-  async getPostsByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
-    try {
-      return await this.postRepository.findByCategory(category, paginationQuery);
-    } catch {
-      this.handleError();
-    }
+  async getPostsByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<PostsResponseDto> {
+    const [posts, total] = await this.postRepository.findByCategory(category, paginationQuery);
+    return new PostsResponseDto(total, posts);
   }
 
   // 게시글 생성
