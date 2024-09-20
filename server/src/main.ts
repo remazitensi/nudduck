@@ -15,6 +15,10 @@ async function bootstrap() {
       transform: true, // 요청으로 들어오는 데이터를 우리가 기대하는 DTO의 타입으로 자동 변환 해준다.
     }),
   );
+  app.enableCors({
+    origin: process.env.CLIENT_URL, // 클라이언트의 도메인
+    credentials: true, // 자격 증명(쿠키) 허용
+  });
   app.use(cookieParser());
   // Swagger 설정
   const config = new DocumentBuilder()
