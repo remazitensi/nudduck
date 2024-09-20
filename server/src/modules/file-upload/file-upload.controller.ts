@@ -10,14 +10,15 @@
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.19    이승철      Modified    ApiTags 추가
  * 2024.09.21    이승철      Modified    응답 dto 추가
+ * 2024.09.21    이승철      Modified    절대경로 변경
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { PresignedUrlDto } from '@_modules/file-upload/dto/file-upload.dto';
+import { PresignedUrlResponseDto } from '@_modules/file-upload/dto/presigned-url-response.dto';
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PresignedUrlResponseDto } from './dto/presigned-url-response.dto';
 
 @ApiTags('presigned-url')
 @Controller('presigned-url')

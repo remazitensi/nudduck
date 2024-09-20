@@ -10,14 +10,15 @@
  * 2024.09.16    이승철      Modified    절대경로 변경
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    응답 dto 추가
+ * 2024.09.21    이승철      Modified    절대경로 변경
  */
 
 import { ExpertPageDto } from '@_modules/expert/dto/expert-page.dto';
+import { ExpertListResponseDto, ExpertResponseDto } from '@_modules/expert/dto/expert-response.dto';
 import { Expert } from '@_modules/expert/entity/expert.entity';
 import { ExpertService } from '@_modules/expert/expert.service';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ExpertListResponseDto, ExpertResponseDto } from './dto/expert-response.dto';
 
 @ApiTags('Expert')
 @Controller('expert')

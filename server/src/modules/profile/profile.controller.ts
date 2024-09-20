@@ -8,13 +8,14 @@
  * 2024.09.17    이승철      Created
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
+ * 2024.09.21    이승철      Modified    절대경로 변경
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
+import { ProfileService } from '@_modules/profile/profile.service';
 import { ProfileDto } from '@_modules/user/dto/profile.dto';
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ProfileService } from './profile.service';
 
 @ApiTags('Profile Management')
 @Controller('profile')

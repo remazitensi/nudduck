@@ -9,17 +9,18 @@
  * 2024.09.16    이승철      Modified    절대경로 변경, ApiResponse 추가
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
+ * 2024.09.21    이승철      Modified    절대경로 변경
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { AIChatHistoryDto } from '@_modules/simulation/dto/ai-chat-history.dto';
+import { AIChatMessageDto } from '@_modules/simulation/dto/ai-chat-message.dto';
 import { AIChatResponseDto } from '@_modules/simulation/dto/ai-chat-response.dto';
 import { AskAIDto } from '@_modules/simulation/dto/ask-ai.dto';
 import { StartAIDto } from '@_modules/simulation/dto/start-ai.dto';
 import { SimulationService } from '@_modules/simulation/simulation.service';
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AIChatMessageDto } from './dto/ai-chat-message.dto';
 
 @ApiTags('Simulation')
 @Controller('simulation')
