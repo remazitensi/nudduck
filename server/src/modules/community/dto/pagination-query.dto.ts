@@ -29,4 +29,11 @@ export class PaginationQueryDto {
   @IsPositive()
   @Min(1)
   pageSize: number = 10; // 기본값을 10
+
+  @ApiPropertyOptional({
+    description: '정렬 기준 (예: createdAt:desc, title:asc)',
+    example: 'createdAt:desc',
+    required: false,
+  })
+  sort?: string;
 }
