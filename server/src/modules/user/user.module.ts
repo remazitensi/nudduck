@@ -7,19 +7,21 @@
  * Date          Author      Status      Description
  * 2024.09.10    이승철      Created
  * 2024.09.16    이승철      Modified    절대경로 변경
+ * 2024.09.21    이승철      Modified    lifeGraph 모듈 주입
  */
 
 import { FileUploadModule } from '@_modules/file-upload/file-upload.module';
+import { LifeGraphModule } from '@_modules/life-graph/life-graph.module';
 import { UserHashtag } from '@_modules/user/entity/hashtag.entity';
 import { User } from '@_modules/user/entity/user.entity';
 import { UserController } from '@_modules/user/user.controller';
 import { UserRepository } from '@_modules/user/user.repository';
 import { UserService } from '@_modules/user/user.service';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, UserHashtag]), FileUploadModule],
+  imports: [TypeOrmModule.forFeature([User, UserHashtag]), FileUploadModule, forwardRef(() => LifeGraphModule)],
   controllers: [UserController],
   providers: [UserService, UserRepository],
   exports: [UserService, UserRepository],
