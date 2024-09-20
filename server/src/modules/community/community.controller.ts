@@ -28,6 +28,7 @@ import { Category } from './enums/category.enum';
 import { Request } from 'express';
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { User } from '@_modules/user/entity/user.entity';
+import { CommunityDto } from './dto/community.dto';
 
 @ApiTags('Community')
 @Controller('community')
@@ -38,8 +39,8 @@ export class CommunityController {
   @ApiOperation({ summary: '게시글 목록 조회 (페이지네이션 포함)' })
   @ApiQuery({ name: 'page', type: 'number', required: false, description: '페이지 번호' })
   @ApiQuery({ name: 'limit', type: 'number', required: false, description: '페이지당 항목 수' })
-  @ApiResponse({ status: 200, description: '게시글 목록을 조회합니다.', type: [Community] })
-  async getPosts(@Query() paginationQuery: PaginationQueryDto): Promise<Community[]> {
+  @ApiResponse({ status: 200, description: '게시글 목록을 조회합니다.', type: [CommunityDto] })
+  async getPosts(@Query() paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
     return this.communityService.getAllPosts(paginationQuery);
   }
 
@@ -48,8 +49,8 @@ export class CommunityController {
   @ApiParam({ name: 'category', type: 'string', description: '카테고리' })
   @ApiQuery({ name: 'page', type: 'number', required: false, description: '페이지 번호' })
   @ApiQuery({ name: 'limit', type: 'number', required: false, description: '페이지당 항목 수' })
-  @ApiResponse({ status: 200, description: '카테고리별 게시글 목록을 조회합니다.', type: [Community] })
-  async getPostsByCategory(@Param('category') category: Category, @Query() paginationQuery: PaginationQueryDto): Promise<Community[]> {
+  @ApiResponse({ status: 200, description: '카테고리별 게시글 목록을 조회합니다.', type: [CommunityDto] })
+  async getPostsByCategory(@Param('category') category: Category, @Query() paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
     return this.communityService.getPostsByCategory(category, paginationQuery);
   }
 
@@ -243,14 +244,6 @@ export class CommunityController {
   @ApiResponse({ status: 200, description: '게시글에 대한 댓글 목록을 조회합니다.', type: [Comment] })
   async getComments(@Param('postId', ParseIntPipe) postId: number, @Query() paginationQuery: PaginationQueryDto): Promise<Comment[]> {
     return this.communityService.getComments(postId, paginationQuery);
-  }
-
-  @Post(':postId/like')
-  @ApiOperation({ summary: '게시글 좋아요' })
-  @ApiParam({ name: 'postId', type: 'number', description: '게시글 ID' })
-  @ApiResponse({ status: 200, description: '게시글에 좋아요를 추가합니다.' })
-  async likePost(@Param('postId', ParseIntPipe) postId: number): Promise<void> {
-    return this.communityService.incrementLike(postId);
   }
 
   @Post(':postId/view')

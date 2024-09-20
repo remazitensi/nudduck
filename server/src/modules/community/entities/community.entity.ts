@@ -41,9 +41,6 @@ export class Community {
   @UpdateDateColumn({ type: 'timestamp' }) // 자동 수정되는 수정일 컬럼
   updatedAt: Date;
 
-  @Column({ default: 0 }) // 기본값 0인 좋아요 수
-  likeCount: number;
-
   @Column({ default: 0 }) // 기본값 0인 조회 수
   viewCount: number;
 

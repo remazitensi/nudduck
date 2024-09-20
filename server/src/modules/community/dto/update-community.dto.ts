@@ -34,11 +34,6 @@ export class UpdateCommunityDto {
   @IsEnum(Category)
   category?: Category;
 
-  @ApiPropertyOptional({ description: '수정된 좋아요 수' })
-  @IsOptional()
-  @IsNumber()
-  likeCount?: number;
-
   @ApiPropertyOptional({ description: '수정된 조회수' })
   @IsOptional()
   @IsNumber()
