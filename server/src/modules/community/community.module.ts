@@ -19,10 +19,11 @@ import { Community } from './entities/community.entity';
 import { Comment } from './entities/comment.entity';
 import { PostRepository } from './repositories/post.repository';
 import { CommentRepository } from './repositories/comment.repository';
-import { User } from '@_modules/user/entity/user.entity';
+import { UserRepository } from '@_modules/user/user.repository';
+import { UserModule } from '@_modules/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Community, Comment, User])],
+  imports: [TypeOrmModule.forFeature([Community, Comment, UserRepository]), UserModule],
   controllers: [CommunityController],
   providers: [CommunityService, PostRepository, CommentRepository],
   exports: [CommunityService, PostRepository, CommentRepository],
