@@ -11,6 +11,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
+import { updateUserProfile } from '../apis/mypage-api';
+
 interface UserEditModalProps {
     data: {
         id: string;
