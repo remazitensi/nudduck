@@ -4,7 +4,21 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 // TODO : 옵션설정 : 범례 없애기, 0 중심줄 강조, 컬러, 선 둥글게, 선 두껍게, 툴팁 설정 등
 
-export const Graph: React.FC = ({ lifeData }) => {
+export const Graph: React.FC = () => {
+  const lifeData = [
+    { age: 17, score: 4, title: '일본 유학' },
+    { age: 18, score: 2, title: '일본 유학' },
+    { age: 19, score: -2, title: '일본 유학' },
+    { age: 20, score: 3, title: '대학 입학', desc: '엘리스 대학교 AI학과 입학' },
+    { age: 21, score: 4, title: '유럽 여행' },
+    { age: 22, score: -1, title: '인턴 계속 탈락' },
+    { age: 23, score: -3, title: '휴학' },
+    { age: 24, score: 5, title: '제주 1년 살기' },
+    { age: 25, score: 5, title: '대만 워킹홀리데이 시작' },
+    { age: 26, score: -1, title: '대만생활' },
+    { age: 27, score: 4, title: '결혼' },
+  ];
+
   //data에서 age를 라벨 추출
   const labels: number[] = lifeData.map((item) => item.age);
 
@@ -49,21 +63,21 @@ export const Graph: React.FC = ({ lifeData }) => {
         min: age.min, // x 축의 최소값
         max: age.max, // x 축의 최대값
         ticks: {
-          display: false, //축 숫자 안 보이게
+          // display: false, //축 숫자 안 보이게
           stepSize: 1,
         },
         grid: {
-          display: false, // x축 그리드 선 숨기기
+          // display: false, // x축 그리드 선 숨기기
         },
         axis: {
-          display: false, // x축 자체와 레이블 숨기기
+          // display: false, // x축 자체와 레이블 숨기기
         },
       },
       y: {
         min: -6,
         max: 6,
         ticks: {
-          display: false, // 축 숫자 안 보이게
+          // display: false, // 축 숫자 안 보이게
           stepSize: 1,
           callback: (value) => {
             if (value === -6 || value === 6) {
@@ -73,10 +87,10 @@ export const Graph: React.FC = ({ lifeData }) => {
           },
         },
         grid: {
-          display: false, // x축 그리드 선 숨기기
+          // display: false, // x축 그리드 선 숨기기
         },
         axis: {
-          display: false, // x축 자체와 레이블 숨기기
+          // display: false, // x축 자체와 레이블 숨기기
         },
       },
     },
@@ -87,7 +101,6 @@ export const Graph: React.FC = ({ lifeData }) => {
     datasets: [
       {
         type: 'line',
-        //data를 따로 빼서 변수로 넣기
         data: lifeData,
         fill: 'origin',
         parsing: {
@@ -107,7 +120,7 @@ export const Graph: React.FC = ({ lifeData }) => {
           }
           return '#6B8E23';
         },
-        borderWidth: 3,
+        borderWidth: 6,
         backgroundColor: (context) => {
           // const index = context.dataIndex;
           // const value = context.dataset.data[index];
