@@ -6,11 +6,18 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.13    김우현      Modified     type 지정
+ * 2024.09.20    김우현      Updated     api 완성()
  */
 
 import { isAxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { api, baseApi } from './base-api';
+
+interface UserProfile {
+  nickname: string; // 사용자 닉네임
+  imageUrl: string; // 프로필 이미지 URL
+  hashtags: string[]; // 해시태그 배열
+}
 
 // 사용자 프로필 가져오기
 export async function fetchUserProfile() {
@@ -30,17 +37,12 @@ export async function fetchUserProfile() {
 }
 
 // 사용자 프로필 회원정보 수정
-export async function updateUserProfile(profile: {
+export async function updateUserProfile(
+  profile: UserProfile,
   // 아래 string관련된 것들을 다 넣어야 하는건지? 예전에 했던거라 지우진 않음
-  imageUrl: string;
-  nickName: string;
-  name: string;
-  email: string;
-  hashtags: string[]; // 이 부분은 그대로 유지 (배열)
-  created_At: string;
-}) {
+) {
   const navigate = useNavigate();
-  const url = `${api.myPage}my/profile`;
+  const url = `${api.myPage}/profile`;
 
   try {
     const response = await baseApi.put(url, profile);
@@ -81,19 +83,22 @@ export async function updateUserProfile(profile: {
 
 // 계정탈퇴 - 더미데이터 이용할 경우
 export async function deleteAccount() {
-  const url = `${api.myPage}/delete-account`;
+  const url = `${api.myPage}/account`;
+  console.log(url);
   const navigate = useNavigate();
 
   try {
-    // 백엔드와 연결하는 대신 더미 데이터를 이용
-    const mockResponse = {
-      status: 200, // 성공시
-      data: '탈퇴 처리 완료', // 더미 데이터
-    };
+    console.log('delete:', '요청');
+    // // 백엔드와 연결하는 대신 더미 데이터를 이용
+    // const mockResponse = {
+    //   status: 200, // 성공시
+    //   data: '탈퇴 처리 완료', // 더미 데이터
+    // };
 
     // 실제 api 호출 대신 mockResponse를 사용하여 처리
-    if (mockResponse.status === 200) {
-      alert(mockResponse.data);
+    const response = await baseApi.delete(url, {}); // 빈객체 빈바디니까
+    if (response.status === 200) {
+      alert(response.data);
       navigate(api.home);
     }
   } catch (error: unknown) {
