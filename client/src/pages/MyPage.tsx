@@ -16,7 +16,7 @@ import QuitModal from './QuitModal';
 const MyPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [quitOpen, setQuitOpen] = useState(false);
-  
+
   // 사용자 프로필 상태 추가
   const [profile, setProfile] = useState({
     id: '',
@@ -24,7 +24,7 @@ const MyPage: React.FC = () => {
     nickName: '',
     name: '',
     email: '',
-    hashtags: [],
+    hashtags: [] as string[],
     created_At: '',
   });
 
@@ -47,19 +47,19 @@ const MyPage: React.FC = () => {
 
   // 이미지 저장 핸들러
   const handleSaveImage = (newImage: string) => {
-    setProfile(prevProfile => ({ ...prevProfile, imageUrl: newImage }));
+    setProfile((prevProfile) => ({ ...prevProfile, imageUrl: newImage }));
     handleCloseModal();
   };
 
   // 닉네임 저장 핸들러
   const handleSaveNickName = (newNickName: string) => {
-    setProfile(prevProfile => ({ ...prevProfile, nickName: newNickName }));
+    setProfile((prevProfile) => ({ ...prevProfile, nickName: newNickName }));
     handleCloseModal();
   };
 
   // 해시태그 저장 핸들러
   const handleSaveHashTag = (newHashTag: string[]) => {
-    setProfile(prevProfile => ({ ...prevProfile, hashtags: newHashTag }));
+    setProfile((prevProfile) => ({ ...prevProfile, hashtags: newHashTag }));
     handleCloseModal();
   };
 
@@ -76,14 +76,12 @@ const MyPage: React.FC = () => {
         profile={profile} // 추가된 props
       />
 
-      <div className='aaa w-[1200px] h-[780px] bg-[#fafafa] rounded-[20px] shadow-lg'>
-        인생그래프
-      </div>
+      <div className='aaa h-[780px] w-[1200px] rounded-[20px] bg-[#fafafa] shadow-lg'>인생그래프</div>
 
       {/* 탈퇴 모달 */}
-      <div onClick={handleQuitOpenModal} className='flex mt-[40px] w-[1200px] justify-end gap-[5px] cursor-pointer'>
+      <div onClick={handleQuitOpenModal} className='mt-[40px] flex w-[1200px] cursor-pointer justify-end gap-[5px]'>
         <img src='/quit.svg' alt='quit' />
-        <div className='flex text-[#8D8B67] text-[15px] items-center'>탈퇴하기</div>
+        <div className='flex items-center text-[15px] text-[#8D8B67]'>탈퇴하기</div>
         {quitOpen && <QuitModal onClose={handleQuitCloseModal} />}
       </div>
     </div>

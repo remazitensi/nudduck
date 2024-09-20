@@ -8,6 +8,7 @@
  * 2024.09.10    김우현      Created     탈퇴 모달 생성
  */
 import React from 'react';
+import { deleteAccount } from '../apis/mypage-api';
 
 
 interface QuitModalProps {
@@ -16,9 +17,15 @@ interface QuitModalProps {
 
 const QuitModal:React.FC<QuitModalProps> = ({ onClose }) => {
 
-    const handleClickQuit = () => {
-        alert('정상적으로 탈퇴 처리 되었습니다.')
-        onClose();
+    const handleClickQuit = async() => {
+        try {
+            await deleteAccount(); // 탈퇴처리 api 호출
+            alert('정상적으로 탈퇴처리 되었습니다.') // 성공 메시지
+            onClose();
+        } catch (error) {
+            console.log('탈퇴처리 실패:', error);
+            alert('탈퇴 처리중 문제가 발생하였습니다.');
+        }
     }
 
     return (

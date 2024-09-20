@@ -2,7 +2,7 @@ import UserEditModal from '../../pages/UserEditModal';
 
 import React, { useState, useEffect } from 'react';
 
-import { fetchUserProfile, updateUserProfile, deleteUserImage } from '../../apis/mypage-api';
+import { fetchUserProfile } from '../../apis/mypage-api';
 
 
 // MyProfile 컴포넌트에 필요한 props 타입 정의
@@ -15,15 +15,16 @@ interface MyProfileProps {
   handleCloseModal: () => void;
   handleSaveImage: (newImage: string) => void;
   handleSaveNickName: (newNickName: string) => void;
-  handleSaveHashTag: (newHashTag: string) => void;
-
-  id: string;
-  imageUrl: string;
-  nickName: string;
-  name: string;
-  email: string;
-  hashtags: string[];
-  created_At: string;
+  handleSaveHashTag: (newHashTag: string[]) => void;
+  profile: {
+    id: string;
+    imageUrl: string;
+    nickName: string;
+    name: string;
+    email: string;
+    hashtags: string[];
+    created_At: string;
+  } 
 }
 
 const MyProfile: React.FC<MyProfileProps> = ({
@@ -52,7 +53,7 @@ const [profile, setProfile] = useState({
 
 const fetchProfile = async () => {
   try {
-    const data = await fetchUserProfile();
+    const data: typeof profile = await fetchUserProfile(); // profile 타입과 동일하게 설정
     setProfile(data);
     console.log('Fetched profile:', data); // API 호출 후 데이터 로그 확인
   } catch (error) {
@@ -97,7 +98,7 @@ useEffect(() => {
                 <UserEditModal
                   data={profile}
                   onClose={handleCloseModal}
-                  currentImage={profile.imageUrl}
+                  // currentImage={profile.imageUrl}
                   onSaveImage={handleSaveImage}
                   onSaveNickName={handleSaveNickName}
                   onSaveHashTag={handleSaveHashTag}
@@ -110,7 +111,8 @@ useEffect(() => {
             </div>
           </div>
           <div className="flex justify-center">
-            <img className="w-[250px] h-[250px] rounded-[125px] mt-[20px]" src={profile.imageUrl} alt='userImg' />
+            <img className="w-[250px] h-[250px] rounded-[125px] mt-[20px]" src='/userImage.png' alt='userImg' />
+            {/* {profile.imageUrl || '/default_image.png'} */}
           </div>
 
           <div className="pl-[65px] mt-[60px]">
