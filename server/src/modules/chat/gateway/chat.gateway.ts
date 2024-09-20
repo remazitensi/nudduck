@@ -19,7 +19,7 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('sendMessage')
-  async handleMessage(@MessageBody() { message: content }: SendMessageDto, @ConnectedSocket() client: Socket, @MessageBody() roomId: number, @MessageBody() senderId: number) {
+  async handleMessage(@MessageBody() { content }: SendMessageDto, @ConnectedSocket() client: Socket, @MessageBody() roomId: number, @MessageBody() senderId: number) {
     try {
       const savedMessage = await this.chatService.saveMessage(senderId, roomId, content);
       this.server.to(roomId.toString()).emit('newMessage', savedMessage);

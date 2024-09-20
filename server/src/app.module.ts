@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommunityModule } from './modules/community/community.module';
-import { RedisModule } from 'modules/chat/redis/redis.module';
+import { RedisModule } from 'modules/redis/redis.module';
 import { ChatModule } from 'modules/chat/chat.module';
 
 @Module({
@@ -46,11 +46,7 @@ import { ChatModule } from 'modules/chat/chat.module';
     CommunityModule,
     RedisModule,
     ChatModule,
-    CommunityModule,
-    RedisModule,
-    ChatModule,
   ],
-  controllers: [AppController],
   controllers: [AppController],
   providers: [AppService],
 })
