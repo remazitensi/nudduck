@@ -11,11 +11,11 @@
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    응답 dto 추가
  * 2024.09.21    이승철      Modified    절대경로 변경
+ * 2024.09.21    이승철      Modified    getExperts 반환타입 변경
  */
 
 import { ExpertPageDto } from '@_modules/expert/dto/expert-page.dto';
 import { ExpertListResponseDto, ExpertResponseDto } from '@_modules/expert/dto/expert-response.dto';
-import { Expert } from '@_modules/expert/entity/expert.entity';
 import { ExpertService } from '@_modules/expert/expert.service';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -30,7 +30,7 @@ export class ExpertController {
   @ApiResponse({ status: 200, description: '성공적으로 전문가 리스트를 반환합니다.', type: ExpertListResponseDto })
   @ApiResponse({ status: 400, description: '잘못된 요청입니다.' })
   @Get()
-  async getExperts(@Query() expertPageDto: ExpertPageDto): Promise<{ data: Expert[]; totalCount: number }> {
+  async getExperts(@Query() expertPageDto: ExpertPageDto): Promise<ExpertListResponseDto> {
     const limit = 10; // 페이지 당 10개의 데이터 고정
     return this.expertService.getExperts(expertPageDto.page, limit);
   }
