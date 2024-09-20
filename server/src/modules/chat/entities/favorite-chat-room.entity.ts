@@ -8,22 +8,28 @@
  * 2024-09-17    김재영      Created     즐겨찾기 채팅방 엔티티 정의
  */
 
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Entity, ManyToOne, PrimaryColumn, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from './user.entity';
+import { ChatRoom } from './chat-room.entity';
 
 @Entity('FavoriteChatRoom')
 export class FavoriteChatRoom {
   @ApiProperty({
-    description: '즐겨찾기 추가한 사용자 ID',
+    description: '즐겨찾기 추가한 사용자',
     example: 101,
   })
   @PrimaryColumn()
-  userId: number;
+  @ManyToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @ApiProperty({
-    description: '즐겨찾기된 채팅방 ID',
+    description: '즐겨찾기된 채팅방',
     example: 1,
   })
   @PrimaryColumn()
-  chatroomId: number;
+  @ManyToOne(() => ChatRoom, { eager: true })
+  @JoinColumn({ name: 'chatroomId' })
+  chatroom: ChatRoom;
 }

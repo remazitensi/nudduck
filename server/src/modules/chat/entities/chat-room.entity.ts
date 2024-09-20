@@ -6,10 +6,13 @@
  * History
  * Date          Author      Status      Description
  * 2024-09-17    김재영      Created     채팅방 엔티티 정의
+ * 2024.09.20    김재영      modified    채팅방 엔티티 수정
  */
 
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from './user.entity';
+import { Message } from './message.entity';
 
 @Entity('ChatRoom')
 export class ChatRoom {
@@ -28,11 +31,12 @@ export class ChatRoom {
   chatroomName: string;
 
   @ApiProperty({
-    description: '채팅방을 생성한 사용자 ID',
+    description: '채팅방을 생성한 사용자',
     example: 101,
   })
-  @Column()
-  userId: number;
+  @ManyToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @ApiProperty({
     description: '채팅방이 생성된 시간',
@@ -40,4 +44,11 @@ export class ChatRoom {
   })
   @CreateDateColumn()
   createdAt: Date;
+
+  @ApiProperty({
+    description: '채팅방 내의 메시지 목록',
+    type: [Message],
+  })
+  @OneToMany(() => Message, (message) => message.chatroom)
+  messages: Message[];
 }
