@@ -66,7 +66,7 @@ export class CommunityService {
   async getAllPosts(paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
     try {
       return await this.postRepository.findAll(paginationQuery);
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -75,7 +75,7 @@ export class CommunityService {
   async getPostsByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<CommunityDto[]> {
     try {
       return await this.postRepository.findByCategory(category, paginationQuery);
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -94,7 +94,7 @@ export class CommunityService {
       });
 
       return await this.postRepository.save(post);
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -115,7 +115,7 @@ export class CommunityService {
       this.checkOwnership(userId, post.user.id); // 권한 확인
       await this.postRepository.updatePost(id, updateCommunityDto);
       return this.getPostById(id);
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -126,7 +126,7 @@ export class CommunityService {
       const post = await this.getPostById(id);
       this.checkOwnership(userId, post.user.id); // 권한 확인
       await this.postRepository.deletePost(id);
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -158,7 +158,7 @@ export class CommunityService {
         await this.updatePostCommentCount(postId, manager);
         return comment;
       });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -177,7 +177,7 @@ export class CommunityService {
         await manager.update(Comment, commentId, updateCommentDto);
         return manager.findOneOrFail(Comment, { where: { id: commentId } });
       });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -196,7 +196,7 @@ export class CommunityService {
         await this.commentRepository.deleteCommentAndReplies(commentId, manager);
         await this.updatePostCommentCount(postId, manager);
       });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -214,7 +214,7 @@ export class CommunityService {
         await this.updateReplyCount(parentId, manager);
         return reply;
       });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -232,7 +232,7 @@ export class CommunityService {
         await manager.update(Comment, commentId, updateCommentDto);
         return manager.findOneOrFail(Comment, { where: { id: commentId } });
       });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -253,7 +253,7 @@ export class CommunityService {
           await this.updateReplyCount(reply.parentId, manager);
         }
       });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -263,7 +263,7 @@ export class CommunityService {
     try {
       const count = await manager.count(Comment, { where: { postId, parentId: null } });
       await manager.update(Community, { postId }, { commentCount: count });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -273,7 +273,7 @@ export class CommunityService {
     try {
       const count = await manager.count(Comment, { where: { parentId: commentId } });
       await manager.update(Comment, { id: commentId }, { replyCount: count });
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
@@ -282,7 +282,7 @@ export class CommunityService {
   async incrementView(postId: number): Promise<void> {
     try {
       await this.postRepository.incrementViewCount(postId);
-    } catch (error) {
+    } catch {
       this.handleError();
     }
   }
