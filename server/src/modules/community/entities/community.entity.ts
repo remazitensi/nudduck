@@ -13,10 +13,9 @@
  * 2024.09.19    김재영      Modified    유저 아이디 추가
  */
 
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { Category } from '../enums/category.enum';
-import { Comment } from './comment.entity';
-import { User } from '@_modules/user/entity/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Category } from '@_modules/community/enums/category.enum';
+import { Comment } from '@_modules/community/entities/comment.entity';
 
 @Entity('community') // 테이블 이름 지정
 export class Community {
@@ -28,9 +27,6 @@ export class Community {
 
   @Column('text') // 긴 텍스트를 위한 컬럼
   content: string;
-
-  @ManyToOne(() => User, (user) => user.communities) // 게시글 작성자
-  user: User;
 
   @Column({ type: 'enum', enum: Category, nullable: true }) // enum을 사용한 카테고리 컬럼
   category?: Category;
