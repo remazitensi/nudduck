@@ -1,18 +1,17 @@
 /**
  * File Name    : community.dto.ts
- * Description  : 커뮤니티 게시글 DTO (제목만 포함)
+ * Description  : 커뮤니티 게시글 DTO
  * Author       : 김재영
  *
  * History
  * Date          Author      Status      Description
- * 2024.09.20    김재영      Created     커뮤니티 게시글 제목만 포함한 DTO 생성
+ * 2024.09.20    김재영      Created     커뮤니티 게시글 DTO 생성
  */
 
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@_modules/user/entity/user.entity';
-import { Category } from '../enums/category.enum';
+import { Category } from '@_modules/community/enums/category.enum';
 
-export class CommunityDto {
+export class CommunityResponseDto {
   @ApiProperty({
     description: '게시글 ID',
     example: 1,
@@ -40,14 +39,13 @@ export class CommunityDto {
   @ApiProperty({
     description: '카테고리',
     enum: Category,
-    example: 'STUDY',
+    example: 'study',
   })
   category?: Category; // 카테고리
 
-  @ApiProperty({
-    description: '작성자 정보',
-    example: '멋쨍이 재영',
-    type: User,
-  })
-  user: User; // 작성자 정보
+  @ApiProperty({ description: '작성자 닉네임', example: '멋쨍이 재영' })
+  readonly nickname: string;
+
+  @ApiProperty({ description: '작성자 프로필 사진 URL', example: 'http://nudduck.com/remazitensi.jpg' })
+  readonly imageUrl?: string;
 }
