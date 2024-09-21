@@ -12,7 +12,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getInterviewPostList, getMeetingPostList, getPostList, getStudyPostList, getTalkPostList } from '../apis/community-api';
+import { getInterviewPostList, getMeetingPostList, getPostList, getStudyPostList, getTalkPostList } from '../apis/community/community-post-api';
 import { PostList } from '../components/Community/PostList';
 import { PostListParams, PostListRes } from '../types/community-type';
 
@@ -25,7 +25,7 @@ const CommunityPostList: React.FC = () => {
     community: [],
   });
 
-  const [sort, setSort] = useState('latest'); // 최신순, 인기순, 조회순 관리
+  const [sort, setSort] = useState('createdAt:desc'); // 최신순, 조회순 관리
   const [selectedCategory, setSelectedCategory] = useState('전체'); // 카테고리 상태
 
   // 카테고리에 따라 적절한 fetch 함수 호출
@@ -127,10 +127,9 @@ const CommunityPostList: React.FC = () => {
           </div>
           <div className='flex items-center gap-[10px] text-[18px]'>
             <button
-              className={`text-[${sort === 'latest' ? '#59573D' : '#AEAC9A'}]`}
+              className={`text-[${sort === 'createdAt:desc' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
-                // console.log('Sort changed to latest');
-                setSort('latest');
+                setSort('createdAt:desc');
               }}
             >
               최신순
@@ -148,10 +147,9 @@ const CommunityPostList: React.FC = () => {
             </button>
             <div>|</div> */}
             <button
-              className={`text-[${sort === 'views' ? '#59573D' : '#AEAC9A'}]`}
+              className={`text-[${sort === 'viewCount:desc' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
-                // console.log('Sort changed to views');
-                setSort('views');
+                setSort('viewCount:desc');
               }}
             >
               조회순
