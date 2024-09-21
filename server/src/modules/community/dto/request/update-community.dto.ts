@@ -13,7 +13,7 @@
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, IsEnum, IsNumber } from 'class-validator';
-import { Category } from '../enums/category.enum';
+import { Category } from '@_modules/community/enums/category.enum';
 
 export class UpdateCommunityDto {
   @ApiPropertyOptional({ description: '수정된 게시글 제목' })

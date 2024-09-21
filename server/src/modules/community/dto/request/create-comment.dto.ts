@@ -9,7 +9,7 @@
  * 2024.09.10    김재영      Modified    대댓글에 대한 parentId 속성 추가
  * 2024.09.12    김재영      Modified    Swagger 데코레이터 추가
  * 2024.09.16    김재영      Modified    camelcase로 변경
- * 2024.09.17    김재영      Modified    postId와 userId 속성 추가
+ * 2024.09.22    김재영      Modified    댓글 ID 추가
  */
 
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
@@ -30,15 +30,15 @@ export class CreateCommentDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  postId: number; // 게시글 ID 추가
+  postId: number;
 
-  @ApiProperty({
-    description: '작성자 ID',
+  @ApiPropertyOptional({
+    description: '댓글 ID (대댓글이 아닌 경우 필요하지 않음)',
     example: 1,
   })
   @IsNumber()
-  @IsNotEmpty()
-  userId: number; // 작성자 ID 추가
+  @IsOptional()
+  commentId?: number;
 
   @ApiPropertyOptional({
     description: '대댓글일 경우 부모 댓글의 ID',
@@ -46,38 +46,5 @@ export class CreateCommentDto {
   })
   @IsNumber()
   @IsOptional()
-  parentId?: number; // 대댓글일 경우, 부모 댓글 ID
-}
-
-// 조회 시 사용할 DTO
-export class CommentResponseDto {
-  @ApiProperty({
-    description: '댓글 ID',
-    example: 101,
-  })
-  commentId: number;
-
-  @ApiProperty({
-    description: '댓글 내용',
-    example: '이 게시글에 대한 댓글입니다.',
-  })
-  content: string;
-
-  @ApiProperty({
-    description: '작성 일시',
-    example: '2024-09-12T12:00:00Z',
-  })
-  createdAt: Date;
-
-  @ApiProperty({
-    description: '수정 일시',
-    example: '2024-09-12T12:05:00Z',
-  })
-  updatedAt: Date;
-
-  @ApiProperty({
-    description: '대댓글 수',
-    example: 2,
-  })
-  replyCount: number;
+  parentId?: number;
 }

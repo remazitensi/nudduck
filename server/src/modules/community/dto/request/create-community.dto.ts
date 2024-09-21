@@ -11,8 +11,8 @@
  */
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { Category } from '../enums/category.enum';
+import { IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { Category } from '@_modules/community/enums/category.enum';
 
 export class CreateCommunityDto {
   @ApiProperty({
@@ -28,13 +28,6 @@ export class CreateCommunityDto {
   })
   @IsNotEmpty()
   content: string;
-
-  @ApiProperty({
-    description: '작성자의 사용자 ID',
-    example: 123,
-  })
-  @IsNotEmpty()
-  userId: number;
 
   @ApiPropertyOptional({
     description: '커뮤니티 게시글의 카테고리',
