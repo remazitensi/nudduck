@@ -1,3 +1,13 @@
+/*
+ * File Name    : Graph.tsx
+ * Description  : chart.js 데이터와 옵션
+ * Author       : 김민지
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.11    김민지      Created      더미 데이터로 디자인 옵션 선정
+ */
+
 import { CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 // import { lifeData } from '../../types/graph_type';
