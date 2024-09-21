@@ -12,7 +12,7 @@
 
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { PostBodyData, PostDetailData, PostDetailParams, PostListParams } from '../types/community-type';
+import { PostBodyData, PostDetailData, PostListParams } from '../types/community-type';
 import { api, baseApi } from './base-api';
 
 // <------------------ 게시글 api ------------------>
@@ -23,7 +23,7 @@ function isAxiosError(error: unknown): error is AxiosError {
 }
 
 // 전체 게시글 목록 get 요청
-export async function getPostList({ page = 1, sort = 'latest', search = '' }: PostListParams) {
+export async function getPostList({ page = 1, sort = 'latest' }: PostListParams) {
   // 카테고리가 있으면 /community/{category}, 없으면 /community
   // 리팩토링 이후 카테고리 선택 시 setCategory가 잘 동작하면 주석 해제할 예정
   // const url = category ? `${api.community}/${category}` : api.community;
@@ -33,9 +33,9 @@ export async function getPostList({ page = 1, sort = 'latest', search = '' }: Po
     // get 요청으로 받은 응답을 response에 저장
     const response = await baseApi.get(url, {
       params: {
-        page: page,
-        sort: sort,
-        search: search,
+        page: Number(page),
+        pageSize: Number(10),
+        // sort: sort,
       },
     });
     console.log(response);
@@ -51,14 +51,14 @@ export async function getPostList({ page = 1, sort = 'latest', search = '' }: Po
 }
 
 // 면접 카테고리 게시글 목록 조회
-export async function getInterviewPostList({ page = 1, sort = 'latest', search = '' }: PostListParams) {
+export async function getInterviewPostList({ page = 1, sort = 'latest' }: PostListParams) {
   const url = `${api.community}/interview`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: page,
+        pageSize: 10,
         sort: sort,
-        search: search,
       },
     });
     console.log(response);
@@ -74,14 +74,14 @@ export async function getInterviewPostList({ page = 1, sort = 'latest', search =
 }
 
 // 모임 카테고리 게시글 목록 조회
-export async function getMeetingPostList({ page = 1, sort = 'latest', search = '' }: PostListParams) {
+export async function getMeetingPostList({ page = 1, sort = 'latest' }: PostListParams) {
   const url = `${api.community}/meeting`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: page,
+        pageSize: 10,
         sort: sort,
-        search: search,
       },
     });
     console.log(response);
@@ -97,14 +97,14 @@ export async function getMeetingPostList({ page = 1, sort = 'latest', search = '
 }
 
 // 스터디 카테고리 게시글 목록 조회
-export async function getStudyPostList({ page = 1, sort = 'latest', search = '' }: PostListParams) {
+export async function getStudyPostList({ page = 1, sort = 'latest' }: PostListParams) {
   const url = `${api.community}/study`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: page,
+        pageSize: 10,
         sort: sort,
-        search: search,
       },
     });
     console.log(response);
@@ -120,14 +120,14 @@ export async function getStudyPostList({ page = 1, sort = 'latest', search = '' 
 }
 
 // 잡담 카테고리 게시글 목록 조회
-export async function getTalkPostList({ page = 1, sort = 'latest', search = '' }: PostListParams) {
+export async function getTalkPostList({ page = 1, sort = 'latest' }: PostListParams) {
   const url = `${api.community}/talk`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: page,
+        pageSize: 10,
         sort: sort,
-        search: search,
       },
     });
     console.log(response);
@@ -143,7 +143,7 @@ export async function getTalkPostList({ page = 1, sort = 'latest', search = '' }
 }
 
 // 카테고리 무관 게시글 상세 내역 get 요청
-export async function getPostDetail({ id = '' }: PostDetailParams) {
+export async function getPostDetail(id: number) {
   try {
     const response = await baseApi.get(`${api.community}/${id}`, {});
     console.log(response);
@@ -166,8 +166,8 @@ export async function createPost({ post }: { post: PostBodyData }) {
     const response = await baseApi.post(api.community, { post });
 
     if (response.status === 201) {
-      // 새로 작성한 게시물 페이지로 이동
-      navigate(`/community/${response.data.post_id}`);
+      // 커뮤니티 페이지로 이동
+      navigate(`/community`);
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
@@ -183,11 +183,11 @@ export async function createPost({ post }: { post: PostBodyData }) {
 export async function editPost({ post }: { post: PostDetailData }) {
   const navigate = useNavigate();
   try {
-    const response = await baseApi.put(`${api.community}/${post.post_id}`, {});
+    const response = await baseApi.put(`${api.community}/${post.postId}`, {});
 
     if (response.status === 201) {
       // 수정한 게시글 페이지로 이동
-      navigate(`/community/${post.post_id}`);
+      navigate(`/community/${post.postId}`);
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
@@ -203,7 +203,7 @@ export async function editPost({ post }: { post: PostDetailData }) {
 export async function deletePost({ post }: { post: PostDetailData }) {
   const navigate = useNavigate();
   try {
-    const response = await baseApi.delete(`${api.community}/${post.post_id}`, {});
+    const response = await baseApi.delete(`${api.community}/${post.postId}`, {});
 
     if (response.status === 201) {
       navigate(api.myPage);
@@ -217,12 +217,6 @@ export async function deletePost({ post }: { post: PostDetailData }) {
     throw error;
   }
 }
-
-// TODO : 게시글 좋아요 증가
-
-// TODO : 게시글 좋아요 감소
-
-// TODO : 게시글 조회수 증가
 
 // <-------------- 댓글 ------------------>
 
