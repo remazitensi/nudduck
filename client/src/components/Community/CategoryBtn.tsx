@@ -1,13 +1,12 @@
 /**
- * File Name    : Cate.tsx
- * Description  : 게시글 제목이 들어가는 리스트 컴포넌트
+ * File Name    : CategoryBtn.tsx
+ * Description  : 카테고리에 따라 색이 바뀌는 컴포넌트
  * Author       : 김민지
  *
  * History
  * Date          Author      Status      Description
- * 2024.09.13    김민지      Created     PostSection 동적 추가, 카테고리 컴포넌트 분리
- * 2024.09.13    김민지      Modified    카테고리에 따라 이름, 색 변경
- * 2024.09.19    김민지      Modified    게시글 상세페이지 이동, 타입에러 해결, 파일명 변경, CategoryBtn 컴포넌트 분리
+ * 2024.09.19    김민지      Created     CategoryBtn 컴포넌트 분리
+ * 2024.09.22    김민지      Modified
  */
 
 //todo : 지금 하고 있는 거 - 카테고리btn 컴포넌트 분리 주석 작성

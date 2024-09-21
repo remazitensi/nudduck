@@ -12,7 +12,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api, baseApi } from '../apis/base-api';
-import { getPostDetail } from '../apis/community-api';
+import { getPostDetail } from '../apis/community/community-post-api';
 import { CategoryBtn } from '../components/Community/CategoryBtn';
 import { PostDetailData } from '../types/community-type';
 
@@ -25,7 +25,7 @@ const CommunityPostDetail: React.FC = () => {
     category: '',
     user: '',
     userId: 0,
-    created_at: '',
+    createdAt: '',
     updated_at: '',
     viewCount: 0,
     commentCount: 0,
@@ -74,7 +74,7 @@ const CommunityPostDetail: React.FC = () => {
         </div>
         <div className='flex gap-[8px] text-[#AEAC9A]'>
           <div>작성일</div>
-          <div>{postData.created_at.substring(0, 10)}</div>
+          <div>{postData.createdAt.substring(0, 10)}</div>
         </div>
         <div className='text-[#AEAC9A]'>
           조회수
