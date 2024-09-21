@@ -14,7 +14,7 @@ import React, { useRef, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import { useNavigate } from 'react-router-dom';
-import { createPost } from '../apis/community-api';
+import { createPost } from '../apis/community/community-post-api';
 
 const CommunityPostCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -45,15 +45,23 @@ const CommunityPostCreate: React.FC = () => {
 
   // 게시글을 저장하는 함수
   const savePost = async () => {
-    const content = editorRef.current?.getInstance().getMarkdown(); // Editor의 markdown 가져오기
+    const content = editorRef.current?.getInstance().getMarkdown();
     const post = {
       title: typing,
       content: content,
       category: category,
     };
-    await createPost({
-      post: post,
-    });
+
+    try {
+      // API 호출 및 성공 시 리다이렉트
+      await createPost({ post });
+      alert('게시글이 성공적으로 저장되었습니다.');
+      navigate(`/community`);
+    } catch (error: any) {
+      // 에러 발생 시 처리
+      alert(error.message || '게시글 저장 중 에러가 발생했습니다.');
+      navigate(`/community`);
+    }
   };
 
   const toolbarItems = [
@@ -63,7 +71,7 @@ const CommunityPostCreate: React.FC = () => {
 
   return (
     <div className='community-titles flex flex-col items-center'>
-      <div className='mt-[140px]' onClick={() => navigate('/community')}>
+      <div className='mt-[140px] cursor-pointer' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[100px] border-b-2 border-[#8D8B67]'></div>
       </div>
@@ -131,8 +139,10 @@ const CommunityPostCreate: React.FC = () => {
             toolbarItems={toolbarItems}
           />
           <div className='mt-[80px] flex justify-end gap-[23px]'>
-            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-white'>취소</button>
-            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9]' onClick={savePost}>
+            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
+              취소
+            </button>
+            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
               저장
             </button>
           </div>

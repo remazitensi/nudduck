@@ -12,7 +12,6 @@
  */
 
 import { AxiosError } from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { PostBodyData, PostDetailData, PostListParams } from '../../types/community-type';
 import { api, baseApi } from '../base-api';
 
@@ -167,29 +166,27 @@ export async function getPostDetail(id: number) {
 
 // 게시글 작성 post 요청
 export async function createPost({ post }: { post: PostBodyData }) {
-  const navigate = useNavigate();
   try {
-    // baseApi(url, { 백으로 보내야 할 정보를 담는 곳 })
     const response = await baseApi.post(api.community, { post });
 
     if (response.status === 201) {
-      // 커뮤니티 페이지로 이동
-      navigate(`/community`);
+      // Todo : 게시글이 성공적으로 생성된 경우
+      return response.data;
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to fetch posts:', errorMessage);
+      console.error('Failed to create post:', errorMessage);
+      throw new Error(errorMessage); // 에러 메시지를 상위로 던짐
     } else {
       console.error('알 수 없는 에러가 발생했습니다.');
+      throw new Error('알 수 없는 에러가 발생했습니다.');
     }
-    throw error;
   }
 }
 
 // TODO 게시글 수정 put 요청
 export async function editPost({ post }: { post: PostDetailData }) {
-  const navigate = useNavigate();
   try {
     const response = await baseApi.put(`${api.community}/${post.postId}`, {});
 
@@ -210,7 +207,6 @@ export async function editPost({ post }: { post: PostDetailData }) {
 
 // TODO 게시글 삭제 delete 요청
 export async function deletePost({ post }: { post: PostDetailData }) {
-  const navigate = useNavigate();
   try {
     const response = await baseApi.delete(`${api.community}/${post.postId}`, {});
 
