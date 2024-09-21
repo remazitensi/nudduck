@@ -7,19 +7,43 @@
  * Date          Author      Status      Description
  * 2024.09.10    김우현      Created     커뮤니티 게시글보기 페이지 생성
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getPostDetail } from '../apis/community-api';
+import { CategoryBtn } from '../components/Community/PostSection';
+import { PostDetailData } from '../types/community-type';
 
 const CommunityPostDetail: React.FC = () => {
+  const { id } = useParams(); // URL 파라미터에서 id 가져오기, 구조분해할당
+  const [postData, setPostData] = useState<PostDetailData | null>(null); // postData에 타입 지정
+  const [error, setError] = useState(null); // 에러 상태 저장
+  // path의 postId를 사용해서 get
+  useEffect(() => {
+    const fetchPostData = async () => {
+      try {
+        if (id) {
+          const data = await getPostDetail(Number(id)); // 작성한 API 요청 함수 호출
+          setPostData(data); // 가져온 데이터를 state에 저장
+        }
+      } catch (err) {
+        console.error('Error fetching post data:', err);
+        setError(err); // 에러가 발생하면 에러 상태 저장
+      }
+    };
+
+    fetchPostData(); // API 요청 함수 호출
+  }, [id]);
+
   return (
     <div className='community-titles flex flex-col items-center'>
       <div className='mt-[140px]'>
         <div className='text-[28px] font-bold'>커뮤니티</div>
-        <div className='mt-[10px] w-[100px] border-b-2 border-[8D8B67]'></div>
+        <div className='mt-[10px] w-[100px] border-b-2 border-[#8D8B67]'></div>
       </div>
 
       <div className='mt-[120px] flex w-[1200px] items-center justify-between text-center'>
         <div className='mr-[120px] flex items-center gap-[10px]'>
-          <div className='h-[30px] w-[75px] bg-[#FFC5C3] text-center'>스터디</div>
+          <CategoryBtn category={postData.category} />
           <div className='text-[24px]'>1:1 대화방 및 스터디 구합니다</div>
         </div>
         <div className='flex gap-[8px] text-[#AEAC9A]'>

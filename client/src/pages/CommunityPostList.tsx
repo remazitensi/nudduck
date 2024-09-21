@@ -8,7 +8,7 @@
  * 2024.09.10    김우현      Created     커뮤니티 페이지 생성
  * 2024.09.13    김민지      Modified    PostSection 동적 추가, 컴포넌트 분리, 카테고리 선택
  * 2024.09.14    김민지      Modified    글쓰기 Link 수정
- * 2024.09.19    김민지      Modified    sort, search 추가
+ * 2024.09.19    김민지      Modified    sort, category switch 추가
  */
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -25,15 +25,12 @@ const CommunityPostList: React.FC = () => {
     community: [],
   });
 
-  const [inputValue, setInputValue] = useState(''); // input의 값을 관리
-  const [search, setSearch] = useState(''); // 검색 상태
-  const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(null); // debounce 타이머
   const [sort, setSort] = useState('latest'); // 최신순, 인기순, 조회순 관리
   const [selectedCategory, setSelectedCategory] = useState('전체'); // 카테고리 상태
 
   // 카테고리에 따라 적절한 fetch 함수 호출
   const fetchPosts = async () => {
-    const params: PostListParams = { page: posts.currentPage, sort: sort, search: search };
+    const params: PostListParams = { page: posts.currentPage, sort: sort };
     let data;
 
     switch (selectedCategory) {
@@ -57,27 +54,11 @@ const CommunityPostList: React.FC = () => {
     setPosts(data);
   };
 
-  // inputValue가 변경될 때마다 0.5초 뒤에 search 상태 업데이트
-  useEffect(() => {
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout); // 이전 타이머 제거
-    }
-
-    const timeout = setTimeout(() => {
-      setSearch(inputValue); // 입력된 값으로 search 상태 업데이트
-    }, 500);
-
-    setDebounceTimeout(timeout);
-
-    // inputValue 변경 시 타이머 정리
-    return () => clearTimeout(timeout);
-  }, [inputValue]);
-
-  // 페이지 로드 시 및 sort, search, selectedCategory 변경 시 fetchPosts 호출
+  // 페이지 로드 시 및 sort,selectedCategory 변경 시 fetchPosts 호출
   useEffect(() => {
     // console.log('Fetching posts with sort:', sort);
     fetchPosts();
-  }, [sort, search, selectedCategory]);
+  }, [sort, selectedCategory]);
 
   // 페이지가 처음 로드될 때 fetchPosts 실행
   useEffect(() => {
@@ -104,13 +85,24 @@ const CommunityPostList: React.FC = () => {
       <div className='mt-[55px]'>
         <div className='flex items-center'>
           <div className='flex cursor-pointer gap-[80px] text-[20px]'>
-            <div onClick={() => handleCategoryChange('전체')}>전체</div>
-            <div onClick={() => handleCategoryChange('면접')}>면접</div>
-            <div onClick={() => handleCategoryChange('모임')}>모임</div>
-            <div onClick={() => handleCategoryChange('스터디')}>스터디</div>
-            <div onClick={() => handleCategoryChange('잡담')}>잡담</div>
+            <div onClick={() => handleCategoryChange('전체')} className={`text-[${selectedCategory === '전체' ? '#59573D' : '#AEAC9A'}]`}>
+              전체
+            </div>
+            <div onClick={() => handleCategoryChange('면접')} className={`text-[${selectedCategory === '면접' ? '#59573D' : '#AEAC9A'}]`}>
+              면접
+            </div>
+            <div onClick={() => handleCategoryChange('모임')} className={`text-[${selectedCategory === '모임' ? '#59573D' : '#AEAC9A'}]`}>
+              모임
+            </div>
+            <div onClick={() => handleCategoryChange('스터디')} className={`text-[${selectedCategory === '스터디' ? '#59573D' : '#AEAC9A'}]`}>
+              스터디
+            </div>
+            <div onClick={() => handleCategoryChange('잡담')} className={`text-[${selectedCategory === '잡담' ? '#59573D' : '#AEAC9A'}]`}>
+              잡담
+            </div>
           </div>
-          <div className='ml-[70px] flex items-center'>
+          {/* 검색 컴포넌트 삭제 */}
+          {/* <div className='ml-[70px] flex items-center'>
             <div className='flex items-center gap-[20px]'>
               <input
                 className='flex h-[50px] w-[300px] rounded-xl border p-[10px]'
@@ -122,7 +114,7 @@ const CommunityPostList: React.FC = () => {
                 검색
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -144,7 +136,8 @@ const CommunityPostList: React.FC = () => {
               최신순
             </button>
             <div>|</div>
-            <button
+            {/* 인기순 삭제 */}
+            {/* <button
               className={`text-[${sort === 'popular' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
                 // console.log('Sort changed to popular');
@@ -153,7 +146,7 @@ const CommunityPostList: React.FC = () => {
             >
               인기순
             </button>
-            <div>|</div>
+            <div>|</div> */}
             <button
               className={`text-[${sort === 'views' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
@@ -169,6 +162,7 @@ const CommunityPostList: React.FC = () => {
         <div className='w-[700px]'>
           <div className='mb-[30px] flex flex-col'>
             <div className='mt-[10px] w-full border-b-2 border-[8D8B67]'></div>
+            {/* 게시물 목록 컴포넌트 */}
             <PostList posts={posts.community} />
 
             {/* 페이지네이션 컴포넌트 */}
