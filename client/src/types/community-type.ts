@@ -10,31 +10,32 @@
  * 2024.09.19    김민지      Modified    PostTitleData, PostDetailData 명시
  */
 
-export type PostListParams = { category?: string; page: number; sort?: string; search?: string };
+export type PostListParams = { category?: string; page: number; sort?: string };
 
 export type PostDetailParams = { category?: string; id: string };
 
 export type PostTitleData = {
-  post_id: number;
+  postId: number;
   title: string;
   category: string;
-  user_id: number;
+  userId: number;
   created_at: string;
-  likes_count: number;
-  views_count: number;
+  // likes_count: number;
+  viewCount: number;
 };
 
 export type PostDetailData = {
-  post_id: number;
+  postId: number;
   title: string;
   content: string;
   category: string;
-  user_id: number;
+  user: string;
+  userId: number;
   created_at: string;
   updated_at: string;
-  likes_count: number;
-  views_count: number;
-  comments_count: number;
+  // likes_count: number;
+  viewCount: number;
+  commentCount: number;
 };
 
 export type PostListRes = {

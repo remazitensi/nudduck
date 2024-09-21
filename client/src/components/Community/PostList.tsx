@@ -18,7 +18,7 @@ export const PostList: React.FC<any> = ({ posts }) => {
     <div>
       {/* 각 게시글 데이터를 PostSection에 전달 */}
       {posts.map((post: PostDetailData) => (
-        <PostSection key={post.post_id} data={post} />
+        <PostSection key={post.postId} data={post} />
       ))}
     </div>
   );
