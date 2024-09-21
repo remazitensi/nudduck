@@ -3,16 +3,16 @@ export const testPostList = {
   currentPage: 1, // 현재 페이지
   totalPages: 5, // 총 페이지 수
   community: [
-    { postId: 1, title: 'Post 1', content: 'Content 1', category: 'study', user: 'kim', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 2, title: 'Post 2', content: 'Content 2', category: 'interview', user: 'park', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 3, title: 'Post 3', content: 'Content 3', category: 'study', user: 'Lee', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 4, title: 'Post 4', content: 'Content 4', category: 'meeting', user: 'choi', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 5, title: 'Post 1', content: 'Content 1', category: 'study', user: 'kim', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 6, title: 'Post 2', content: 'Content 2', category: 'interview', user: 'park', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 7, title: 'Post 3', content: 'Content 3', category: 'talk', user: 'Lee', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 8, title: 'Post 4', content: 'Content 4', category: 'interview', user: 'choi', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 9, title: 'Post 1', content: 'Content 1', category: 'study', user: 'kim', created_at: '2024-09-12T12:34:56.789Z' },
-    { postId: 10, title: 'Post 2', content: 'Content 2', category: 'interview', user: 'park', created_at: '2024-09-12T12:34:56.789Z' },
+    { postId: 1, title: 'Post 1', content: 'Content 1', category: 'study', user: 'kim', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 2, title: 'Post 2', content: 'Content 2', category: 'interview', user: 'park', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 3, title: 'Post 3', content: 'Content 3', category: 'study', user: 'Lee', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 4, title: 'Post 4', content: 'Content 4', category: 'meeting', user: 'choi', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 5, title: 'Post 1', content: 'Content 1', category: 'study', user: 'kim', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 6, title: 'Post 2', content: 'Content 2', category: 'interview', user: 'park', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 7, title: 'Post 3', content: 'Content 3', category: 'talk', user: 'Lee', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 8, title: 'Post 4', content: 'Content 4', category: 'interview', user: 'choi', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 9, title: 'Post 1', content: 'Content 1', category: 'study', user: 'kim', createdAt: '2024-09-12T12:34:56.789Z' },
+    { postId: 10, title: 'Post 2', content: 'Content 2', category: 'interview', user: 'park', createdAt: '2024-09-12T12:34:56.789Z' },
   ],
 };
 
@@ -22,7 +22,7 @@ export const testPost = {
   content: '내용입니다.',
   userId: '1004',
   category: 'study',
-  created_at: '2024-09-12T12:34:56.789Z',
+  createdAt: '2024-09-12T12:34:56.789Z',
   updated_at: '2024-09-12T12:34:56.789Z',
   // likes_count: 10,
   viewCount: 100,

@@ -47,7 +47,7 @@ export const PostSection: React.FC<PostSectionProps> = ({ data }) => {
           {/* <div className='ml-[30px] text-[#AEAC9A]'>
             좋아요 <span className='text-[#FFC5C3]'>{data.likes_count}</span>
           </div> */}
-          <div className='ml-[320px] text-[#AEAC9A]'>작성일 {data.created_at.substring(0, 10)}</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
+          <div className='ml-[320px] text-[#AEAC9A]'>작성일 {data.createdAt.substring(0, 10)}</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
         </div>
       </div>
     </div>
