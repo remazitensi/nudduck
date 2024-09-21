@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Rammetto+One&display=swap');
+
 /* 전체 페이지의 최대 가로 너비를 1920px로 설정 */
 body {
   margin: 0;
@@ -16,7 +18,8 @@ body {
 }
 
 /* 기타 기본 스타일 */
-h1, p {
+h1,
+p {
   margin: 0;
   padding: 0;
 }
