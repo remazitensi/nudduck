@@ -1,5 +1,5 @@
-import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket, UseGuards, WsException } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, UseGuards, WsException } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 // import { Jwt } from '../auth/guards/jwt-auth.guard';
 import { ChatService } from '../chat.service';
 import { SendMessageDto } from '../dto/send-message.dto';
@@ -13,16 +13,17 @@ export class ChatGateway {
   constructor(private readonly chatService: ChatService) {}
 
   @SubscribeMessage('joinRoom')
-  async handleJoinRoom(@MessageBody() roomId: number, @ConnectedSocket() client: Socket) {
-    client.join(roomId.toString());
-    client.emit('joinedRoom', roomId);
+  async handleJoinRoom(@MessageBody() chatroomId: number) {
+    this.server.to(chatroomId.toString()).emit('joinedRoom', chatroomId);
   }
 
   @SubscribeMessage('sendMessage')
-  async handleMessage(@MessageBody() { content }: SendMessageDto, @ConnectedSocket() client: Socket, @MessageBody() roomId: number, @MessageBody() senderId: number) {
+  async handleMessage(@MessageBody() sendMessageDto: SendMessageDto) {
+    const { chatroomId, senderId, content } = sendMessageDto;
+
     try {
-      const savedMessage = await this.chatService.saveMessage(senderId, roomId, content);
-      this.server.to(roomId.toString()).emit('newMessage', savedMessage);
+      const savedMessage = await this.chatService.saveMessage(senderId, chatroomId, content);
+      this.server.to(chatroomId.toString()).emit('newMessage', savedMessage);
     } catch (error) {
       throw new WsException(`메시지를 보낼 수 없습니다: ${error.message}`);
     }
