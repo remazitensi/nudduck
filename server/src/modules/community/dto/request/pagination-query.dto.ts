@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.11    김재영      Created     페이지네이션 DTO 초기 생성
  * 2024.09.12    김재영      Modified    Swagger 데코레이터 및 기본값 추가
+ * 2024.09.23    김재영      Modified    limit, offset 추가하여 무한 스크롤 지원
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -36,4 +37,20 @@ export class PaginationQueryDto {
     required: false,
   })
   sort?: string;
+
+  @ApiPropertyOptional({
+    description: '조회할 항목 수 (limit, 기본값: 10)',
+    example: 10,
+  })
+  @IsOptional()
+  @IsPositive()
+  limit: number = 10; // 기본값을 10
+
+  @ApiPropertyOptional({
+    description: '조회 시작 지점 (offset, 기본값: 0)',
+    example: 0,
+  })
+  @IsOptional()
+  @Min(0)
+  offset: number = 0; // 기본값을 0
 }
