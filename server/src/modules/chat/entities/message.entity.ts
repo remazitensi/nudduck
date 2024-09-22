@@ -5,14 +5,14 @@
  *
  * History
  * Date          Author      Status      Description
- * 2024.09.17    김재영      Created     메시지 엔티티 정의
+ * 2024-09-17    김재영      Created     메시지 엔티티 정의
  * 2024.09.20    김재영      Modified    메시지 엔티티 수정
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { ChatRoom } from './chat-room.entity';
-import { User } from './user.entity';
+import { ChatRoom } from './room.entity';
+import { User } from '@_modules/user/entity/user.entity';
 
 @Entity('ChatMessage')
 export class Message {
@@ -27,7 +27,7 @@ export class Message {
     description: '메시지를 전송한 사용자',
     example: 101,
   })
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User, (user) => user.messages, { eager: false }) // 양방향 설정
   @JoinColumn({ name: 'userId' })
   user: User;
 
