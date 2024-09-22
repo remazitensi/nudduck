@@ -11,6 +11,7 @@
  * 2024.09.18    이승철      Modified    예외처리
  * 2024.09.18    이승철      Modified    불필요한 코드 제거 및 인생그래프 이벤트 책임분리
  * 2024.09.18    이승철      Modified    인생그래프 이벤트 Full Replacement Update로 변경
+ * 2024.09.23    이승철      Modified    인생그래프 개수가 0일 경우 조건문 추가
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
@@ -57,7 +58,15 @@ export class LifeGraphService {
     page = Math.max(page, 1);
     const totalCount = await this.lifeGraphRepository.countLifeGraphs(userId);
     const totalPages = Math.ceil(totalCount / limit);
-    if (page > totalPages) page = totalPages;
+    // 페이지가 0인 경우 처리
+    if (totalPages === 0) {
+      page = 1;
+    } else {
+        page = Math.max(page, 1); // 최소 1페이지로 설정
+        if (page > totalPages) {
+            page = totalPages; // 총 페이지보다 클 경우 마지막 페이지로 설정
+        }
+      }
 
     const data = await this.lifeGraphRepository.findLifeGraphs(userId, page, limit);
     return { data, totalCount };
