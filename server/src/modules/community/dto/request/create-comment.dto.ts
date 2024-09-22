@@ -47,4 +47,11 @@ export class CreateCommentDto {
   @IsNumber()
   @IsOptional()
   parentId?: number;
+
+  @ApiProperty({
+    description: '유저 ID',
+    example: 1, // 예시 유저 ID 추가
+  })
+  @IsNumber()
+  userId: number;
 }
