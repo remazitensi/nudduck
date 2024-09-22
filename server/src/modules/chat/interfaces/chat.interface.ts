@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024-09-17    김재영      Created     채팅 관련 인터페이스 정의
+ * 2024-09-22    김재영      Modified    채팅 관련 인터페이스 수정
  */
 
 export interface CreateRoomDto {
@@ -33,6 +34,6 @@ export interface ChatMessage {
 export interface ChatRoom {
   chatroomId: number; // 채팅방 ID
   chatroomName: string; // 채팅방 이름
-  userId: number; // 채팅방을 생성한 사용자 ID
+  participants: number[]; // 참가자 ID 목록 (예: [101, 102])
   createdAt: Date; // 채팅방 생성 시간
 }
