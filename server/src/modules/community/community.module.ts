@@ -13,19 +13,19 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CommunityService } from './community.service';
-import { CommunityController } from './community.controller';
-import { Community } from './entities/community.entity';
-import { Comment } from './entities/comment.entity';
-import { PostRepository } from './repositories/post.repository';
-import { CommentRepository } from './repositories/comment.repository';
+import { CommunityService } from '@_modules/community/community.service';
+import { CommunityController } from '@_modules/community/community.controller';
+import { Community } from '@_modules/community/entities/community.entity';
+import { Comment } from '@_modules/community/entities/comment.entity';
+import { CommunityRepository } from './repositories/community.repository';
+import { CommentRepository } from '@_modules/community/repositories/comment.repository';
 import { UserRepository } from '@_modules/user/user.repository';
 import { UserModule } from '@_modules/user/user.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Community, Comment, UserRepository]), UserModule],
   controllers: [CommunityController],
-  providers: [CommunityService, PostRepository, CommentRepository],
-  exports: [CommunityService, PostRepository, CommentRepository],
+  providers: [CommunityService, CommunityRepository, CommentRepository],
+  exports: [CommunityService, CommunityRepository, CommentRepository],
 })
 export class CommunityModule {}
