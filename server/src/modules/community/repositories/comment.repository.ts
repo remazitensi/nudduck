@@ -8,84 +8,58 @@
  * 2024.09.17    김재영      Created     댓글 리포지토리 초기 생성
  * 2024.09.17    김재영      Modified    타입 정의 및 메소드 추가
  * 2024.09.19    김재영      Modified    오류 처리 메소드 추가
+ * 2024.09.22    김재영      Modified    DTO 및 엔티티에 맞춰 리포지토리 업데이트
+ * 2024.09.22    김재영      Modified    대댓글 수정 및 삭제 메소드 추가
+ * 2024.09.22    김재영      Modified    replyCount 로직을 조회 시 계산하도록 변경
+ * 2024.09.22    김재영      Modified    무한 스크롤 지원
  */
 
 import { Repository, EntityManager, QueryFailedError } from 'typeorm';
-import { Comment } from '../entities/comment.entity';
-import { Community } from '../entities/community.entity';
-import { CreateCommentDto } from '../dto/create-comment.dto';
-import { PaginationQueryDto } from '../dto/pagination-query.dto';
-import { User } from '@_modules/user/entity/user.entity';
+import { Comment } from '@_modules/community/entities/comment.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { Community } from '@_modules/community/entities/community.entity';
+import { CreateCommentDto } from '@_modules/community/dto/request/create-comment.dto';
+import { UpdateCommentDto } from '@_modules/community/dto/request/update-comment.dto';
+import { User } from '@_modules/user/entity/user.entity';
 
 export class CommentRepository extends Repository<Comment> {
-  // 오류 처리 메소드
-  private handleError(error: any): void {
+  private handleError(error: unknown): void {
     if (error instanceof QueryFailedError) {
       throw new HttpException('쿼리 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     throw new HttpException('서버 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  // 대댓글을 포함한 댓글 조회 메소드
-  async findWithRepliesAndCounts(commentId: number): Promise<Comment | undefined> {
-    try {
-      return await this.createQueryBuilder('comment')
-        .leftJoinAndSelect('comment.replies', 'replies')
-        .leftJoin(
-          (subQuery) => {
-            return subQuery.select('parent.id', 'id').addSelect('COUNT(child.id)', 'replyCount').from(Comment, 'parent').leftJoin(Comment, 'child', 'child.parentId = parent.id').groupBy('parent.id');
-          },
-          'replyCountQuery',
-          'replyCountQuery.id = comment.id',
-        )
-        .addSelect('COALESCE(replyCountQuery.replyCount, 0)', 'replyCount')
-        .where('comment.id = :commentId', { commentId })
-        .getOne();
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  // 댓글 목록 조회 (페이지네이션)
-  async getCommentsWithCounts(postId: number, paginationQuery: PaginationQueryDto): Promise<Comment[]> {
-    const { page = 1, pageSize = 10 } = paginationQuery;
-    const take = pageSize;
-    const skip = (page - 1) * pageSize;
-
+  async findCommentsWithReplyCount(postId: number, limit: number, offset: number): Promise<Comment[]> {
     try {
       return await this.createQueryBuilder('comment')
         .leftJoinAndSelect('comment.user', 'user')
-        .leftJoin(
-          (subQuery) => {
-            return subQuery.select('parent.id', 'id').addSelect('COUNT(child.id)', 'replyCount').from(Comment, 'parent').leftJoin(Comment, 'child', 'child.parentId = parent.id').groupBy('parent.id');
-          },
-          'replyCountQuery',
-          'replyCountQuery.id = comment.id',
-        )
-        .addSelect('COALESCE(replyCountQuery.replyCount, 0)', 'replyCount')
         .where('comment.postId = :postId', { postId })
-        .andWhere('comment.parentId IS NULL') // 부모 댓글만 조회
-        .take(take)
-        .skip(skip)
+        .andWhere('comment.parentId IS NULL')
+        .orderBy('comment.createdAt', 'DESC')
+        .skip(offset)
+        .take(limit)
+        .select(['comment.id', 'comment.content', 'comment.createdAt', 'comment.updatedAt', 'comment.parentId', 'user.nickname', 'user.image_url', 'user.id'])
         .getMany();
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  // 커뮤니티 게시글에 댓글 추가
-  async addComment(postId: number, createCommentDto: CreateCommentDto, manager: EntityManager): Promise<Comment> {
+  async createComment(postId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<Comment> {
     const comment = new Comment();
     comment.content = createCommentDto.content;
     comment.postId = postId;
-    comment.user = { id: createCommentDto.userId } as User;
+    comment.parentId = createCommentDto.parentId;
     comment.community = { postId } as Community;
+
+    const user = new User();
+    user.id = userId;
+    comment.user = user;
 
     try {
       await manager.transaction(async (transactionalEntityManager: EntityManager) => {
         await transactionalEntityManager.save(Comment, comment);
-
         await transactionalEntityManager
           .createQueryBuilder()
           .update(Community)
@@ -93,60 +67,124 @@ export class CommentRepository extends Repository<Comment> {
           .where('postId = :postId', { postId })
           .execute();
       });
+      return comment;
     } catch (error) {
       this.handleError(error);
     }
-
-    return comment;
   }
 
-  // 대댓글 추가
-  async addReply(commentId: number, createCommentDto: CreateCommentDto, manager: EntityManager): Promise<Comment> {
+  async findCommentById(commentId: number): Promise<Comment | undefined> {
+    try {
+      return await this.createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.user', 'user')
+        .where('comment.id = :commentId', { commentId })
+        .select(['comment.id', 'comment.content', 'comment.createdAt', 'comment.updatedAt', 'comment.parentId', 'user.nickname', 'user.image_url', 'user.id'])
+        .getOne();
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async updateComment(commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment | undefined> {
+    try {
+      const comment = await this.findOne({ where: { id: commentId }, relations: ['user'] });
+
+      if (!comment) {
+        throw new HttpException('댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+
+      comment.content = updateCommentDto.content || comment.content;
+      await this.save(comment);
+
+      return comment;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async createReply(commentId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<Comment> {
     const reply = new Comment();
     reply.content = createCommentDto.content;
+    reply.postId = createCommentDto.postId;
     reply.parentId = commentId;
-    reply.user = { id: createCommentDto.userId } as User;
-    reply.community = { postId: (await this.findCommentById(commentId)).postId } as Community;
+
+    const user = new User();
+    user.id = userId;
+    reply.user = user;
+
+    reply.community = { postId: createCommentDto.postId } as Community;
 
     try {
       await manager.transaction(async (transactionalEntityManager: EntityManager) => {
         await transactionalEntityManager.save(Comment, reply);
-
-        const count = await transactionalEntityManager
-          .createQueryBuilder()
-          .select('COUNT(*)', 'count')
-          .from(Comment, 'comment')
-          .where('comment.parentId = :parentId', { parentId: commentId })
-          .getRawOne();
-
-        await transactionalEntityManager.createQueryBuilder().update(Comment).set({ replyCount: count.count }).where('id = :commentId', { commentId }).execute();
       });
-    } catch (error) {
-      this.handleError(error);
-    }
-
-    return reply;
-  }
-
-  // 댓글 조회 (단일 댓글 조회)
-  async findCommentById(commentId: number): Promise<Comment | undefined> {
-    try {
-      return await this.findOne({ where: { id: commentId } });
+      return reply;
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  // 댓글과 대댓글 삭제
-  async deleteCommentAndReplies(commentId: number, manager: EntityManager): Promise<void> {
+  async updateReply(replyId: number, updateCommentDto: UpdateCommentDto): Promise<Comment | undefined> {
     try {
-      await manager.transaction(async (transactionalEntityManager: EntityManager) => {
-        // 대댓글 삭제
-        await transactionalEntityManager.createQueryBuilder().delete().from(Comment).where('parentId = :parentId', { parentId: commentId }).execute();
+      const reply = await this.findOne({ where: { id: replyId }, relations: ['user'] });
 
-        // 댓글 삭제
-        await transactionalEntityManager.createQueryBuilder().delete().from(Comment).where('id = :id', { id: commentId }).execute();
-      });
+      if (!reply) {
+        throw new HttpException('대댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+
+      reply.content = updateCommentDto.content || reply.content;
+      await this.save(reply);
+
+      return reply;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteReply(replyId: number): Promise<void> {
+    try {
+      const reply = await this.findOne({ where: { id: replyId } });
+
+      if (!reply) {
+        throw new HttpException('대댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+
+      await this.remove(reply);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteComment(commentId: number): Promise<void> {
+    try {
+      const comment = await this.findOne({ where: { id: commentId } });
+
+      if (!comment) {
+        throw new HttpException('댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+
+      await this.remove(comment);
+
+      await this.createQueryBuilder()
+        .update(Community)
+        .set({ commentCount: () => 'commentCount - 1' })
+        .where('postId = :postId', { postId: comment.postId })
+        .execute();
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async findRepliesByCommentId(commentId: number, limit: number, offset: number): Promise<Comment[]> {
+    try {
+      return await this.createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.user', 'user')
+        .where('comment.parentId = :commentId', { commentId })
+        .orderBy('comment.createdAt', 'DESC')
+        .skip(offset)
+        .take(limit)
+        .select(['comment.id', 'comment.content', 'comment.createdAt', 'comment.updatedAt', 'comment.parentId', 'user.nickname', 'user.image_url', 'user.id'])
+        .getMany();
     } catch (error) {
       this.handleError(error);
     }
