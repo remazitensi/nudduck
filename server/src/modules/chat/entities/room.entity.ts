@@ -6,7 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024-09-17    김재영      Created     채팅방 엔티티 정의
- * 2024.09.20    김재영      modified    채팅방 엔티티 수정 (참가자 추가)
+ * 2024.09.20    김재영      modified    참가자 추가 및 userId 필드 제거
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
