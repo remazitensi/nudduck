@@ -9,12 +9,12 @@
  * 2024.09.10    김재영      Modified    typeorm 추가
  * 2024.09.13    김재영      Modified    대댓글 개수 추가
  * 2024.09.17    김재영      Modified    주석 업데이트 및 설명 추가
- * 2024.09.19    김재영      Modified    오타 수정
- * 2024.09.20    김재영      Modified    jwt 가드에서 받아오므로 유저 삭제
+ * 2024.09.22    김재영      Modified    replyCount는 DTO에서 계산하여 처리할 수 있도록 변경
  */
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Community } from '@_modules/community/entities/community.entity';
+import { User } from '@_modules/user/entity/user.entity';
 
 @Entity('comment')
 export class Comment {
@@ -27,7 +27,7 @@ export class Comment {
   @Column({ nullable: true })
   parentId?: number | null;
 
-  @Column() // 게시글 ID
+  @Column()
   postId: number;
 
   @CreateDateColumn({ type: 'timestamp' })
@@ -45,5 +45,6 @@ export class Comment {
   @OneToMany(() => Comment, (comment) => comment.parent)
   replies?: Comment[];
 
-  replyCount?: number;
+  @ManyToOne(() => User, (user) => user.comments, { eager: false })
+  user: User;
 }
