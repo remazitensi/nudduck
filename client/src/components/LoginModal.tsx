@@ -9,10 +9,12 @@
  * 2024.09.11    황솜귤      Modified    onLogin 핸들러 추가
  * 2024.09.12    황솜귤      Modified    파일명 수정
  * 2024.09.21    황솜귤      Modified    baseApi로 수정
+ * 2024.09.22    황솜귤      Modified    로그인 콜백을 통한 리디렉션 처리
  */
 
-import React, { useEffect } from 'react';
-import { baseApi } from '../apis/base-api'; // baseApi 임포트
+import axios from 'axios';
+import React from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate 추가
 import './LoginModal.css';
 
 interface LoginModalProps {
@@ -21,29 +23,39 @@ interface LoginModalProps {
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin }) => {
+  const navigate = useNavigate(); // navigate hook 사용
+
   const handleGoogleLogin = () => {
-    window.location.href = '/auth/google'; // Google 소셜 로그인 URL로 이동
+    window.location.href = 'http://localhost:3000/api/auth/google'; // Google 소셜 로그인 URL로 이동
   };
 
   const handleKakaoLogin = () => {
-    window.location.href = '/auth/kakao'; // Kakao 소셜 로그인 URL로 이동
+    window.location.href = 'http://localhost:3000/api/auth/kakao'; // Kakao 소셜 로그인 URL로 이동
   };
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        // 로그인 상태를 확인하는 API 호출
-        const response = await baseApi.get('/auth/status'); // baseApi를 사용하여 로그인 상태 확인
-        if (response.status === 200) {
-          onLogin(); // 로그인 상태 업데이트
-        }
-      } catch (error) {
-        console.error('로그인 상태 확인 실패', error);
+  const handleAuthCallback = async () => {
+    try {
+      // axios를 통해 인증된 사용자의 정보를 가져옵니다.
+      const response = await axios.get('http://localhost:3000/api/my', { withCredentials: true });
+      if (response.status === 200) {
+        onLogin(); // 로그인 상태 업데이트
+        navigate('/HomePage'); // 로그인 성공 시 HomePage로 리디렉트
+        onClose(); // 로그인 모달 닫기
       }
-    };
+    } catch (error) {
+      console.error('로그인 처리 중 오류 발생:', error);
+    }
+  };
 
-    checkLoginStatus(); // 컴포넌트가 마운트될 때 로그인 상태 확인
-  }, [onLogin]); // navigate는 실제로 사용되지 않으므로 의존성 배열에서 제거
+  React.useEffect(() => {
+    const currentUrl = window.location.href;
+    if (
+      currentUrl.includes('/auth/google/callback') ||
+      currentUrl.includes('/auth/kakao/callback')
+    ) {
+      handleAuthCallback();
+    }
+  }, []);
 
   return (
     <div className="login-modal">
