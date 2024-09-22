@@ -1,21 +1,7 @@
-/**
- * File Name    : community.entity.ts
- * Description  : 커뮤니티 게시글 엔티티
- * Author       : 김재영
- *
- * History
- * Date          Author      Status      Description
- * 2024.09.08    김재영      Created     커뮤니티 게시글 엔티티 초기 생성
- * 2024.09.09    김재영      Modified    게시글 속성 및 설명 추가
- * 2024.09.10    김재영      Modified    typeorm 추가
- * 2024.09.16    김재영      Modified    camelcase로 변경
- * 2024.09.17    김재영      Modified    주석 업데이트 및 설명 추가
- * 2024.09.19    김재영      Modified    유저 아이디 추가
- */
-
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Category } from '@_modules/community/enums/category.enum';
 import { Comment } from '@_modules/community/entities/comment.entity';
+import { User } from '@_modules/user/entity/user.entity';
 
 @Entity('community') // 테이블 이름 지정
 export class Community {
@@ -44,5 +30,9 @@ export class Community {
   commentCount: number;
 
   @OneToMany(() => Comment, (comment) => comment.community, { cascade: true }) // 일대다 관계
-  comments?: Comment[];
+  comments?: Comment[]; // 댓글이 없을 수 있으므로 nullable 설정
+
+  @ManyToOne(() => User, (user) => user.communities, { eager: false, onDelete: 'CASCADE', nullable: false }) // 유저와의 관계 추가
+  @JoinColumn({ name: 'userId' }) // 외래 키 컬럼을 명시적으로 지정
+  user: User;
 }
