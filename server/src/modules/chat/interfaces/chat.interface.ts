@@ -11,7 +11,7 @@
 
 export interface CreateRoomDto {
   chatroomName: string; // 채팅방 이름
-  userId: number; // 채팅방을 생성한 사용자 ID
+  participants: number[]; // 채팅방에 참가하는 사용자 ID 목록
 }
 
 // 메시지 저장 시 요청 데이터 정의
