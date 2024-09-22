@@ -11,7 +11,7 @@
  * 2024.09.12    황솜귤      Modified    소셜 로그인 및 사용자 정보 연동 처리
  * 2024.09.21    황솜귤      Modified    로고 클릭 시 Link to
  * 2024.09.21    황솜귤      Modified    로그인/로그아웃 상태에 따른 UI 변경 및 메뉴 노출 제어
- * 2024.09.22    황솜귤      Modified    드롭다운 디자인 수정 및 정렬
+ * 2024.09.22    황솜귤      Modified    드롭다운 디자인 수정 및 로그인 상태 확인 로직 변경
  */
 
 import React, { useEffect, useState } from 'react';
@@ -30,36 +30,25 @@ const Header: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchUserData();
-    }
-  }, [isLoggedIn]);
+    fetchUserData(); // 컴포넌트가 처음 마운트될 때 사용자 정보 요청
+  }, []);
 
   // 사용자 정보 요청 함수
   const fetchUserData = async () => {
     try {
-      const response = await baseApi.get('/api/my'); // API 요청으로 사용자 정보 가져오기
-      const { name, email, imageUrl } = response.data; // 필요한 정보 추출
-      setUser({
-        name,
-        email,
-        profileImage: imageUrl || 'https://via.placeholder.com/32x32', // 프로필 이미지가 없을 때 대체 이미지 사용
-      });
-    } catch (error) {
-      console.error('사용자 정보를 가져오는 데 실패했습니다:', error);
-    }
-  };
-
-  // 로그인 상태 변경 핸들러
-  const handleLogin = async () => {
-    try {
-      const response = await baseApi.get('/auth/status'); // 실제로 로그인 상태를 확인
+      const response = await baseApi.get('/api/my'); // 로그인된 사용자 정보 가져오기
       if (response.status === 200) {
-        setIsLoggedIn(true);
-        setIsModalOpen(false); // 로그인 모달 닫기
+        const { name, email, imageUrl } = response.data;
+        setUser({
+          name,
+          email,
+          profileImage: imageUrl || 'https://via.placeholder.com/32x32', // 프로필 이미지가 없을 때 대체 이미지 사용
+        });
+        setIsLoggedIn(true); // 사용자 정보가 있으면 로그인 상태로 변경
       }
     } catch (error) {
-      console.error('로그인 상태 확인에 실패했습니다.', error);
+      console.error('사용자 정보를 가져오는 데 실패했습니다:', error);
+      setIsLoggedIn(false); // 오류 발생 시 로그인 상태를 false로 설정
     }
   };
 
@@ -93,7 +82,7 @@ const Header: React.FC = () => {
     <header className="w-full bg-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-8 py-4">
         {/* 로고 및 사이트명 */}
-        <Link to="/" className="flex items-center">
+        <Link to="/HomePage" className="flex items-center">
           <img src="/logo.png" className="mr-4 h-[66px] w-[66px]" alt="Nudduck Logo" />
           <span className="text-4xl font-bold text-gray-800">NUDDUCK</span>
         </Link>
@@ -169,7 +158,7 @@ const Header: React.FC = () => {
       {/* 로그인 모달 */}
       {isModalOpen && (
         <LoginModal
-          onLogin={handleLogin} // 로그인 성공 시 호출
+          onLogin={fetchUserData} // 로그인 성공 시 사용자 정보 가져오기
           onClose={() => setIsModalOpen(false)} // 모달 닫기
         />
       )}
