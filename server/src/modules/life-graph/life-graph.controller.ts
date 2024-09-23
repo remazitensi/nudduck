@@ -12,12 +12,13 @@
  * 2024.09.19    이승철      api tag 추가
  * 2024.09.21    이승철      Modified    응답 dto 추가
  * 2024.09.21    이승철      Modified    절대경로 변경
+ * 2024.09.24    이승철      Modified    limit를 dto에 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
 import { FavoriteLifeGraphDto } from '@_modules/life-graph/dto/favorite-life-graph.dto';
-import { LifeGraphPageDto } from '@_modules/life-graph/dto/life-graph-page.dto';
+import { LifeGraphPaginationQueryDto } from '@_modules/life-graph/dto/life-graph-pagination-query.dto';
 import { LifeGraphListResponseDto, LifeGraphResponseDto } from '@_modules/life-graph/dto/life-graph-response.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
 import { LifeGraphService } from '@_modules/life-graph/life-graph.service';
@@ -42,13 +43,12 @@ export class LifeGraphController {
   }
 
   @ApiOperation({ summary: '인생 그래프 목록 조회', description: '페이지네이션을 적용하여 인생 그래프 목록을 조회합니다.' })
-  @ApiQuery({ type: LifeGraphPageDto, description: '페이지 번호 (기본값: 1)' })
+  @ApiQuery({ type: LifeGraphPaginationQueryDto, description: '페이지 번호 및 페이지 당 항목 수' })
   @ApiResponse({ status: 200, description: '성공적으로 인생 그래프 목록을 반환합니다.', type: LifeGraphListResponseDto })
   @ApiResponse({ status: 400, description: '잘못된 요청입니다.' })
   @Get()
-  async getAllLifeGraphs(@Req() req: UserRequest, @Query() lifeGraphPageDto: LifeGraphPageDto): Promise<LifeGraphListResponseDto> {
-    const limit = 6;
-    return await this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPageDto.page, limit);
+  async getAllLifeGraphs(@Req() req: UserRequest, @Query() lifeGraphPaginationQueryDto: LifeGraphPaginationQueryDto): Promise<LifeGraphListResponseDto> {
+    return await this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPaginationQueryDto);
   }
 
   @ApiOperation({ summary: '특정 인생 그래프 조회', description: 'ID를 기반으로 특정 인생 그래프를 조회합니다.' })

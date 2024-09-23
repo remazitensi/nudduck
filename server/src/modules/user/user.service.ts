@@ -53,12 +53,12 @@ export class UserService {
         })
       : null;
   
-    const page = Math.max(myPaginationQueryDto.page, 1);
-    const limit = myPaginationQueryDto.limit;
-  
+    const { page, limit } = myPaginationQueryDto;
+    const actualPage = Math.max(page, 1);
     const totalCount = await this.userRepository.countMyPosts(userId);
     const totalPages = Math.ceil(totalCount / limit);
-    const finalPage = totalPages === 0 ? 1 : Math.min(page, totalPages);
+
+    const finalPage = totalPages === 0 ? 1 : Math.min(actualPage, totalPages);
   
     const posts = await this.userRepository.findMyPosts(userId, finalPage, limit);
   

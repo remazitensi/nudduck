@@ -14,7 +14,7 @@ import { LifeGraphController } from '@_modules/life-graph/life-graph.controller'
 import { LifeGraphService } from '@_modules/life-graph/life-graph.service';
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
-import { LifeGraphPageDto } from '@_modules/life-graph/dto/life-graph-page.dto';
+import { LifeGraphPageDto } from '@_modules/life-graph/dto/life-graph-pagination-query.dto';
 import { UserRequest } from 'common/interfaces/user-request.interface';
 
 describe('LifeGraphController', () => {

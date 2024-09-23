@@ -1,18 +1,19 @@
 /**
- * File Name    : expert-page.dto.ts
- * Description  : expert-page dto 설정
+ * File Name    : expert-pagination-query.dto.ts
+ * Description  : 전문가 페이지네이션 쿼리 dto
  * Author       : 이승철
  *
  * History
  * Date          Author      Status      Description
  * 2024.09.14    이승철      Created
+ * 2024.09.24    이승철      Modified    limit 추가
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Min } from 'class-validator';
 
-export class ExpertPageDto {
+export class ExpertPaginationQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
@@ -23,4 +24,15 @@ export class ExpertPageDto {
     minimum: 1,
   })
   page: number = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @ApiPropertyOptional({
+    description: '페이지 당 항목 수 (기본값: 10)',
+    example: 10,
+    minimum: 1,
+  })
+  limit: number = 10;
 }
