@@ -35,10 +35,7 @@ async function bootstrap() {
     .addServer('http://localhost:3000/api-docs', 'Local Development Server')
     .addTag('Intro', 'API for main and intro pages')
     .addTag('User Management', 'API for user profile and authentication')
-    .addTag('Simulation', 'API for simulation functions')
-    .addTag('Community', 'API for community features')
     .addTag('Expert', 'API for expert consultation services')
-    .addTag('LifeGraph', 'API for life graph generation and management')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
