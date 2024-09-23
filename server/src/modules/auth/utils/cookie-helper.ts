@@ -6,16 +6,14 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.16    이승철      Created
- * 2024.09.24    이승철      Modified    httpOnly false로 변경
- * 2024.09.24    이승철      Modified    secure false로 변경
  */
 
 import { CookieOptions } from "express";
 
 export const getAccessCookieOptions = (): CookieOptions => {
     return {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
       sameSite: 'lax',
       maxAge: 60 * 60 * 1000, // 1시간
     };
@@ -23,8 +21,8 @@ export const getAccessCookieOptions = (): CookieOptions => {
   
   export const getRefreshCookieOptions = (): CookieOptions => {
     return {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
       sameSite: 'lax',
       maxAge: 3 * 24 * 60 * 60 * 1000, // 3일
     };

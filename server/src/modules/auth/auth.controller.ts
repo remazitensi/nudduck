@@ -18,18 +18,19 @@
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
  * 2024.09.23    이승철      Modified    리다이렉트 설정
+ * 2024.09.24    이승철      Modified    서버에서 refreshToken 추출
  */
 
 import { AuthService } from '@_modules/auth/auth.service';
-import { RefreshTokenDto } from '@_modules/auth/dto/refresh-token.dto';
 import { UserDto } from '@_modules/auth/dto/user.dto';
 import { getAccessCookieOptions, getRefreshCookieOptions } from '@_modules/auth/utils/cookie-helper';
-import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OAuthUser } from 'common/interfaces/oauth-user.interface';
-import { Response } from 'express';
+import { UserRequest } from 'common/interfaces/user-request.interface';
+import { Request, Response } from 'express';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -96,17 +97,18 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '엑세스 토큰 재발급' })
-  @ApiBody({ description: '리프레시 토큰을 사용하여 엑세스 토큰 재발급', type: RefreshTokenDto })
   @ApiResponse({ status: 200, description: '엑세스 토큰이 재발급되었습니다.' })
   @ApiResponse({ status: 400, description: '리프레시 토큰이 제공되지 않았습니다.' })
   @Post('access-token')
-  async accessToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response): Promise<void> {
-    if (!refreshTokenDto.refreshToken) {
+  async accessToken(@Req() req: UserRequest, @Res() res: Response): Promise<void> {
+    const refreshToken = req.cookies['refreshToken'];
+  
+    if (!refreshToken) {
       throw new BadRequestException('리프레시 토큰이 제공되지 않았습니다.');
     }
-
-    const newAccessToken = await this.authService.regenerateAccessToken(refreshTokenDto.refreshToken);
-
+  
+    const newAccessToken = await this.authService.regenerateAccessToken(refreshToken);
+  
     res.cookie('accessToken', newAccessToken, getAccessCookieOptions());
     res.status(200).json({ message: '엑세스 토큰이 재발급되었습니다.' });
   }
