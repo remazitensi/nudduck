@@ -25,7 +25,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ChatModule } from 'modules/chat/chat.module';
+import { ChatModule } from '@_modules/chat/chat.module';
+import { ScheduleModule } from '@_modules/quote/schedule.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { ChatModule } from 'modules/chat/chat.module';
     ExpertModule,
     CommunityModule,
     ChatModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
