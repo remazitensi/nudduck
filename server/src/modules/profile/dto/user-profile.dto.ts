@@ -1,20 +1,17 @@
 /**
- * File Name    : profile.dto.ts
+ * File Name    : user-profile.dto.ts
  * Description  : 유저 프로필 조회 dto
  * Author       : 이승철
  *
  * History
  * Date          Author      Status      Description
- * 2024.09.10    이승철      Created
- * 2024.09.16    이승철      Modified    프로필에 인생그래프 추가
- * 2024.09.17    이승철      Modified    즐겨찾기 인생그래프 타입변경
- * 2024.09.21    이승철      Modified    즐겨찾기 인생그래프 예시 추가
+ * 2024.09.23    이승철      Created
  */
 
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ProfileDto {
+export class UserProfileDto {
   @ApiProperty({ description: '유저 닉네임', example: 'JohnDoe123' })
   nickname: string;
 

@@ -8,9 +8,11 @@
  * 2024.09.10    이승철      Created
  * 2024.09.16    이승철      Modified    절대경로 변경, user.entity snakecase로 변경, 메서드 명명관행 
  * 2024.09.16    이승철      Modified    해시태그 중복체크 및 맵핑, bulk insert 반영
+ * 2024.09.24    이승철      Modified    나의 게시글, 카운트 추가
  */
 
 import { UserDto } from '@_modules/auth/dto/user.dto';
+import { Community } from '@_modules/community/entities/community.entity';
 import { UserHashtag } from '@_modules/user/entity/hashtag.entity';
 import { User } from '@_modules/user/entity/user.entity';
 import { Injectable } from '@nestjs/common';
@@ -24,6 +26,8 @@ export class UserRepository {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserHashtag)
     private readonly userHashtagRepository: Repository<UserHashtag>,
+    @InjectRepository(Community)
+    private readonly communityRepository: Repository<Community>,
   ) {}
 
   // Provider로 사용자 찾기 (소셜 로그인용)
@@ -31,6 +35,23 @@ export class UserRepository {
     return this.userRepository.findOne({
       where: { provider, provider_id },
       withDeleted: true,
+    });
+  }
+
+  // 게시글 찾기
+  async findMyPosts(userId: number, page: number, limit: number): Promise<Community[]> {
+    return this.communityRepository.find({
+      where: { user: { id: userId } },
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  // 게시글 카운트
+  async countMyPosts(userId: number): Promise<number> {
+    return this.communityRepository.count({
+      where: { user: { id: userId } },
     });
   }
 

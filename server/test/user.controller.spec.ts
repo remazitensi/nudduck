@@ -9,7 +9,7 @@
  * 2024.09.18    이승철      Modified    Partial로 req 객체 모킹
  */
 
-import { ProfileDto } from '@_modules/user/dto/profile.dto';
+import { ProfileDto } from '@_modules/user/dto/my-profile.dto';
 import { UpdateProfileDto } from '@_modules/user/dto/update-profile.dto';
 import { UserController } from '@_modules/user/user.controller';
 import { UserService } from '@_modules/user/user.service';
