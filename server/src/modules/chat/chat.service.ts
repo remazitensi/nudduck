@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { RoomRepository } from './repositories/room.repository';
-import { MessageRepository } from './repositories/message.repository';
-import { ChatRoom, CreateRoomDto, SaveMessageDto, ChatMessage } from './interfaces/chat.interface';
+import { RoomRepository } from '@_modules/chat/repositories/room.repository';
+import { MessageRepository } from '@_modules/chat/repositories/message.repository';
+import { ChatRoom, CreateRoomDto, SaveMessageDto, ChatMessage } from '@_modules/chat/interfaces/chat.interface';
 
 @Injectable()
 export class ChatService {

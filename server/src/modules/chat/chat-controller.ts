@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiParam } from '@nestjs/swagger';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { SendMessageDto } from './dto/send-message.dto';
-import { RedisService } from 'modules/redis/redis.service';
+import { CreateRoomDto } from '@_modules/chat/dto/create-room.dto';
+import { SendMessageDto } from '@_modules/chat/dto/send-message.dto';
+import { RedisService } from '@_modules/redis/redis.service';
 
 @ApiTags('Chat')
 @Controller('chat/rooms')

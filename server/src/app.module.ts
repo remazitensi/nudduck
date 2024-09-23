@@ -17,7 +17,7 @@ import { FileUploadModule } from '@_modules/file-upload/file-upload.module';
 import { LifeGraphModule } from '@_modules/life-graph/life-graph.module';
 import { ProfileModule } from '@_modules/profile/profile.module';
 import { UserModule } from '@_modules/user/user.module';
-import { CommunityModule } from './modules/community/community.module';
+import { CommunityModule } from '@_modules/community/community.module';
 import { SimulationModule } from '@_modules/simulation/simulation.module';
 import { ExpertModule } from '@_modules/expert/expert.module';
 import { Module } from '@nestjs/common';
@@ -25,7 +25,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CommunityModule } from './modules/community/community.module';
 import { RedisModule } from 'modules/redis/redis.module';
 import { ChatModule } from 'modules/chat/chat.module';
 
@@ -33,6 +32,7 @@ import { ChatModule } from 'modules/chat/chat.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // 글로벌로 환경 변수 사용
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule], // ConfigModule에서 환경 변수 가져오기
@@ -51,6 +51,13 @@ import { ChatModule } from 'modules/chat/chat.module';
         logging: true, // 모든 쿼리 로그 활성화
       }),
     }),
+    AuthModule,
+    FileUploadModule,
+    LifeGraphModule,
+    ProfileModule,
+    UserModule,
+    SimulationModule,
+    ExpertModule,
     CommunityModule,
     RedisModule,
     ChatModule,

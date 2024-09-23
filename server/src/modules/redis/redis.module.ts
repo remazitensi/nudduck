@@ -1,7 +1,7 @@
 import { Module, Global, HttpException, HttpStatus } from '@nestjs/common';
 import { createClient } from 'redis';
 import { RedisService } from './redis.service';
-import { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, REDIS_DB } from './redis.constant';
+import { ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
@@ -9,10 +9,16 @@ import { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, REDIS_DB } from './redis.consta
     RedisService,
     {
       provide: 'REDIS_CLIENT',
-      useFactory: async () => {
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const redisHost = configService.get<string>('REDIS_HOST');
+        const redisPort = configService.get<number>('REDIS_PORT');
+        const redisPassword = configService.get<string>('REDIS_PASSWORD');
+        const redisDb = configService.get<number>('REDIS_DB');
+
         const client = createClient({
-          url: `redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}`,
-          password: REDIS_PASSWORD,
+          url: `redis://${redisHost}:${redisPort}/${redisDb}`,
+          password: redisPassword,
         });
 
         try {
