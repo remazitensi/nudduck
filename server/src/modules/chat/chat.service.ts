@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoomRepository } from '@_modules/chat/repositories/room.repository';
 import { MessageRepository } from '@_modules/chat/repositories/message.repository';
+import { RedisService } from '@_modules/redis/redis.service';
 import { ChatRoom, CreateRoomDto, SaveMessageDto, ChatMessage } from '@_modules/chat/interfaces/chat.interface';
 
 @Injectable()
@@ -8,6 +9,7 @@ export class ChatService {
   constructor(
     private readonly roomRepository: RoomRepository,
     private readonly messageRepository: MessageRepository,
+    private readonly redisService: RedisService,
   ) {}
 
   // 1:1 채팅방 찾기
@@ -32,25 +34,43 @@ export class ChatService {
 
   // 1:1 채팅방에 메시지 저장
   async saveMessage(messageData: SaveMessageDto): Promise<ChatMessage> {
-    const savedMessage = await this.messageRepository.saveMessage(messageData);
-    return {
-      messageId: savedMessage.messageId,
-      userId: savedMessage.user.id,
-      chatroomId: savedMessage.chatroom.chatroomId,
-      content: savedMessage.content,
-      createdAt: savedMessage.timestamp,
-    };
+    try {
+      const savedMessage = await this.messageRepository.saveMessage(messageData);
+
+      // Redis에 메시지 저장
+      const redisKey = `message:${savedMessage.chatroom.chatroomId}:${savedMessage.messageId}`;
+      await this.redisService.set(redisKey, JSON.stringify(savedMessage));
+
+      return {
+        messageId: savedMessage.messageId,
+        userId: savedMessage.user.id,
+        chatroomId: savedMessage.chatroom.chatroomId,
+        content: savedMessage.content,
+        createdAt: savedMessage.timestamp,
+      };
+    } catch {
+      throw new Error('메시지 저장에 실패했습니다.');
+    }
   }
 
   // 특정 채팅방의 메시지 조회
   async getMessagesByRoom(roomId: number): Promise<ChatMessage[]> {
-    const messages = await this.messageRepository.findMessagesByRoom(roomId);
-    return messages.map((message) => ({
-      messageId: message.messageId,
-      userId: message.user.id,
-      chatroomId: message.chatroom.chatroomId,
-      content: message.content,
-      createdAt: message.timestamp,
-    }));
+    try {
+      // Redis에서 메시지 조회
+      const keys = await this.redisService.getClient().keys(`message:${roomId}:*`);
+
+      const messages: ChatMessage[] = [];
+
+      for (const key of keys) {
+        const messageData = await this.redisService.get(key);
+        if (messageData) {
+          messages.push(JSON.parse(messageData));
+        }
+      }
+
+      return messages;
+    } catch {
+      throw new Error('메시지 조회에 실패했습니다.');
+    }
   }
 }
