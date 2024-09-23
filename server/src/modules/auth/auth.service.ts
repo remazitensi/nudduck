@@ -17,6 +17,7 @@
  * 2024.09.11    이승철      Modified    accessToken 재발급 로직 재추가
  * 2024.09.16    이승철      Modified    쿠키발급 컨트롤러로 이전, nickname으로 변경, User.entity에 snakecase 적용, 절대경로 변경
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
+ * 2024.09.24    이승철      Modified    엑세스 토큰 재발급 로직 수정
  */
 
 import { AuthRepository } from '@_modules/auth/auth.repository';
@@ -117,9 +118,9 @@ export class AuthService {
     }
 
     const accessToken = this.jwtService.sign(
-      { sub: user.id, provider: user.provider, email: user.email },
+      { sub: user.providerId, provider: user.provider, email: user.email },
       {
-        secret: process.env.JWT_ACCESS_SECRET,
+        secret: this.configService.get('JWT_ACCESS_SECRET'),
         expiresIn: '1h',
       },
     );
