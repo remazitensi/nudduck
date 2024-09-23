@@ -10,6 +10,7 @@
  * 2024.09.10    이승철      Modified    UserModule 추가 및 forRoot 전역설정 삭제
  * 2024.09.10    이승철      Modified    FileUploadModule 추가
  * 2024.09.16    이승철      Modified    절대경로 변경
+ * 2024.09.23    김재영      Modified
  */
 
 import { AuthController } from '@_modules/auth/auth.controller';
@@ -23,7 +24,7 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { JwtModule } from '@nestjs/jwt';
     FileUploadModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthRepository, GoogleStrategy, KakaoStrategy, JwtStrategy],
-  exports: [AuthService, JwtStrategy, PassportModule],
+  providers: [AuthService, AuthRepository, GoogleStrategy, KakaoStrategy, JwtStrategy, JwtService],
+  exports: [AuthService, JwtStrategy, PassportModule, JwtService],
 })
 export class AuthModule {}
