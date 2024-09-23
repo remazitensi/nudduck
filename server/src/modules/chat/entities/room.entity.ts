@@ -11,7 +11,7 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Message } from './message.entity';
+import { Message } from '@_modules/chat/entities/message.entity';
 import { User } from '@_modules/user/entity/user.entity';
 
 @Entity('ChatRoom')

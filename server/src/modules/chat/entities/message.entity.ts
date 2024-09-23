@@ -11,7 +11,7 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { ChatRoom } from './room.entity';
+import { ChatRoom } from '@_modules/chat/entities/room.entity';
 import { User } from '@_modules/user/entity/user.entity';
 
 @Entity('ChatMessage')
@@ -50,7 +50,7 @@ export class Message {
     description: '메시지가 전송된 시간',
     example: '2024-09-17T12:34:56Z',
   })
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ type: 'timestamp' })
   timestamp: Date;
 
   @ApiProperty({
