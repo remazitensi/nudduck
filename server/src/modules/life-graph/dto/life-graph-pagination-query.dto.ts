@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
  * 2024.09.24    이승철      Modified    limit 추가
+ * 2024.09.24    이승철      Modified    limit 기본값 변경
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -30,10 +31,10 @@ export class LifeGraphPaginationQueryDto {
   @IsInt()
   @Min(1)
   @ApiPropertyOptional({
-    description: '페이지 당 항목 수 (기본값: 6)',
-    example: 6,
+    description: '페이지 당 항목 수 (기본값: 1)',
+    example: 1,
     minimum: 1,
   })
-  limit: number = 6;
+  limit: number = 1;
 }
 
