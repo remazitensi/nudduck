@@ -10,16 +10,19 @@
  * 2024.09.17    이승철      Modified    request 객체에 user 타입 확장
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
+ * 2024.09.23    이승철      Modified    MyProfileDto로 변경
+ * 2024.09.24    이승철      Modified    프로필 조회 나의 게시글 포함
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
-import { ProfileDto } from '@_modules/user/dto/profile.dto';
+import { MyProfileDto } from '@_modules/user/dto/my-profile.dto';
 import { UpdateProfileDto } from '@_modules/user/dto/update-profile.dto';
 import { UserService } from '@_modules/user/user.service';
-import { Body, Controller, Delete, Get, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRequest } from 'common/interfaces/user-request.interface';
 import { Response } from 'express';
+import { MyPaginationQueryDto } from './dto/my-pagination-query.dto';
 
 @ApiTags('User Management')
 @Controller('my')
@@ -27,12 +30,15 @@ import { Response } from 'express';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOperation({ summary: '프로필 조회' })
-  @ApiResponse({ status: 200, description: '유저 프로필 조회 성공', type: ProfileDto })
+  @ApiOperation({ summary: '프로필 조회 및 게시글 목록 조회' })
+  @ApiResponse({ status: 200, description: '유저 프로필 조회 성공', type: MyProfileDto })
   @ApiResponse({ status: 404, description: '유저를 찾을 수 없습니다.' })
   @Get()
-  async getMyProfile(@Req() req: UserRequest): Promise<ProfileDto> {
-    return this.userService.getMyProfile(req.user.id);
+  async getMyProfile(
+    @Req() req: UserRequest,
+    @Query() myPaginationQueryDto: MyPaginationQueryDto
+  ): Promise<MyProfileDto> {
+    return this.userService.getMyProfileWithPosts(req.user.id, myPaginationQueryDto);
   }
 
   @ApiOperation({ summary: '회원정보 수정' })
