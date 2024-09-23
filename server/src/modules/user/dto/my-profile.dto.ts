@@ -12,6 +12,7 @@
  * 2024.09.23    이승철      Modified    MyProfileDto로 변경
  * 2024.09.23    이승철      Modified    유저가 작성한 게시글 목록
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
+ * 2024.09.24    이승철      Modified    가입일 반환
  */
 
 import { CommunitySummaryDto } from '@_modules/user/dto/community-summary.dto';
@@ -60,4 +61,7 @@ export class MyProfileDto {
 
   @ApiProperty({ description: '전체 게시글 수', example: 100 })
   totalCount: number;
+
+  @ApiProperty({ description: '프로필 생성일', example: '2024-09-24' })
+  createdAt: Date;
 }

@@ -13,6 +13,7 @@
  * 2024.09.23    이승철      Modified    MyProfileDto로 변경
  * 2024.09.24    이승철      Modified    프로필 조회 나의 게시글 포함
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
+ * 2024.09.24    이승철      Modified    가입일 반환
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
@@ -69,6 +70,7 @@ export class UserService {
       email: user.email,
       name: user.name,
       imageUrl: user.imageUrl,
+      createdAt: user.createdAt,
       hashtags,
       favoriteLifeGraph,
       posts: postSummaries,

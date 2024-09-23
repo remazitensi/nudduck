@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.23    이승철      Created
+ * 2024.09.24    이승철      Modified    날짜 타입 변경
  */
 
 import { Community } from "@_modules/community/entities/community.entity";
@@ -22,7 +23,7 @@ export class CommunitySummaryDto {
     description: '게시글 작성일',
     example: '2024-02-01',
   })
-  createdAt: string;
+  createdAt: Date;
 
   @ApiProperty({
     description: '게시글 제목',
@@ -32,7 +33,7 @@ export class CommunitySummaryDto {
 
   constructor(community: Community) {
     this.postId = community.postId;
-    this.createdAt = community.createdAt.toISOString().split('T')[0];
+    this.createdAt = community.createdAt;
     this.title = community.title;
   }
 }
