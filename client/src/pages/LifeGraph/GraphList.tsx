@@ -10,8 +10,8 @@
  * 2024.09.13    김재영      Done        관련 채팅방 검색 및 참여, 커뮤니티 피드 제공 기능 추가 및 완료
  */
 
-import { Graph } from '../../components/Graph/Graph';
-import { lifeDataArray } from '../../types/graph_type';
+import { Graph } from '../../components/Graph/CreateListGraph';
+import { lifeDataArray } from '../../types/graph-type';
 
 // res.data
 const lifeData: lifeDataArray = [
