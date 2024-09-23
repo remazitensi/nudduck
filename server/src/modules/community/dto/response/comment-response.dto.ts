@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.21    김재영      Created     댓글 응답 DTO 초기 생성
  * 2024.09.22    김재영      Modified    생성자 추가 및 데이터 매핑 로직 추가
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -83,6 +84,6 @@ export class CommentResponseDto {
     this.parentId = comment.parentId; // 부모 댓글 ID
     this.userId = comment.user?.id || null; // 작성자 ID
     this.nickname = comment.user?.nickname || ''; // 작성자 닉네임
-    this.imageUrl = comment.user?.image_url || ''; // 작성자 프로필 사진 URL
+    this.imageUrl = comment.user?.imageUrl || ''; // 작성자 프로필 사진 URL
   }
 }

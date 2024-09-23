@@ -11,6 +11,7 @@
  * 2024.09.21    이승철      Modified    즐겨찾기 인생그래프 예시 추가
  * 2024.09.23    이승철      Modified    MyProfileDto로 변경
  * 2024.09.23    이승철      Modified    유저가 작성한 게시글 목록
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { CommunitySummaryDto } from '@_modules/user/dto/community-summary.dto';
@@ -37,14 +38,14 @@ export class MyProfileDto {
     description: '즐겨찾기한 인생 그래프',
     example: {
       id: 1,
-      current_age: 25,
+      currentAge: 25,
       title: 'My Life Graph',
       events: [
         { age: 10, score: 4, title: 'Started school', description: 'Started elementary school' },
         { age: 20, score: 3, title: 'Graduated college', description: "Graduated with a bachelor's degree" },
       ],
-      created_at: '2024-09-17T00:00:00.000Z',
-      updated_at: '2024-09-17T00:00:00.000Z',
+      createdAt: '2024-09-17T00:00:00.000Z',
+      updatedAt: '2024-09-17T00:00:00.000Z',
     },
     nullable: true,
     type: () => LifeGraph,

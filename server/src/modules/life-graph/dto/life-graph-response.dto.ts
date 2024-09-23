@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.21    이승철      Created
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -29,7 +30,7 @@ export class LifeGraphResponseDto {
   id: number;
 
   @ApiProperty({ example: 25, description: '현재 나이' })
-  current_age: number;
+  currentAge: number;
 
   @ApiProperty({ example: 'My Life Graph', description: '그래프 제목' })
   title: string;
@@ -38,10 +39,10 @@ export class LifeGraphResponseDto {
   events: LifeGraphEventDto[];
 
   @ApiProperty({ example: '2024-09-17T00:00:00.000Z', description: '생성 날짜' })
-  created_at: Date;
+  createdAt: Date;
 
   @ApiProperty({ example: '2024-09-17T00:00:00.000Z', description: '수정 날짜' })
-  updated_at: Date;
+  updatedAt: Date;
 }
 
 export class LifeGraphListResponseDto {

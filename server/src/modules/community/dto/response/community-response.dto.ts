@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.20    김재영      Created     커뮤니티 게시글 DTO 생성
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 import { ApiProperty } from '@nestjs/swagger';
 import { Category } from '@_modules/community/enums/category.enum';
@@ -60,6 +61,6 @@ export class CommunityResponseDto {
     this.category = community.category;
     this.userId = community.user?.id || null; // userId 할당
     this.nickname = community.user.nickname; // 작성자 닉네임
-    this.imageUrl = community.user.image_url; // 작성자 프로필 사진 URL
+    this.imageUrl = community.user.imageUrl; // 작성자 프로필 사진 URL
   }
 }

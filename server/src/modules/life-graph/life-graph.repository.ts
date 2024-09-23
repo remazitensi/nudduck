@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
  * 2024.09.18    이승철      Modified    트랜잭션에서 직접 db처리로 인해 update 로직 삭제
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
@@ -34,7 +35,7 @@ export class LifeGraphRepository {
       where: { user: { id: userId } },
       skip: (page - 1) * limit,
       take: limit,
-      order: { created_at: 'DESC' },
+      order: { createdAt: 'DESC' },
       relations: ['events'],
     });
   }

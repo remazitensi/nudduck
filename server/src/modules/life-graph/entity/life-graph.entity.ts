@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.entity';
@@ -17,12 +18,12 @@ export class LifeGraph {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.life_graphs)
-  @JoinColumn({ name: 'user_id' })
+  @ManyToOne(() => User, (user) => user.lifeGraphs)
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ type: 'int' })
-  current_age: number;
+  currentAge: number;
 
   @Column({ type: 'varchar', length: 255 })
   title: string;
@@ -31,8 +32,8 @@ export class LifeGraph {
   events: LifeGraphEvent[];
 
   @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
+  updatedAt: Date;
 }
