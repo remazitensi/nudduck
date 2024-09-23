@@ -17,6 +17,7 @@
  * 2024.09.17    이승철      Modified    OAuthUser interface 디렉토리로 변경
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
+ * 2024.09.23    이승철      Modified    리다이렉트 설정
  */
 
 import { AuthService } from '@_modules/auth/auth.service';
@@ -24,6 +25,7 @@ import { RefreshTokenDto } from '@_modules/auth/dto/refresh-token.dto';
 import { UserDto } from '@_modules/auth/dto/user.dto';
 import { getAccessCookieOptions, getRefreshCookieOptions } from '@_modules/auth/utils/cookie-helper';
 import { BadRequestException, Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OAuthUser } from 'common/interfaces/oauth-user.interface';
@@ -32,7 +34,10 @@ import { Response } from 'express';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @ApiOperation({ summary: '구글 소셜 로그인' })
   @ApiResponse({ status: 200, description: '구글 로그인 시도' })
@@ -59,7 +64,7 @@ export class AuthController {
 
     res.cookie('accessToken', tokens.accessToken, getAccessCookieOptions());
     res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
-    res.status(200).send('Login successful'); // 성공 응답을 주고 클라이언트에서 redirect
+    res.redirect(this.configService.get<string>('HOME_PAGE')); 
   }
 
   @ApiOperation({ summary: '카카오 로그인' })
@@ -87,7 +92,7 @@ export class AuthController {
 
     res.cookie('accessToken', tokens.accessToken, getAccessCookieOptions());
     res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
-    res.status(200).send('Login successful'); // 성공 응답을 주고 클라이언트에서 redirect
+    res.redirect(this.configService.get<string>('HOME_PAGE'));
   }
 
   @ApiOperation({ summary: '엑세스 토큰 재발급' })
