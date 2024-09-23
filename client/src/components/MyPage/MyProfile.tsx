@@ -1,11 +1,12 @@
 /**
- * File Name    : Header.tsx
- * Description  : pages - 프로필 수정 모달 -
+ * File Name    : MyProfile.tsx
+ * Description  : 마이페이지 내 프로필, 작성게시글 포함
  * Author       : 김우현
  *
  * History
  * Date          Author      Status      Description
  * 2024.09.20    김우현      Updated     api 완성()
+ * 2024.09.23    김민지      Modified    작성 게시글 레이아웃
  */
 import UserEditModal from '../../pages/UserEditModal';
 
@@ -57,6 +58,10 @@ const MyProfile: React.FC<MyProfileProps> = ({
     created_At: '',
   }); // get으로 받아온 새 정보
 
+  const [posts, setPosts] = useState([]); // 게시글 목록 데이터
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+  const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수
+
   const fetchProfile = async () => {
     try {
       const data: typeof profile = await fetchUserProfile(); // profile 타입과 동일하게 설정
@@ -80,7 +85,17 @@ const MyProfile: React.FC<MyProfileProps> = ({
     console.log('Updated profile:', profile);
   }, [profile]);
 
-  // // api 끝
+  // ----------- api 끝 -----------
+
+  // 페이지네이션 현재 페이지 설정
+  const handleCurrentPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page); // page에 현재 페이지 저장
+    }
+  };
+
+  // TODO : currentPage를 추적하는 useEffect -> currentPage가 변할 때 api 요청 다시
+  useEffect(() => {}, [currentPage]);
 
   return (
     <div>
@@ -90,6 +105,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
       </div>
 
       <div className='mt-[80px] flex w-[1200px] gap-[30px]'>
+        {/* 프로필 영역 */}
         <div className='flex h-[780px] w-[500px] flex-col rounded-[20px] bg-[#fafafa] shadow-lg'>
           <div className='pl-[40px] pt-[35px]'>
             <div className='flex gap-[20px]'>
@@ -137,6 +153,59 @@ const MyProfile: React.FC<MyProfileProps> = ({
                 <p>{profile.created_At}</p>
               </div>
             </div>
+          </div>
+        </div>
+        {/* 내가 쓴 게시글 영역 */}
+        <div className='flex h-[780px] w-[670px] flex-col rounded-[20px] bg-[#fafafa] shadow-lg'>
+          <div className='pl-[40px] pt-[35px]'>
+            <div className='flex gap-[20px]'>
+              <div className='text-[25px]'>내 게시글</div>
+            </div>
+            <div className='mt-[25px]'>
+              <p className='text-[16px]'>댓글을 단 유저와 취준메이트가 되어보세요!</p>
+              <div className='mt-[20px] w-[415px] border-b border-[#585858]'></div>
+            </div>
+            <div className='mt-[100px] h-[434px] w-[602px]'>
+              <div className='flex'>
+                <p className='ml-[30px]'>날짜</p>
+                <p className='ml-[184px]'>제목</p>
+              </div>
+              {/* 아래 div 안에 모든 게시글 섹션이 들어가야 함 */}
+              <div className='mt-[27px] flex flex-col gap-[15px]'>
+                {/* ------- 게시글 1개당 섹션, 동적으로 추가 -------- */}
+                {posts.map((post) => (
+                  <div key={post.id} className='flex items-center'>
+                    <div>{post.date}</div>
+                    <div className='ml-[44px] flex w-[250px] justify-center'>
+                      <p>{post.title}</p>
+                    </div>
+                    {/* Todo : edit, del 버튼 onClick
+                    // Todo :  edit 버튼 => path='edit/:id' 로 이동  */}
+                    <img className='ml-auto' src='/edit-btn.png' />
+                    <img className='ml-[6px]' src='/delete-btn.png' />
+                  </div>
+                ))}
+                {/* ------- 게시글 1개당 섹션 끝. -------- */}
+              </div>
+              {/* 페이지네이션 구역 */}
+              {/* Todo : get으로 받은 count 계산해서 totalPages... */}
+              <div className='pagination-controls mt-[25px] flex flex-col items-center'>
+                <div className='flex space-x-2'>
+                  <button onClick={() => handleCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                    이전
+                  </button>
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button key={index + 1} onClick={() => handleCurrentPage(index + 1)} disabled={index + 1 === currentPage} className={`${index + 1 === currentPage ? 'font-bold' : ''}`}>
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button onClick={() => handleCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                    다음
+                  </button>
+                </div>
+              </div>
+            </div>
+            {/* ------- 페이지네이션 끝 ------- */}
           </div>
         </div>
       </div>
