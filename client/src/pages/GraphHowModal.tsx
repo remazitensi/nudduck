@@ -16,7 +16,7 @@ interface GraphHowModalProps {
 const GraphHowModal: React.FC<GraphHowModalProps> = ({ onClose }) => {
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
-      <div className='flex h-[870px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
+      <div className='flex h-[950px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
         {/* &nbsp; 한칸 띄우게 해주는 코드 */}
         <div className='mt-[65px]'>
           <div className='ml-[60px] flex flex-col'>
