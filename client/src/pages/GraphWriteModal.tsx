@@ -105,7 +105,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, onSaveTitle,
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
-      <div className='flex h-[870px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
+      <div className='flex h-[1000px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
         <div className='flex justify-end'>
           <div onClick={onClose} className='flex cursor-pointer flex-wrap p-[20px] text-[24px]'>
             x
@@ -126,7 +126,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, onSaveTitle,
             <input className='h-[40px] w-[200px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none' placeholder='나이를 숫자만 입력해주세요' />
           </div>
           {/* 이 부분이 스크롤 형식으로 차지하는 부분 overflow-x-hidden overflow-y-auto */}
-          <div className='mt-[25px] h-[350px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
+          <div className='mt-[25px] h-[400px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
             {/* inputs 배열의 각 요소를 map으로 렌더링 */}
             {inputs.map((input, index) => (
               // 바로 아래의 div는 정렬을 위해 이벤트 input을 아래로 보내기 위해 한번더 div로 감쌌음
@@ -191,7 +191,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, onSaveTitle,
           </div>
         </div>
         <div className='mt-[90px] flex h-[50px] w-full justify-center pl-[20px]'>
-          <button className='text-25px] flex w-[220px] items-center justify-center rounded-[10px] bg-[#909700] font-bold text-white'>저장하기</button>
+          <button className='flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>저장하기</button>
         </div>
       </div>
     </div>
