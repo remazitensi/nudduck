@@ -30,7 +30,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OAuthUser } from 'common/interfaces/oauth-user.interface';
 import { UserRequest } from 'common/interfaces/user-request.interface';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 @ApiTags('Authentication')
 @Controller('auth')
