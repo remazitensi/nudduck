@@ -1,4 +1,6 @@
-import { Graph } from '../../components/Graph/Graph';
+// 안 쓰는 파일 (정리할 것)
+
+import { Graph } from './CreateListGraph';
 
 // res.data
 const lifeData = [
