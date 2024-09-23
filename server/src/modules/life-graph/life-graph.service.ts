@@ -13,6 +13,7 @@
  * 2024.09.18    이승철      Modified    인생그래프 이벤트 Full Replacement Update로 변경
  * 2024.09.23    이승철      Modified    인생그래프 개수가 0일 경우 조건문 추가
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
+ * 2024.09.24    이승철      Modified    limit를 dto에 추가
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
@@ -24,6 +25,7 @@ import { DataSource } from 'typeorm';
 import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.entity';
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { LifeGraphEventService } from '@_modules/life-graph/life-graph-event.service';
+import { LifeGraphPaginationQueryDto } from './dto/life-graph-pagination-query.dto';
 
 @Injectable()
 export class LifeGraphService {
@@ -54,22 +56,16 @@ export class LifeGraphService {
     await this.lifeGraphRepository.createLifeGraph(newLifeGraph);
   }
 
-  // 전체 인생 그래프 조회  
-  async getAllLifeGraph(userId: number, page: number, limit: number): Promise<{ data: LifeGraph[]; totalCount: number }> {
-    page = Math.max(page, 1);
+  // 전체 인생 그래프 조회
+  async getAllLifeGraph(userId: number, lifeGraphPaginationQueryDto: LifeGraphPaginationQueryDto): Promise<{ data: LifeGraph[]; totalCount: number }> {
+    const { page, limit } = lifeGraphPaginationQueryDto;
+    const actualPage = Math.max(page, 1);
     const totalCount = await this.lifeGraphRepository.countLifeGraphs(userId);
     const totalPages = Math.ceil(totalCount / limit);
-    // 페이지가 0인 경우 처리
-    if (totalPages === 0) {
-      page = 1;
-    } else {
-        page = Math.max(page, 1); // 최소 1페이지로 설정
-        if (page > totalPages) {
-            page = totalPages; // 총 페이지보다 클 경우 마지막 페이지로 설정
-        }
-      }
 
-    const data = await this.lifeGraphRepository.findLifeGraphs(userId, page, limit);
+    const finalPage = totalPages === 0 ? 1 : Math.min(actualPage, totalPages);
+
+    const data = await this.lifeGraphRepository.findLifeGraphs(userId, finalPage, limit);
     return { data, totalCount };
   }
 
