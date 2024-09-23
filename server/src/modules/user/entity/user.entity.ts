@@ -13,6 +13,7 @@
  * 2024.09.16    이승철      Modified    인생그래프, 인생그래프 즐겨찾기 적용
  * 2024.09.19    김재영      Modified    커뮤니티 적용
  * 2024.09.23    김재영      Modified    채팅 기능 적용
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn, JoinColumn } from 'typeorm';
@@ -24,7 +25,7 @@ import { ChatRoom } from '@_modules/chat/entities/room.entity';
 import { Message } from '@_modules/chat/entities/message.entity';
 
 @Entity()
-@Unique(['provider', 'provider_id'])
+@Unique(['provider', 'providerId'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -33,7 +34,7 @@ export class User {
   provider: string;
 
   @Column({ type: 'varchar', length: 255 })
-  provider_id: string;
+  providerId: string;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -45,31 +46,31 @@ export class User {
   nickname: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  refresh_token: string;
+  refreshToken: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  image_url: string;
+  imageUrl: string;
 
   @OneToMany(() => UserHashtag, (userHashtag) => userHashtag.user)
   hashtags: UserHashtag[];
 
   // 즐겨찾기한 인생 그래프와의 관계 (유저는 하나의 인생 그래프만 즐겨찾기 가능)
   @ManyToOne(() => LifeGraph)
-  @JoinColumn({ name: 'favorite_life_graph_id' })
-  favorite_life_graph: LifeGraph;
+  @JoinColumn({ name: 'favoriteLifeGraphId' })
+  favoriteLifeGraph: LifeGraph;
 
   // 유저가 작성한 인생 그래프들과의 관계
   @OneToMany(() => LifeGraph, (lifeGraph) => lifeGraph.user)
-  life_graphs: LifeGraph[];
+  lifeGraphs: LifeGraph[];
 
   @CreateDateColumn()
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updated_at: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
-  deleted_at: Date | null;
+  deletedAt: Date | null;
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];

@@ -16,6 +16,7 @@
  * 2024.09.10    이승철      Modified    회원탈퇴 후, 재가입 로직 구현
  * 2024.09.11    이승철      Modified    accessToken 재발급 로직 재추가
  * 2024.09.16    이승철      Modified    쿠키발급 컨트롤러로 이전, nickname으로 변경, User.entity에 snakecase 적용, 절대경로 변경
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { AuthRepository } from '@_modules/auth/auth.repository';
@@ -41,9 +42,9 @@ export class AuthService {
     const existingUser = await this.authRepository.findUserByProvider(userDto.provider, userDto.providerId);
 
     if (existingUser) {
-      if (existingUser.deleted_at) {
+      if (existingUser.deletedAt) {
         // 탈퇴한 계정이라면 재가입 처리
-        existingUser.deleted_at = null;
+        existingUser.deletedAt = null;
         await this.authRepository.updateUser(existingUser);
       }
       const tokens = this.generateTokens(existingUser);
@@ -85,7 +86,7 @@ export class AuthService {
 
   // 토큰 생성
   private generateTokens(user: User): { accessToken: string; refreshToken: string } {
-    const payload = { sub: user.provider_id, provider: user.provider, email: user.email };
+    const payload = { sub: user.providerId, provider: user.provider, email: user.email };
 
     const accessToken = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_SECRET'),
@@ -111,7 +112,7 @@ export class AuthService {
       throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
     }
 
-    if (user.refresh_token !== refreshToken) {
+    if (user.refreshToken !== refreshToken) {
       throw new ForbiddenException('리프레시 토큰이 일치하지 않습니다.');
     }
 

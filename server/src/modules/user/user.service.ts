@@ -12,6 +12,7 @@
  * 2024.09.23    이승철      Modified    favoriteLifeGraph => favorite_life-graph로 변경
  * 2024.09.23    이승철      Modified    MyProfileDto로 변경
  * 2024.09.24    이승철      Modified    프로필 조회 나의 게시글 포함
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
@@ -39,15 +40,15 @@ export class UserService {
     userId: number,
     myPaginationQueryDto: MyPaginationQueryDto
   ): Promise<MyProfileDto> {
-    const user = await this.userRepository.findUserById(userId, ['favorite_life_graph', 'hashtags']);
+    const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph', 'hashtags']);
     if (!user) {
       throw new NotFoundException('회원을 찾을 수 없습니다.');
     }
   
     const hashtags = user.hashtags.map((hashtag) => hashtag.name);
   
-    const favoriteLifeGraph = user.favorite_life_graph
-      ? await this.lifeGraphRepository.findOneLifeGraph(user.favorite_life_graph.id, user.id, {
+    const favoriteLifeGraph = user.favoriteLifeGraph
+      ? await this.lifeGraphRepository.findOneLifeGraph(user.favoriteLifeGraph.id, user.id, {
           relations: ['events'],
         })
       : null;
@@ -67,7 +68,7 @@ export class UserService {
       nickname: user.nickname,
       email: user.email,
       name: user.name,
-      imageUrl: user.image_url,
+      imageUrl: user.imageUrl,
       hashtags,
       favoriteLifeGraph,
       posts: postSummaries,
@@ -93,7 +94,7 @@ export class UserService {
       }
 
       // 프로필 이미지 수정/삭제 (imageUrl이 undefined가 아니고 기존과 다른 경우에만)
-      if (updateProfileDto.imageUrl && user.image_url !== updateProfileDto.imageUrl) {
+      if (updateProfileDto.imageUrl && user.imageUrl !== updateProfileDto.imageUrl) {
         await this.updateProfileImage(user, updateProfileDto.imageUrl);
       }
 
@@ -124,9 +125,9 @@ export class UserService {
 
   private async updateProfileImage(user, imageUrl: string): Promise<void> {
     if (imageUrl === ' ') {
-      user.image_url = this.fileUploadService.getDefaultProfileImgURL(); // 기본 이미지로 설정
+      user.imageUrl = this.fileUploadService.getDefaultProfileImgURL(); // 기본 이미지로 설정
     } else {
-      user.image_url = imageUrl; // 새 이미지 URL 설정
+      user.imageUrl = imageUrl; // 새 이미지 URL 설정
     }
   }
 
@@ -160,7 +161,7 @@ export class UserService {
       throw new NotFoundException('회원을 찾을 수 없습니다.');
     }
 
-    user.refresh_token = null;
+    user.refreshToken = null;
     await this.userRepository.updateUser(user);
   }
 

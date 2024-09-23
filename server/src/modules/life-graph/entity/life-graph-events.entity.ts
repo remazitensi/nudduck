@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.17    이승철      Created
  * 2024.09.18    이승철      Modified    이벤트 제목 추가
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
@@ -19,7 +20,7 @@ export class LifeGraphEvent {
   id: number;
 
   @ManyToOne(() => LifeGraph, (lifeGraph) => lifeGraph.events, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'life_graph_id' })
+  @JoinColumn({ name: 'lifeGraphId' })
   lifeGraph: LifeGraph;
 
   @Column({ type: 'int' })

@@ -12,6 +12,7 @@
  * 2024.09.18    이승철      Modified    불필요한 코드 제거 및 인생그래프 이벤트 책임분리
  * 2024.09.18    이승철      Modified    인생그래프 이벤트 Full Replacement Update로 변경
  * 2024.09.23    이승철      Modified    인생그래프 개수가 0일 경우 조건문 추가
+ * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
@@ -38,7 +39,7 @@ export class LifeGraphService {
     const user = await this.userRepository.findUserById(userId);
     const newLifeGraph = {
       user,
-      current_age: createLifeGraphDto.currentAge,
+      currentAge: createLifeGraphDto.currentAge,
       title: createLifeGraphDto.title,
       events: createLifeGraphDto.events.map((eventDto) => {
         const lifeGraphEvent = new LifeGraphEvent();
@@ -120,7 +121,7 @@ export class LifeGraphService {
   // 제목과 나이 업데이트
   private updateBasicInfo(lifeGraph: LifeGraph, updateLifeGraphDto: UpdateLifeGraphDto): void {
     if (updateLifeGraphDto.currentAge) {
-      lifeGraph.current_age = updateLifeGraphDto.currentAge;
+      lifeGraph.currentAge = updateLifeGraphDto.currentAge;
     }
     if (updateLifeGraphDto.title) {
       lifeGraph.title = updateLifeGraphDto.title;
@@ -145,10 +146,10 @@ export class LifeGraphService {
       throw new NotFoundException();
     }
 
-    if (user.favorite_life_graph?.id === graphId) {
-      user.favorite_life_graph = null; // 이미 즐겨찾기 되어 있으면 해제
+    if (user.favoriteLifeGraph?.id === graphId) {
+      user.favoriteLifeGraph = null; // 이미 즐겨찾기 되어 있으면 해제
     } else {
-      user.favorite_life_graph = lifeGraph; // 즐겨찾기로 설정
+      user.favoriteLifeGraph = lifeGraph; // 즐겨찾기로 설정
     }
 
     await this.userRepository.updateUser(user);
