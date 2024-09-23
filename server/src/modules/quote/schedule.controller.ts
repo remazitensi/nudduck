@@ -5,7 +5,7 @@ import { QuoteDto } from './dto/quote.dto';
 import { EnglishSentenceDto } from './dto/english-sentence.dto';
 
 @ApiTags('Schedule')
-@ApiExtraModels(QuoteDto, EnglishSentenceDto) // DTO 모델을 추가하여 Swagger가 참조할 수 있게 설정
+@ApiExtraModels(QuoteDto, EnglishSentenceDto)
 @Controller('schedule')
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}

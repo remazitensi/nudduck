@@ -26,7 +26,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ChatModule } from '@_modules/chat/chat.module';
-import { ScheduleModule } from '@_modules/quote/schedule.module';
+import { ScheduleModule as NestScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -60,7 +60,7 @@ import { ScheduleModule } from '@_modules/quote/schedule.module';
     ExpertModule,
     CommunityModule,
     ChatModule,
-    ScheduleModule,
+    NestScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
