@@ -9,21 +9,41 @@
  * 2024.09.24    김민지      Modified     그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
  */
 
+import { api, baseApi } from '../../apis/base-api';
 import { GraphData } from '../../types/graph-type';
 import { CreateListGraph } from './CreateListGraph';
 
 const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, changeActiveStar }: GraphData) => {
-  const isActive = activeStarId === id; // 현재 그래프가 활성화된 스타인지 확인
+  const isActive = activeStarId === id; // 현재 활성화 스타와 비교해서 그래프가 활성화된 스타인지 확인
 
   const changeStar = () => {
     changeActiveStar(isActive ? null : id); // 클릭 시 활성화 상태 변경
+  };
+
+  const deleteGraph = async () => {
+    try {
+      const data = await baseApi.delete(`${api.lifeGraph}/${id}`, {});
+      if (data.status === 200) {
+        console.log(data);
+        alert('성공적으로 인생 그래프가 삭제되었습니다!');
+        // todo : get요청 자동화F
+      }
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   return (
     <div className='flex w-[380px] flex-col'>
       <div className='mb-[5px] flex justify-end gap-[10px]'>
         <img src='/edit-btn.png' className='cursor-pointer' />
-        <img src='/delete-btn.png' className='cursor-pointer' />
+        <img
+          src='/delete-btn.png'
+          className='cursor-pointer'
+          onClick={() => {
+            deleteGraph();
+          }}
+        />
       </div>
       <div className='flex w-[380px] bg-[#F8F8F8] hover:shadow-md'>
         <div className='mt-[30px]'>
