@@ -14,6 +14,7 @@
 import { AxiosError } from 'axios';
 import { PostBodyData, PostDetailData, PostListParams } from '../../types/community-type';
 import { api, baseApi } from '../base-api';
+// const navigate = useNavigate();
 
 // <------------------ 게시글 api ------------------>
 
@@ -192,7 +193,7 @@ export async function editPost({ post }: { post: PostDetailData }) {
 
     if (response.status === 201) {
       // 수정한 게시글 페이지로 이동
-      navigate(`/community/${post.postId}`);
+      window.location.href = `/community/${post.postId}`;
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
@@ -211,7 +212,7 @@ export async function deletePost({ post }: { post: PostDetailData }) {
     const response = await baseApi.delete(`${api.community}/${post.postId}`, {});
 
     if (response.status === 201) {
-      navigate(api.myPage);
+      window.location.href = `/community`;
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
