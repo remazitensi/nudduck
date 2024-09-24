@@ -3,15 +3,136 @@ import Picker from '@emoji-mart/react';
 import React, { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 
+import { checkChat, inviteChat, sendMessage, whichCheckchatRoom } from '../apis/chatRoom-api';
+
 // 소켓 서버 주소 설정
-const socket = io('http://localhost:7000'); // 서버 포트번호 7000으로 연결
+const socket = io('http://localhost:3000/api'); // 서버 포트번호 3000으로 연결
+
+interface ChatRoomData {
+  loggedInUserId: number; // 로그인한 사용자 ID
+  loggedInUserNickname: string; // 로그인한 사용자 닉네임
+  recipientId: string; // 수신자 ID
+  recipientNickname: string; // 수신자 닉네임
+  createdAt: string; // 생성일
+}
+
+interface chatMessage {
+  name: string;
+  msg: string;
+  time: string;
+}
 
 const ChatRoom: React.FC = () => {
   const [message, setMessage] = useState<string>(''); // 사용자가 입력한 메시지 상태
-  const [nickname, setNickName] = useState<string>(''); // 사용자 닉네임 상태
+  // const [nickname, setNickName] = useState<string>(''); // 사용자 닉네임 상태
   const [chatHistory, setChatHistory] = useState<Array<{ name: string; msg: string; time: string }>>([]); // 채팅 메시지를 저장하는 배열
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // 이모티콘 선택기 표시 여부
-  const [hashTag, setHashTag] = useState('');
+  const [loggedInUserId, setLoggedInUserId] = useState<number>(0); // 로그인한 사용자 ID 초기화
+  const [loggedInUserNickname, setLoggedInUserNickname] = useState<string>(''); // 로그인한 사용자 닉네임 초기화
+  const [roomId, setRoomId] = useState<number>(0); // 현재 대화방 ID 초기화
+
+  // const handleRoomSelect = (roomId) => {
+  //   setSelectedRoomId(roomId);
+  // }
+
+  // 채팅시작 및 대화방 만들기 d
+  const handleStartChat = async (recipientId: number, loggedInUserId: number, loggedInUserNickname: string, recipientNickname: string) => {
+    try {
+      const response = await inviteChat(recipientId, loggedInUserId, loggedInUserNickname, recipientNickname);
+      // 응답 데이터에서 메시지를 받아와서 채팅 기록 설정
+      if (response && response.message) {
+        setChatHistory(response.message);
+      } else {
+        console.error('No message data returned from inviteChat');
+      }
+    } catch (error) {
+      console.error('Failed to startChat:', error);
+    }
+  };
+
+  // 목록 클릭 시 해당 목록의 메시지 불러오기 아래랑 같은거 아님? d
+  const loadMessages = async (sessionId: number) => {
+    try {
+      const response = await checkChat(sessionId);
+      setChatHistory(response.messages);
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+    }
+  };
+
+  // 채팅 목록 조회 함수 d
+  const handleCheckChat = async () => {
+    try {
+      const response = await checkChat(loggedInUserId);
+
+      // setChatHistory([]);
+      await loadMessages(response.currentId);
+    } catch (error) {
+      console.log('Failed to CheckChat:', error);
+    }
+  };
+
+  // 특정 채팅방의 메시지 조회 d
+  const handleWhichCheckRoom = async (roomId: number) => {
+    try {
+      const response = await whichCheckchatRoom(roomId);
+      setChatHistory([]);
+      await loadMessages(response.currentId); // 메시지 불러오기
+    } catch (error) {
+      console.log('Failed to checkRoom:', error);
+    }
+  };
+
+  // 채팅 메시지 전송 d
+  const sendChatMessage = async () => {
+    if (!message.trim()) {
+      console.error('Message cannot be empty'); // 빈 메시지 체크
+      return;
+    }
+
+    try {
+      // 메시지 전송 d
+      console.log('Sending message to room:', roomId, 'with message:', message);
+
+      // 데이터 객체 생성
+      const data = {
+        userId: loggedInUserId, // 변경된 키 이름
+        nickname: loggedInUserNickname, // 변경된 키 이름
+        roomId: roomId,
+        message: message,
+      };
+
+      await sendMessage(data); // 메시지 전송 { loggedInUserId, loggedInUserNickname, roomId, message }
+      socket.emit('chatting', { id: loggedInUserId, nickname: loggedInUserNickname, msg: message });
+      setMessage(''); // 메시지 입력란 초기화
+      // 메시지를 채팅 기록에 추가
+      setChatHistory((prev) => [...prev, { name: loggedInUserNickname, msg: message, time: new Date().toLocaleTimeString() }]);
+    } catch (error) {
+      console.log('Failed to sendMessage:', error);
+    }
+  };
+
+  // api 전송버튼 및 1:1 대화 목록부분을 처리하는 api 함수
+  // const sendChat = async () => {
+  //   if (!nickname || !message) {
+  //     console.log('Nickname or message is empty');
+  //     return;
+  //   }
+
+  //   try {
+  //     // activateChat API 호출
+  //     await fetchChatHistory(); // 채팅 활성화 API 호출
+
+  //     const time = new Date().toLocaleTimeString();
+  //     console.log('Sending message:', { name: nickname, msg: message, time });
+
+  //     // 소켓을 통해 메시지 전송
+  //     socket.emit('chatting', { name: nickname, msg: message, time });
+  //     setMessage(''); // 메시지 입력란 초기화
+  //   } catch (error) {
+  //     console.error('Failed to send chat message:', error);
+  //   }
+  // };
 
   const handleEmojiSelect = (emoji: any) => {
     setMessage((prevMessage) => prevMessage + emoji.native); // 선택한 이모티콘을 메시지에 추가
@@ -49,21 +170,21 @@ const ChatRoom: React.FC = () => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
 
-  const handleSend = () => {
-    if (nickname && message) {
-      // 메시지 전송
-      const time = new Date().toLocaleTimeString();
-      console.log('Sending message:', { name: nickname, msg: message, time }); // 전송할 데이터 확인
-      socket.emit('chatting', { name: nickname, msg: message, time });
-      setMessage('');
-    } else {
-      console.log('Nickname or message is empty'); // 닉네임 또는 메시지가 비어 있을 경우
-    }
-  };
+  // const handleSend = () => {
+  //   if (nickname && message) {
+  //     // 메시지 전송
+  //     const time = new Date().toLocaleTimeString();
+  //     console.log('Sending message:', { name: nickname, msg: message, time }); // 전송할 데이터 확인
+  //     socket.emit('chatting', { name: nickname, msg: message, time });
+  //     setMessage('');
+  //   } else {
+  //     console.log('Nickname or message is empty'); // 닉네임 또는 메시지가 비어 있을 경우
+  //   }
+  // };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleSend();
+      sendChatMessage(loggedInUserId, loggedInUserNickname, message, roomId);
     }
   };
 
@@ -114,7 +235,8 @@ const ChatRoom: React.FC = () => {
 
           <div className='ID-container h-[1000px] w-[970px] rounded-[30px] border border-[#8D8B67]'>
             <div className='flex h-[100px] w-full items-center rounded-t-[30px] border bg-[#EEF9FF] pl-[30px]'>
-              <input type='text' value={nickname} onChange={(e) => setNickName(e.target.value)} className='bg-[#EEF9FF] text-[20px] outline-none' placeholder='Enter your nickname' />
+              <div>{loggedInUserNickname}</div>
+              {/* <input type='text' value={nickname} onChange={(e) => setNickName(e.target.value)} className='bg-[#EEF9FF] text-[20px] outline-none' placeholder='Enter your nickname' /> */}
             </div>
 
             {/* 메시지 표시 영역 */}
@@ -124,15 +246,15 @@ const ChatRoom: React.FC = () => {
                   <li
                     key={index}
                     ref={(el) => (messageRefs.current[index] = el)} // 각 메시지를 참조하기 위해 ref 저장
-                    className={`flex items-start gap-[10px] ${nickname === item.name ? 'flex-row-reverse' : ''}`}
+                    className={`flex items-start gap-[10px] ${loggedInUserNickname === item.name ? 'flex-row-reverse' : ''}`}
                   >
                     <img className='h-[100px] w-[100px] object-cover' src='/cat_image.png' alt='고양이 이미지' />
                     <div className='flex max-w-[80%] flex-col justify-end gap-[5px]'>
-                      <div className={`flex ${nickname === item.name ? 'justify-end' : ''}`}>
+                      <div className={`flex ${loggedInUserNickname === item.name ? 'justify-end' : ''}`}>
                         <div className='text-[20px] font-bold'>{item.name}</div>
                       </div>
                       <div className='flex items-start gap-[5px]'>
-                        <span className={`max-w-[300px] break-words rounded-[10px] p-3 text-[20px] shadow-xl ${nickname === item.name ? 'bg-[#EEF9FF]' : 'bg-[#FFEABA]'}`}>{item.msg}</span>
+                        <span className={`max-w-[300px] break-words rounded-[10px] p-3 text-[20px] shadow-xl ${loggedInUserNickname === item.name ? 'bg-[#EEF9FF]' : 'bg-[#FFEABA]'}`}>{item.msg}</span>
                         {/* <span className='ml-2 text-xs text-gray-500'>{item.time}</span> */}
                       </div>
                     </div>
@@ -162,7 +284,7 @@ const ChatRoom: React.FC = () => {
                   onKeyPress={handleKeyPress}
                 />
               </div>
-              <div onClick={handleSend} className='flex h-[60px] w-[130px] cursor-pointer items-center justify-center rounded-[10px] bg-[#EEF9FF] hover:bg-[#A1DFFF]'>
+              <div onClick={sendChatMessage} className='flex h-[60px] w-[130px] cursor-pointer items-center justify-center rounded-[10px] bg-[#EEF9FF] hover:bg-[#A1DFFF]'>
                 <button className='text-[28px] text-[#626146]'>전송</button>
               </div>
             </div>
