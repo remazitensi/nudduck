@@ -14,8 +14,8 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 // TODO: Layout 컴포넌트 만들기!
 
-import LifeGraphDetail from './pages/LifeGraphDetail';
-import LifeGraphList from './pages/LifeGraphList';
+import { LifeGraphDetail } from './pages/LifeGraph/LifeGraphDetail';
+import LifeGraphList from './pages/LifeGraph/LifeGraphList';
 
 const App: React.FC = () => {
   return (
