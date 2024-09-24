@@ -13,6 +13,7 @@
 import React, { useEffect, useState } from 'react';
 import { api, baseApi } from '../apis/base-api';
 
+import { fetchLifeGraphs } from '../apis/lifeGraph/graph-api';
 import GraphSection from '../components/Graph/GraphSection';
 import { GraphData } from '../types/graph-type';
 import GraphHowModal from './GraphHowModal';
@@ -46,33 +47,22 @@ const LifeGraphList: React.FC = () => {
     }
   };
 
-  //fixme
+  // fixme
   // 초기 렌더링 시 2번 호출, 이후 지나서도 자동으로 호출됨...
   useEffect(() => {
-    fetchLifeGraphs();
+    updateLifeGraphs();
   }, [currentPage, update]);
 
-  const fetchLifeGraphs = async () => {
-    try {
-      const page = currentPage;
-      const response = await baseApi.get(api.lifeGraph, {
-        params: { page, limit: 6 },
-      });
-      console.log('그래프조회 get', response.data);
-      setGraphListData(response.data.data); // 응답값 배열로 graphListData 업데이트
-      console.log('graphListData에 데이터가 있나?', graphListData);
-
-      // 데이터가 없으면 noData=true
-      if (graphListData.length === 0) {
-        setNoData(true);
-      } else {
-        setNoData(false);
-      }
-
-      const updateTotal = Math.ceil(response.data.totalCount / 6); // 소수는 올림
-      setTotalPages(updateTotal); // 총 페이지 수 계산
-    } catch (error) {
-      console.error('인생그래프를 불러오는데 실패했습니다.', error);
+  const updateLifeGraphs = async () => {
+    const res = await fetchLifeGraphs(currentPage);
+    setGraphListData(res.data);
+    console.log(res);
+    console.log('graphListData에 저장된 데이터: ', graphListData);
+    if (graphListData.length === 0) {
+      setNoData(true);
+    } else if (graphListData.length >= 1) {
+      setNoData(false);
+      setTotalPages(Math.ceil(res.totalCount / 6));
     }
   };
 
@@ -140,8 +130,6 @@ const LifeGraphList: React.FC = () => {
               id={graphData.id}
               activeStarId={activeStarId} // 활성화된 스타 ID 전달
               changeActiveStar={changeActiveStar} // 스타 변경 함수 전달
-              updateList={setGraphListData}
-              getReq={fetchLifeGraphs}
             />
           ))}
         </div>
