@@ -121,16 +121,14 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
       title: graphTitle, // 그래프 제목
       events: events, // 이벤트 목록
     };
-    console.log(requestBody);
-    // todo : error 전부 빈 문자열인지 확인 후 통과
 
     // axios POST 요청
     baseApi
       .post(api.lifeGraph, requestBody)
       .then((response) => {
         console.log('Data saved successfully:', response.data);
-        onClose();
-        // todo : get 업데이트
+        updateList(); // 여기서 그래프 리스트를 업데이트
+        onClose(); // 모달 닫기
       })
       .catch((error) => {
         console.error('Error saving data:', error);
