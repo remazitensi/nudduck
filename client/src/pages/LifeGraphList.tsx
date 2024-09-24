@@ -25,9 +25,6 @@ const LifeGraphList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [noData, setNoData] = useState<boolean>(true); // 개발 완료 후 true로 변경
 
-  //todo : setUpdate를 prop으로 넘겨서 변화를 주고 useEffect 실행되게 할까?
-  const [update, setUpdate] = useState<boolean>(true);
-
   const [isHowModalOpen, setIsHowModalOpen] = useState(false);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
 
@@ -48,7 +45,7 @@ const LifeGraphList: React.FC = () => {
 
   useEffect(() => {
     updateLifeGraphs();
-  }, [currentPage, update]);
+  }, [currentPage]);
 
   const updateLifeGraphs = async () => {
     const res = await fetchLifeGraphs(currentPage);
@@ -94,14 +91,7 @@ const LifeGraphList: React.FC = () => {
           </button>
           // fixme
           {/* updateList 로 get 부르는 fetchLifeGraphs 넘겼는데 동작하지 않음 */}
-          {isWriteModalOpen && (
-            <GraphWriteModal
-              updateList={() => {
-                fetchLifeGraphs(currentPage);
-              }}
-              onClose={() => setIsWriteModalOpen(false)}
-            />
-          )}
+          {isWriteModalOpen && <GraphWriteModal updateList={updateLifeGraphs} onClose={() => setIsWriteModalOpen(false)} />}
         </div>
       </div>
     );
@@ -139,6 +129,7 @@ const LifeGraphList: React.FC = () => {
               id={graphData.id}
               activeStarId={activeStarId} // 활성화된 스타 ID 전달
               changeActiveStar={changeActiveStar} // 스타 변경 함수 전달
+              updateList={updateLifeGraphs}
             />
           ))}
         </div>
