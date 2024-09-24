@@ -6,15 +6,22 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.22    김민지      Created     그래프 섹션 컴포넌트 분리, 차트 이름 추가, 그래프 연결
- * 2024.09.24    김민지      Modified     그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
+ * 2024.09.24    김민지      Modified    그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
+ * 2024.09.25    김민지      Modified    그래프 상세페이지로 이동
  */
 
+import { useNavigate } from 'react-router-dom';
 import { deleteGraph } from '../../apis/lifeGraph/graph-api';
 import { GraphData } from '../../types/graph-type';
 import { CreateListGraph } from './CreateListGraph';
 
 const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, changeActiveStar, updateList }: GraphData) => {
   const isActive = activeStarId === id; // 현재 활성화 스타와 비교해서 그래프가 활성화된 스타인지 확인
+  const navigate = useNavigate();
+
+  const navigateToDetail = () => {
+    navigate(`/life-graph/detail/${id}`); // 클릭 시 해당 id의 상세 페이지로 이동
+  };
 
   const changeStar = () => {
     if (!isActive) {
@@ -36,7 +43,7 @@ const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, c
           }}
         />
       </div>
-      <div className='flex w-[380px] bg-[#F8F8F8] hover:shadow-md'>
+      <div className='flex w-[380px] bg-[#F8F8F8] hover:shadow-md' onClick={navigateToDetail}>
         <div className='mt-[30px]'>
           <div className='h-[220px] w-[380px]'>
             <CreateListGraph events={events}></CreateListGraph>
