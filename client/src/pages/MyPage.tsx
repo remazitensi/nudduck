@@ -8,27 +8,66 @@
  * 2024.09.10    김우현      Created     마이 페이지 생성
  * 2024.09.10    김우현      updated     api 업데이트
  */
-// MyPage.tsx
-import React, { useState } from 'react';
-import MyProfile from '../components/MyPage/MyProfile'; // MyProfile 컴포넌트 임포트
+import React, { useEffect, useState } from 'react';
+import { fetchUserProfile } from '../apis/mypage-api';
+import MyProfile from '../components/MyPage/MyProfile';
 import QuitModal from './QuitModal';
+
+interface Post {
+  id: number;
+  title: string;
+  date: string;
+}
+
+interface FavoriteLifeGraph {
+  id: number;
+  title: string;
+  description: string;
+}
 
 const MyPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [quitOpen, setQuitOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
+  const [limit] = useState(10); // 한 페이지당 보여줄 게시글 수
+  const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수 상태
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
-  // 사용자 프로필 상태 추가
   const [profile, setProfile] = useState({
     id: '',
     imageUrl: '/user_image.png',
-    nickName: '',
+    nickname: '',
     name: '',
     email: '',
     hashtags: [] as string[],
-    created_At: '',
+    createdAt: '',
+    favoriteLifeGraph: null as FavoriteLifeGraph | null,
+    posts: [] as Post[],
+    totalCount: 0,
   });
 
-  // 모달 열기/닫기 핸들러
+  const fetchProfileData = async (page: number) => {
+    setIsLoading(true); // 로딩 시작
+    try {
+      const userProfileData = await fetchUserProfile(page, limit);
+      if (userProfileData) {
+        setProfile((prevProfile) => ({
+          ...prevProfile,
+          ...userProfileData, // profile 전체를 업데이트
+          totalCount: userProfileData.totalCount,
+        }));
+        setTotalPages(Math.ceil(userProfileData.totalCount / limit)); // 전체 페이지 수 계산
+      }
+    } catch (error) {
+      console.error('프로필을 가져오는 중 에러가 발생했습니다.', error);
+    }
+    setIsLoading(false); // 로딩 끝
+  };
+
+  useEffect(() => {
+    fetchProfileData(currentPage);
+  }, [currentPage]);
+
   const handleOpenModal = () => {
     setOpen(true);
   };
@@ -45,19 +84,16 @@ const MyPage: React.FC = () => {
     setQuitOpen(false);
   };
 
-  // 이미지 저장 핸들러
   const handleSaveImage = (newImage: string) => {
     setProfile((prevProfile) => ({ ...prevProfile, imageUrl: newImage }));
     handleCloseModal();
   };
 
-  // 닉네임 저장 핸들러
-  const handleSaveNickName = (newNickName: string) => {
-    setProfile((prevProfile) => ({ ...prevProfile, nickName: newNickName }));
+  const handleSaveNickname = (newNickname: string) => {
+    setProfile((prevProfile) => ({ ...prevProfile, nickname: newNickname }));
     handleCloseModal();
   };
 
-  // 해시태그 저장 핸들러
   const handleSaveHashTag = (newHashTag: string[]) => {
     setProfile((prevProfile) => ({ ...prevProfile, hashtags: newHashTag }));
     handleCloseModal();
@@ -65,20 +101,21 @@ const MyPage: React.FC = () => {
 
   return (
     <div className='myPage-titles flex w-[1920px] flex-col items-center gap-[10px]'>
-      {/* MyProfile 컴포넌트를 사용하고 상태와 핸들러들을 props로 전달 */}
       <MyProfile
         open={open}
         handleOpenModal={handleOpenModal}
         handleCloseModal={handleCloseModal}
-        handleSaveImage={handleSaveImage} // 수정된 핸들러 전달
-        handleSaveNickName={handleSaveNickName} // 수정된 핸들러 전달
-        handleSaveHashTag={handleSaveHashTag} // 수정된 핸들러 전달
-        profile={profile} // 추가된 props
+        handleSaveImage={handleSaveImage}
+        handleSaveNickname={handleSaveNickname}
+        handleSaveHashTag={handleSaveHashTag}
+        userProfile={profile}
+        currentPage={currentPage}
+        limit={limit}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+        isLoading={isLoading} // 로딩 상태 전달
       />
 
-      <div className='aaa h-[780px] w-[1200px] rounded-[20px] bg-[#fafafa] shadow-lg'>인생그래프</div>
-
-      {/* 탈퇴 모달 */}
       <div onClick={handleQuitOpenModal} className='mt-[40px] flex w-[1200px] cursor-pointer justify-end gap-[5px]'>
         <img src='/quit.svg' alt='quit' />
         <div className='flex items-center text-[15px] text-[#8D8B67]'>탈퇴하기</div>
