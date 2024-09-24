@@ -23,3 +23,13 @@ export const fetchLifeGraphs = async (currentPage: number) => {
     console.error('인생그래프를 불러오는데 실패했습니다.', error);
   }
 };
+
+// 그래프 상세페이지 get 조회
+export const getDetailGraphData = async (id: number) => {
+  try {
+    const response = await baseApi.get(`${api.lifeGraph}/${id}`, {});
+    return response.data;
+  } catch (err) {
+    alert(err.message);
+  }
+};
