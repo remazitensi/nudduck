@@ -10,14 +10,17 @@
  * 2024.09.25    김민지      Modified    그래프 상세페이지로 이동
  */
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteGraph } from '../../apis/lifeGraph/graph-api';
+import GraphEditModal from '../../pages/LifeGraph/GraphEditModal';
 import { GraphData } from '../../types/graph-type';
 import { CreateListGraph } from './CreateListGraph';
 
-const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, changeActiveStar, updateList }: GraphData) => {
+const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeStarId, changeActiveStar, updateList }: GraphData) => {
   const isActive = activeStarId === id; // 현재 활성화 스타와 비교해서 그래프가 활성화된 스타인지 확인
   const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
 
   const navigateToDetail = () => {
     navigate(`/life-graph/detail/${id}`); // 클릭 시 해당 id의 상세 페이지로 이동
@@ -33,7 +36,8 @@ const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, c
   return (
     <div className='flex w-[380px] flex-col'>
       <div className='mb-[5px] flex justify-end gap-[10px]'>
-        <img src='/edit-btn.png' className='cursor-pointer' />
+        <img src='/edit-btn.png' className='cursor-pointer' onClick={() => setModalOpen(true)} />
+        {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} />}
         <img
           src='/delete-btn.png'
           className='cursor-pointer'
@@ -50,7 +54,14 @@ const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, c
           </div>
           <div className=''>
             <div className='flex items-center justify-between pl-[15px]'>
-              <img src={`/${isActive ? 'yellowStar.png' : 'grayStar.png'}`} onClick={changeStar} className='cursor-pointer' />
+              <img
+                src={`/${isActive ? 'yellowStar.png' : 'grayStar.png'}`}
+                onClick={(e) => {
+                  e.stopPropagation(); // 부모 요소로 이벤트가 전파되지 않도록 함
+                  changeStar(); // 별 클릭 시 동작
+                }}
+                className='cursor-pointer'
+              />
               <div className='p-[5px] text-right'>
                 <div className='text-[#8D8B67]'>{title}</div>
                 <div className='flex justify-end gap-[20px] text-[#8D8B67]'>
