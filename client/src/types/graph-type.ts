@@ -30,6 +30,7 @@ export type GraphData = {
   // fix : any type
   activeStarId: any;
   changeActiveStar: any;
+  updateList: () => void;
 };
 
 // 전체 그래프 목록 데이터의 타입 정의
