@@ -17,16 +17,14 @@ export const testPostList = {
 };
 
 export const testPost = {
-  postId: 5,
-  title: '제목입니다울랄라',
-  content: '내용입니다.',
-  userId: '1004',
-  category: 'study',
-  createdAt: '2024-09-12T12:34:56.789Z',
-  updated_at: '2024-09-12T12:34:56.789Z',
-  // likes_count: 10,
+  postId: 1,
+  title: '스터디 구해용용가리',
   viewCount: 100,
-  commentCount: 5,
+  createdAt: '2024-09-20T10:00:00.000Z',
+  category: 'study',
+  nickname: '멋쨍이 재영',
+  imageUrl: 'http://nudduck.com/remazitensi.jpg',
+  userId: 1,
 };
 
 export const testReply = {

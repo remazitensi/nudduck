@@ -19,23 +19,21 @@ export type PostTitleData = {
   title: string;
   category: string;
   userId: number;
-  created_at: string;
-  // likes_count: number;
+  createdAt: string;
   viewCount: number;
+  nickname: string;
+  imageUrl: string;
 };
 
 export type PostDetailData = {
   postId: number;
   title: string;
-  content: string;
-  category: string;
-  user: string;
-  userId: number;
-  created_at: string;
-  updated_at: string;
-  // likes_count: number;
   viewCount: number;
-  commentCount: number;
+  createdAt: string;
+  category: string;
+  imageUrl: string;
+  userId: number;
+  nickname: string;
 };
 
 export type PostListRes = {
