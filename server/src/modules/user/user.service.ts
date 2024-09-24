@@ -14,6 +14,7 @@
  * 2024.09.24    이승철      Modified    프로필 조회 나의 게시글 포함
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
  * 2024.09.24    이승철      Modified    가입일 반환
+ * 2024.09.24    이승철      Modified    인생그래프 조회 인자 순서변경
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
@@ -49,7 +50,7 @@ export class UserService {
     const hashtags = user.hashtags.map((hashtag) => hashtag.name);
   
     const favoriteLifeGraph = user.favoriteLifeGraph
-      ? await this.lifeGraphRepository.findOneLifeGraph(user.favoriteLifeGraph.id, user.id, {
+      ? await this.lifeGraphRepository.findOneLifeGraph(user.id, user.favoriteLifeGraph.id, {
           relations: ['events'],
         })
       : null;
