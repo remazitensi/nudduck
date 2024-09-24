@@ -46,8 +46,6 @@ const LifeGraphList: React.FC = () => {
     }
   };
 
-  // fixme
-  // 초기 렌더링 시 2번 호출, 이후 지나서도 자동으로 호출됨...
   useEffect(() => {
     updateLifeGraphs();
   }, [currentPage, update]);
@@ -96,7 +94,14 @@ const LifeGraphList: React.FC = () => {
           </button>
           // fixme
           {/* updateList 로 get 부르는 fetchLifeGraphs 넘겼는데 동작하지 않음 */}
-          {isWriteModalOpen && <GraphWriteModal updateList={fetchLifeGraphs} onClose={() => setIsWriteModalOpen(false)} />}
+          {isWriteModalOpen && (
+            <GraphWriteModal
+              updateList={() => {
+                fetchLifeGraphs(currentPage);
+              }}
+              onClose={() => setIsWriteModalOpen(false)}
+            />
+          )}
         </div>
       </div>
     );
@@ -115,7 +120,12 @@ const LifeGraphList: React.FC = () => {
           <button onClick={() => setIsWriteModalOpen(true)} className='h-[50px] w-[160px] rounded-[10px] bg-[#909700] text-center text-[24px] font-bold text-white'>
             추가하기
           </button>
-          {isWriteModalOpen && <GraphWriteModal onClose={() => setIsWriteModalOpen(false)} />}
+          {isWriteModalOpen && (
+            <GraphWriteModal
+              updateList={updateLifeGraphs} // 그래프 목록 업데이트 함수 전달
+              onClose={() => setIsWriteModalOpen(false)}
+            />
+          )}
         </div>
 
         <div className='mt-[120px] flex w-[1200px] flex-wrap gap-[25px]'>
@@ -134,7 +144,7 @@ const LifeGraphList: React.FC = () => {
         </div>
 
         {/* 페이지네이션 */}
-        <div className='pagination-controls mt-4 flex flex-col items-center'>
+        <div className='pagination-controls mb-[30px] mt-4 flex flex-col items-center'>
           <div className='flex space-x-2'>
             <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
               이전
