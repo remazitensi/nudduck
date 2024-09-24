@@ -8,6 +8,7 @@
  * 2024.09.13    김우현      Created      레이아웃
  * 2024.09.22    김민지      Modified     컴포넌트 분리, 차트섹션 동적 추가
  * 2024.09.24    김민지      Modified     그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
+ * 2024.09.25    김민지      Modified     리팩토링, 즐겨찾기 에러 수정
  */
 
 import React, { useEffect, useState } from 'react';
@@ -23,7 +24,7 @@ const LifeGraphList: React.FC = () => {
   const [graphListData, setGraphListData] = useState<GraphData[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [noData, setNoData] = useState<boolean>(true); // 개발 완료 후 true로 변경
+  const [noData, setNoData] = useState<boolean>(false);
 
   const [isHowModalOpen, setIsHowModalOpen] = useState(false);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
@@ -52,9 +53,9 @@ const LifeGraphList: React.FC = () => {
     setGraphListData(res.data);
     console.log(res);
     console.log('graphListData에 저장된 데이터: ', graphListData);
-    if (graphListData.length === 0) {
+    if (res.data.length === 0) {
       setNoData(true);
-    } else if (graphListData.length >= 1) {
+    } else if (res.data.length >= 1) {
       setNoData(false);
       setTotalPages(Math.ceil(res.totalCount / 6));
     }
@@ -89,8 +90,6 @@ const LifeGraphList: React.FC = () => {
           >
             작성하기
           </button>
-          // fixme
-          {/* updateList 로 get 부르는 fetchLifeGraphs 넘겼는데 동작하지 않음 */}
           {isWriteModalOpen && <GraphWriteModal updateList={updateLifeGraphs} onClose={() => setIsWriteModalOpen(false)} />}
         </div>
       </div>
