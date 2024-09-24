@@ -68,21 +68,21 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
         min: age.min, // x 축의 최소값
         max: age.max, // x 축의 최대값
         ticks: {
-          // display: false, //축 숫자 안 보이게
+          display: false, //축 숫자 안 보이게
           stepSize: 1,
         },
         grid: {
-          // display: false, // x축 그리드 선 숨기기
+          display: false, // x축 그리드 선 숨기기
         },
         axis: {
-          // display: false, // x축 자체와 레이블 숨기기
+          display: false, // x축 자체와 레이블 숨기기
         },
       },
       y: {
         min: -6,
         max: 6,
         ticks: {
-          // display: false, // 축 숫자 안 보이게
+          display: false, // 축 숫자 안 보이게
           stepSize: 1,
           callback: (value) => {
             if (value === -6 || value === 6) {
@@ -92,10 +92,10 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
           },
         },
         grid: {
-          // display: false, // x축 그리드 선 숨기기
+          display: false, // x축 그리드 선 숨기기
         },
         axis: {
-          // display: false, // x축 자체와 레이블 숨기기
+          display: false, // x축 자체와 레이블 숨기기
         },
       },
     },
@@ -149,29 +149,3 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
     </div>
   );
 };
-
-// borderColor: '#D15F5F',
-// backgroundColor: 'rgba(255, 209, 187, 0.5)',
-
-// borderColor: (value) => {
-//   const condition = value.parsed;
-//   if (condition && condition.y > 0) {
-//     return 'blue';
-//   } else if (condition && condition.y < 0) {
-//     return 'red';
-//   }
-//   return 'black';
-
-// borderColor: (context) => {
-//   // console.log(context);
-//   const index = context.dataIndex;
-//   const value = context.dataset.data[index];
-// console.log(value.score)
-//   return value < 0 ? 'red' : 'blue';
-// }
-
-// console.log(value);
-// console.log(context.parsed.y);
-// if (context.raw.score > 0) {
-//   return 'blue';
-// }
