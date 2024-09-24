@@ -13,7 +13,7 @@ import { deleteGraph } from '../../apis/lifeGraph/graph-api';
 import { GraphData } from '../../types/graph-type';
 import { CreateListGraph } from './CreateListGraph';
 
-const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, changeActiveStar }: GraphData) => {
+const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, changeActiveStar, updateList }: GraphData) => {
   const isActive = activeStarId === id; // 현재 활성화 스타와 비교해서 그래프가 활성화된 스타인지 확인
 
   const changeStar = () => {
@@ -30,8 +30,9 @@ const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, c
         <img
           src='/delete-btn.png'
           className='cursor-pointer'
-          onClick={() => {
-            deleteGraph(id);
+          onClick={async () => {
+            await deleteGraph(id);
+            updateList();
           }}
         />
       </div>
