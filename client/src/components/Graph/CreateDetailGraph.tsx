@@ -21,7 +21,7 @@ interface CreateListGraphProps {
   events: GraphEvent[]; // events는 GraphEvent 타입 배열
 }
 
-export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
+export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) => {
   const lifeData = events;
 
   //data에서 age를 라벨 추출
@@ -34,19 +34,9 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
     max: Math.max(...labels),
   };
 
-  // 색상 변경 함수
-  // const handleColor = ({ context }) => {
-  //   console.log(context);
-  //   const index = context.dataIndex;
-  //   const value = context.dataset.data[index];
-  //   return value < 0 ? 'red' : 'blue';
-  // };
-
   const options = {
     responsive: true,
     maintainAspectRatio: true,
-    // false : 늘어날 때도 비율 안 맞추고 부모 박스 크기에 맞춘 반응형
-    // true : 늘어날 때는 그대로, 비율 맞춰서 줄어들기만
     plugins: {
       filler: {
         propagate: true,
@@ -56,6 +46,23 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
       },
       title: {
         display: false,
+      },
+      tooltip: {
+        callbacks: {
+          title: (tooltipItems) => {
+            const item = tooltipItems[0].parsed; // Get the current item
+            return item.title; // Set tooltip title to item.title
+          },
+          label: (tooltipItem) => {
+            const item = tooltipItem.parsed; // Get the current item
+            return item.description; // Set tooltip body to item.description
+          },
+        },
+        bodyFont: {
+          size: 15, // Set tooltip font size
+        },
+        intersect: false, // Make tooltip show even if mouse is not directly on the point
+        mode: 'nearest', // Use 'nearest' to allow tooltip to show for the nearest point
       },
     },
     elements: {
@@ -69,21 +76,13 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
         min: age.min, // x 축의 최소값
         max: age.max, // x 축의 최대값
         ticks: {
-          // display: false, //축 숫자 안 보이게
           stepSize: 1,
-        },
-        grid: {
-          // display: false, // x축 그리드 선 숨기기
-        },
-        axis: {
-          // display: false, // x축 자체와 레이블 숨기기
         },
       },
       y: {
         min: -6,
         max: 6,
         ticks: {
-          // display: false, // 축 숫자 안 보이게
           stepSize: 1,
           callback: (value) => {
             if (value === -6 || value === 6) {
@@ -92,13 +91,11 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
             return value;
           },
         },
-        grid: {
-          // display: false, // x축 그리드 선 숨기기
-        },
-        axis: {
-          // display: false, // x축 자체와 레이블 숨기기
-        },
       },
+    },
+    interaction: {
+      mode: 'nearest', // Allows tooltip to show for the nearest point
+      intersect: false, // Tooltip will show even if not directly on the point
     },
   };
 
@@ -115,7 +112,7 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
         },
         interaction: {
           mode: 'nearest',
-          intersect: false,
+          intersect: true,
         },
         borderColor: (value) => {
           const condition = value.parsed;
@@ -126,18 +123,8 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
           }
           return '#6B8E23';
         },
-        borderWidth: 6,
+        borderWidth: 15,
         backgroundColor: (context) => {
-          // const index = context.dataIndex;
-          // const value = context.dataset.data[index];
-          // try {
-          //   console.log(value.score);
-          //   // return value.score < 0 ? 'red' : 'blue';
-          //   // 현재 결과 : default black 값이 뜸
-          // } catch {
-          //   console.log('-');
-          // }
-
           return 'rgba(173, 216, 175, 0.5)';
         },
       },
@@ -145,34 +132,8 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
   };
 
   return (
-    <div>
-      <Line options={options} data={data} />
+    <div className='flex items-center'>
+      <Line options={options} className='h-full w-full' data={data} />
     </div>
   );
 };
-
-// borderColor: '#D15F5F',
-// backgroundColor: 'rgba(255, 209, 187, 0.5)',
-
-// borderColor: (value) => {
-//   const condition = value.parsed;
-//   if (condition && condition.y > 0) {
-//     return 'blue';
-//   } else if (condition && condition.y < 0) {
-//     return 'red';
-//   }
-//   return 'black';
-
-// borderColor: (context) => {
-//   // console.log(context);
-//   const index = context.dataIndex;
-//   const value = context.dataset.data[index];
-// console.log(value.score)
-//   return value < 0 ? 'red' : 'blue';
-// }
-
-// console.log(value);
-// console.log(context.parsed.y);
-// if (context.raw.score > 0) {
-//   return 'blue';
-// }
