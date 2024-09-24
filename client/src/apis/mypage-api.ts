@@ -1,6 +1,6 @@
 /*
- * File Name    : base-api.ts
- * Description  : base-api create
+ * File Name    : -api.ts
+ * Description  : -api create
  * Author       : 김우현
  *
  * History
@@ -10,25 +10,50 @@
  */
 
 import { isAxiosError } from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { api, baseApi } from './base-api';
 
+interface Post {
+  id: number;
+  title: string;
+  date: string;
+}
+
+interface FavoriteLifeGraph {
+  id: number;
+  title: string;
+  description: string;
+}
+
 interface UserProfile {
-  nickname: string; // 사용자 닉네임
-  imageUrl: string; // 프로필 이미지 URL
-  hashtags: string[]; // 해시태그 배열
+  id: string;
+  nickname: string;
+  imageUrl: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  hashtags: string[];
+  favoriteLifeGraph: FavoriteLifeGraph | null;
+  posts: Post[];
+  totalCount: number; // 전체 게시글 수
+}
+
+interface UpdateUserProfile {
+  nickname: string;
+  imageUrl: string;
+  hashtags: string[];
 }
 
 // 사용자 프로필 가져오기
-export async function fetchUserProfile() {
-  const url = `${api.myPage}/my`; // 이 부분은 navigate를 사용하지 않음 왜냐면, 삭제랑 다르게 데이터를 가져오는 형식이라 페이지가 어디로 이동하는게 아니라 판단
+export async function fetchUserProfile(page: number = 1, limit: number = 10) {
+  const url = `${api.myPage}?page=${page}&limit=${limit}`; // 페이지네이션 쿼리 추가
   try {
-    const response = await baseApi.get(url);
-    response.status === 200; // 이건 조건 if 생략 따로 navigate할 게 아님 단순히 정보를 가져오는 것이라고 판단하여 if문 생략
+    const response = await baseApi.get<UserProfile>(url); // UserProfile 타입으로 데이터 반환
+    if (response.status === 200) {
+      return response.data; // 프로필 및 게시글 정보 반환
+    }
   } catch (error: unknown) {
-    // error는 any보다 isAxiosError가 어울리기에 import에서 isAxiosError를 해주었음
     if (isAxiosError(error)) {
-      console.error('Failed to delete user account:', error.response?.data.message || error.message);
+      console.error('Failed to fetch user profile:', error.response?.data.message || error.message);
     } else {
       console.error('An unknown error occurred');
     }
@@ -37,17 +62,13 @@ export async function fetchUserProfile() {
 }
 
 // 사용자 프로필 회원정보 수정
-export async function updateUserProfile(
-  profile: UserProfile,
-  // 아래 string관련된 것들을 다 넣어야 하는건지? 예전에 했던거라 지우진 않음
-) {
-  const navigate = useNavigate();
+export async function updateUserProfile(profile: UpdateUserProfile): Promise<void> {
   const url = `${api.myPage}/profile`;
 
   try {
-    const response = await baseApi.put(url, profile);
+    const response = await baseApi.put(url, profile); // 프로필 수정 API 호출
     if (response.status === 200) {
-      navigate(api.myPage);
+      console.log('프로필이 성공적으로 수정되었습니다.');
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
@@ -82,24 +103,14 @@ export async function updateUserProfile(
 // }
 
 // 계정탈퇴 - 더미데이터 이용할 경우
-export async function deleteAccount() {
+// 계정탈퇴 API 호출
+export async function deleteAccount(): Promise<void> {
   const url = `${api.myPage}/account`;
-  console.log(url);
-  const navigate = useNavigate();
 
   try {
-    console.log('delete:', '요청');
-    // // 백엔드와 연결하는 대신 더미 데이터를 이용
-    // const mockResponse = {
-    //   status: 200, // 성공시
-    //   data: '탈퇴 처리 완료', // 더미 데이터
-    // };
-
-    // 실제 api 호출 대신 mockResponse를 사용하여 처리
-    const response = await baseApi.delete(url, {}); // 빈객체 빈바디니까
+    const response = await baseApi.delete(url);
     if (response.status === 200) {
-      alert(response.data);
-      navigate(api.home);
+      console.log('계정이 성공적으로 삭제되었습니다.');
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {

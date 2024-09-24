@@ -11,51 +11,51 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-
 import { baseApi } from '../apis/base-api';
 import { updateUserProfile } from '../apis/mypage-api';
 
 interface UserEditModalProps {
   data: {
     id: string;
-    nickName: string;
+    nickname: string;
     imageUrl: string;
     name: string;
     email: string;
-    hashtags: string;
-    created_At: string;
+    hashtags: string[];
+    createdAt: string;
   };
   onClose: () => void;
   currentImage: string;
   onSaveImage: (newImage: string) => void;
-  onSaveNickName: (newNickName: string) => void;
-  onSaveHashTag: (newHashTag: string) => void;
+  onSaveNickname: (newNickname: string) => void;
+  onSaveHashTag: (newHashTag: string[]) => void;
 }
 
-const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentImage, onSaveImage, onSaveNickName, onSaveHashTag }) => {
+const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentImage, onSaveImage, onSaveNickname, onSaveHashTag }) => {
   const [image, setImage] = useState<string>(currentImage);
-  const [nickName, setNickName] = useState<string>(data.nickName || '');
-  const [hashTag, setHashTag] = useState<string>(data.hashtags || '');
-  const [nickNameError, setNickNameError] = useState<string>('');
+  const [nickname, setNickname] = useState<string>(data.nickname || '');
+  const [hashTag, setHashTag] = useState<string>(data.hashtags.join(' ') || '');
+  const [nicknameError, setNicknameError] = useState<string>('');
   const [hashTagError, setHashTagError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    setNickName(data.nickName || '');
-    setHashTag(data.hashtags || '');
+    setNickname(data.nickname || '');
+    setHashTag(data.hashtags.join(' ') || '');
     setImage(data.imageUrl || '');
   }, [data]);
 
-  const validationNickName = (value: string): string | null => {
+  // 닉네임 유효성 검사
+  const validationNickname = (value: string): string | null => {
     const trimValue = value.trim();
     const isValid = /^[가-힣a-zA-Z0-9]{2,6}$/.test(trimValue);
-
     if (!isValid) {
       return '닉네임은 공백 없이 2~6자의 한글, 영문, 숫자만 사용 가능합니다.';
     }
     return null;
   };
 
+  // 해시태그 유효성 검사
   const validationHashTag = (value: string): string | null => {
     const tags = value.split(' ').filter((tag) => tag !== '');
     const isValidTags = tags.every((tag) => tag.startsWith('#') && tag.length >= 2 && tag.length <= 6);
@@ -65,11 +65,11 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
     return null;
   };
 
-  const handleNickNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setNickName(value);
-    const error = validationNickName(value);
-    setNickNameError(error || '');
+    setNickname(value);
+    const error = validationNickname(value);
+    setNicknameError(error || '');
   };
 
   const handleHashTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,68 +86,79 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
       const reader = new FileReader();
       reader.onload = () => {
         if (reader.result) {
-          setImage(reader.result as string);
+          setImage(reader.result as string); // 이미지 미리보기 설정
         }
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // 이미지 삭제 시 기본 이미지 설정
   const deleteFileImg = () => {
-    setImage('/user_image.png');
+    setImage('/default_user_image.png'); // 기본 이미지 경로 설정
   };
 
+  // 프로필 저장 처리
   const handleSave = async () => {
-    if (nickNameError || hashTagError) {
+    if (nicknameError || hashTagError) {
       alert('유효성 검사가 완료되지 않았습니다.');
       return;
     }
-    console.log('Saving image:', image);
-    onSaveImage(image);
-    console.log('Saving nickname:', nickName);
-    onSaveNickName(nickName);
-    console.log('Saving hashtag:', hashTag);
-    onSaveHashTag(hashTag);
-    // 수정 api
+
+    onSaveImage(image); // 이미지 저장
+    onSaveNickname(nickname); // 닉네임 저장
+
+    // 해시태그를 공백을 기준으로 분리하여 배열로 변환
+    const hashTagsArray = hashTag.split(' ').filter((tag) => tag.trim() !== ''); // 빈 문자열 제거
+
+    onSaveHashTag(hashTagsArray); // 해시태그 저장
+
+    // API 호출 로직
     const updateProfile = async () => {
       try {
-        const hashTagsArray = hashTag.split(' '); //.map(tag => tag.trim());
-        // image 기본이면 빈 문자열 보내기
-        let imageUrl = image === '/user.png' ? '' : image; // 기본 이미지 처리
+        let imageUrl = image; // image 상태 값을 그대로 사용
 
-        if (imageUrl) {
-          // 빈문자열이 아닐때만 실행
-          // 파일이 Blob 또는 File 객체일 경우
-          const fileType = image instanceof File ? image.type : 'image/jpeg'; // 기본적으로 JPEG로 설정
+        // 이미지 업로드 처리
+        if (imageUrl && fileInputRef.current?.files && fileInputRef.current.files[0]) {
+          const file = fileInputRef.current.files[0];
+          const fileType = file.type;
 
-          // 1) presigned URL 요청
+          // Presigned URL 요청
           const { data } = await baseApi.post('/presigned-url', {
-            fileName: imageUrl,
-            fileType: fileType,
+            fileName: file.name,
+            contentType: fileType,
           });
 
-          // 2) presigned URL로 S3에 파일 업로드
-          await axios.put(presignedUrl, image, {
+          // 파일을 presigned URL을 사용하여 업로드
+          await fetch(data.presignedURL, {
+            method: 'PUT',
+            body: file,
             headers: {
-              'Content-Type': image,
+              'Content-Type': fileType,
             },
           });
 
-          imageUrl = data.presignedUrl.split('?')[0];
+          imageUrl = data.presignedURL.split('?')[0]; // 업로드된 이미지 URL
         }
 
-        const profile = { imageUrl: imageUrl, hashtags: hashTagsArray, nickname: nickName };
-        // const data: typeof profile = await updateUserProfile(profile); // body에 보내줄 객체
-        await updateUserProfile(profile, imageUrl);
+        const profileData = { imageUrl, hashtags: hashTagsArray, nickname };
+        await updateUserProfile(profileData);
 
-        console.log('Fetched profile:', data); // API 호출 후 데이터 로그 확인
+        alert('프로필이 성공적으로 수정되었습니다.');
+
+        // 업데이트된 데이터를 상위 컴포넌트로 전달
+        onSaveImage(imageUrl);
+        onSaveNickname(nickname);
+        onSaveHashTag(hashTagsArray);
+
+        onClose();
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        console.error('Failed to update profile:', error);
+        alert('프로필 업데이트 중 오류가 발생했습니다.');
       }
     };
-    updateProfile();
-    alert('저장되었습니다.');
-    onClose();
+
+    await updateProfile();
   };
 
   return (
@@ -162,28 +173,26 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
           <div className='relative flex flex-col justify-start pl-[80px] pt-[50px]'>
             <div className='text-center text-[34px] font-bold text-[#626146]'>프로필 편집</div>
             <img src={image} alt='userImg' className='mt-[10px] h-[200px] w-[200px] rounded-[100px]' />
-            <img onClick={() => fileInputRef.current?.click()} className='absolute bottom-[35px] right-[15px] right-[50px] h-[50px] w-[50px] cursor-pointer' src='/Camera.png' alt='cameraImg' />
-
+            <img onClick={() => fileInputRef.current?.click()} className='absolute bottom-[35px] right-[50px] h-[50px] w-[50px] cursor-pointer' src='/Camera.png' alt='cameraImg' />
             <input ref={fileInputRef} type='file' accept='image/*' className='hidden' onChange={handleClickImg} />
-
             <div onClick={deleteFileImg} className='flex cursor-pointer justify-center text-[13px] text-[#999999]'>
               이미지 삭제
             </div>
           </div>
+
           <div className='flex w-[600px] flex-col pl-[80px] pt-[130px]'>
             <div className='mb-[10px] flex gap-[10px]'>
-              <input className='h-[40px] w-[300px] cursor-not-allowed rounded border bg-gray-100 pl-[20px] outline-none' placeholder='해찌' readOnly />
+              <input className='h-[40px] w-[300px] cursor-not-allowed rounded border bg-gray-100 pl-[20px] outline-none' placeholder={data.name || '이름'} readOnly />
               <div className='flex items-center text-[16px] text-[#8D8B67]'>※ 이름 수정 불가</div>
             </div>
-
             <div className='mb-[10px] flex gap-[10px]'>
-              <input className='h-[40px] w-[300px] cursor-not-allowed rounded border bg-gray-100 pl-[20px] outline-none' placeholder='elice@elice.io' readOnly />
+              <input className='h-[40px] w-[300px] cursor-not-allowed rounded border bg-gray-100 pl-[20px] outline-none' placeholder={data.email || '이메일'} readOnly />
               <div className='flex items-center text-[16px] text-[#8D8B67]'>※ 이메일 수정 불가</div>
             </div>
 
             <div className='mb-[10px] flex flex-col gap-[10px]'>
-              <input value={nickName} onChange={handleNickNameChange} className='h-[40px] w-[300px] rounded border pl-[20px] outline-[#8D8B67]' placeholder='닉네임' />
-              {nickNameError && <p className='text-[13px] text-red-500'>{nickNameError}</p>}
+              <input value={nickname} onChange={handleNicknameChange} className='h-[40px] w-[300px] rounded border pl-[20px] outline-[#8D8B67]' placeholder='닉네임' />
+              {nicknameError && <p className='text-[13px] text-red-500'>{nicknameError}</p>}
               <div className='text-[#8D8B67]'>
                 닉네임은 다른 유저에게 보이는 이름이에요!
                 <br />
@@ -192,13 +201,11 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
             </div>
 
             <div className='mb-[10px] flex flex-col gap-[10px]'>
-              <div className='flex flex-col gap-[10px]'>
-                <div className='flex'>
-                  <input value={hashTag} onChange={handleHashTagChange} className='h-[40px] w-[300px] rounded border pl-[20px] outline-[#8D8B67]' placeholder='각 태그는 1~5자로 설정해주세요.' />
-                  <div className='flex items-center text-[16px] text-[#8D8B67]'>※ 최대 5개</div>
-                </div>
-                {hashTagError && <p className='text-[13px] text-red-500'>{hashTagError}</p>}
+              <div className='flex'>
+                <input value={hashTag} onChange={handleHashTagChange} className='h-[40px] w-[300px] rounded border pl-[20px] outline-[#8D8B67]' placeholder='각 태그는 2~6자로 설정해주세요.' />
+                <div className='flex items-center text-[16px] text-[#8D8B67]'>※ 최대 5개</div>
               </div>
+              {hashTagError && <p className='text-[13px] text-red-500'>{hashTagError}</p>}
               <div className='text-[#8D8B67]'>
                 자신을 표현하는 해시태그는 띄어쓰기(공백)으로 구분해 주세요!
                 <br />
