@@ -21,14 +21,12 @@ const CommunityPostDetail: React.FC = () => {
   const [postData, setPostData] = useState<PostDetailData>({
     postId: 0,
     title: '',
-    content: '',
-    category: '',
-    user: '',
-    userId: 0,
-    createdAt: '',
-    updated_at: '',
     viewCount: 0,
-    commentCount: 0,
+    createdAt: '',
+    category: '',
+    imageUrl: '',
+    userId: 0,
+    nickname: '',
   }); // postData에 타입 지정
 
   // path의 postId를 사용해서 get
@@ -80,10 +78,12 @@ const CommunityPostDetail: React.FC = () => {
           조회수
           <span className='ml-[5px] text-[#A1DFFF]'>{postData.viewCount}</span>
         </div>
+        {/* img와 nickname을 감싸는 div에 onClick */}
         <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
           <img src='/clover-image.png' alt='cloverImg' />
-          <div>{postData.user}</div>
+          <div>{postData.nickname}</div>
         </div>
+        {/* --------------------- */}
       </div>
 
       <div className='mt-[50px] h-[500px] w-[1200px]'>

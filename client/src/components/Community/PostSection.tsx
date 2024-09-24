@@ -34,10 +34,14 @@ export const PostSection: React.FC<PostSectionProps> = ({ data }) => {
           {data.title}
         </div>
       </div>
+
+      {/* img와 nickname을 감싸는 div태그에 onClick */}
       <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
         <img src='/clover-image.png' alt='cloverImg' />
-        <div>{data.userId}</div>
+        <div>{data.nickname}</div>
       </div>
+      {/* ----------------- */}
+
       <div className='flex justify-end text-[16px]'>
         <div className='flex'>
           <div className='text-[#AEAC9A]'>
