@@ -30,6 +30,7 @@ export type GraphData = {
   // fix : any type
   activeStarId: any;
   changeActiveStar: any;
+  data: any;
   updateList: () => void;
 };
 
