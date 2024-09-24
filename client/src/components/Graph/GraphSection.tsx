@@ -17,9 +17,11 @@ const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, c
   const isActive = activeStarId === id; // 현재 활성화 스타와 비교해서 그래프가 활성화된 스타인지 확인
 
   const changeStar = () => {
-    changeActiveStar(isActive ? null : id); // 클릭 시 활성화 상태 변경
+    if (!isActive) {
+      // 현재 활성화된 별이 아닌 경우에만 클릭 이벤트 처리
+      changeActiveStar(id);
+    }
   };
-  console.log(events);
 
   return (
     <div className='flex w-[380px] flex-col'>

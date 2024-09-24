@@ -34,16 +34,15 @@ const LifeGraphList: React.FC = () => {
   const [activeStarId, setActiveStarId] = useState<number | null>(null); // 현재 활성화된 스타 ID
 
   const changeActiveStar = async (id: number) => {
-    setActiveStarId(id); // 클릭한 스타 ID로 활성화
-    try {
-      if (setActiveStarId === null) {
+    if (activeStarId !== id) {
+      // 현재 활성화된 스타와 다른 별을 클릭했을 때만 API 요청을 보냄
+      setActiveStarId(id); // 클릭한 스타 ID로 활성화
+      try {
         await baseApi.post(`${api.lifeGraph}/favorite`, { graphId: id });
         alert('대표 그래프가 설정되었습니다. ✔');
-      } else {
-        alert('이미 즐겨찾기 설정이 완료되었습니다. 🍀');
+      } catch (error) {
+        alert(error.message);
       }
-    } catch (error) {
-      alert(error.message);
     }
   };
 
