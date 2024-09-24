@@ -122,6 +122,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
       events: events, // 이벤트 목록
     };
     console.log(requestBody);
+    // todo : error 전부 빈 문자열인지 확인 후 통과
 
     // axios POST 요청
     baseApi
@@ -211,6 +212,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
                     </select>
                   </div>
                   <div className='Buttons mt-[10px] flex gap-[10px] pt-[20px]'>
+                    {/* todo : 요소가 하나 남았을 때는 마이너스동작 안 되게 */}
                     <button onClick={handleAddInput} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
                       +
                     </button>

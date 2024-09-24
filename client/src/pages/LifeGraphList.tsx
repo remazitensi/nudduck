@@ -24,6 +24,9 @@ const LifeGraphList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [noData, setNoData] = useState<boolean>(true); // 개발 완료 후 true로 변경
 
+  //todo : setUpdate를 prop으로 넘겨서 변화를 주고 useEffect 실행되게 할까?
+  const [update, setUpdate] = useState<boolean>(true);
+
   const [isHowModalOpen, setIsHowModalOpen] = useState(false);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
 
@@ -32,16 +35,22 @@ const LifeGraphList: React.FC = () => {
   const changeActiveStar = async (id: number) => {
     setActiveStarId(id); // 클릭한 스타 ID로 활성화
     try {
-      await baseApi.post(`${api.lifeGraph}/favorite`, { graphId: id });
-      alert('대표 그래프가 설정되었습니다 ✔');
+      if (setActiveStarId === null) {
+        await baseApi.post(`${api.lifeGraph}/favorite`, { graphId: id });
+        alert('대표 그래프가 설정되었습니다. ✔');
+      } else {
+        alert('이미 즐겨찾기 설정이 완료되었습니다. 🍀');
+      }
     } catch (error) {
       alert(error.message);
     }
   };
 
+  //fixme
+  // 초기 렌더링 시 2번 호출, 이후 지나서도 자동으로 호출됨...
   useEffect(() => {
-    fetchLifeGraphs(); // 초기 렌더링 시 데이터 로드
-  }, [currentPage]);
+    fetchLifeGraphs();
+  }, [currentPage, update]);
 
   const fetchLifeGraphs = async () => {
     try {
@@ -49,15 +58,17 @@ const LifeGraphList: React.FC = () => {
       const response = await baseApi.get(api.lifeGraph, {
         params: { page, limit: 6 },
       });
-      console.log(response.data);
+      console.log('그래프조회 get', response.data);
       setGraphListData(response.data.data); // 응답값 배열로 graphListData 업데이트
-      console.log('graphListData', graphListData);
-      // 데이터가 있으면 noData=false
-      if (graphListData) {
-        setNoData(false);
-      } else {
+      console.log('graphListData에 데이터가 있나?', graphListData);
+
+      // 데이터가 없으면 noData=true
+      if (graphListData.length === 0) {
         setNoData(true);
+      } else {
+        setNoData(false);
       }
+
       const updateTotal = Math.ceil(response.data.totalCount / 6); // 소수는 올림
       setTotalPages(updateTotal); // 총 페이지 수 계산
     } catch (error) {
@@ -69,9 +80,7 @@ const LifeGraphList: React.FC = () => {
     return (
       <div className='graph-titles flex w-[1920px] flex-col items-center'>
         <div className='mt-[140px] flex flex-col items-center'>
-          <div className='text-[28px] font-bold text-[#909700]'>
-            취업준비생 &nbsp;<span className='text-black'>의 인생그래프</span>
-          </div>
+          <div className='text-[28px] font-bold text-[#909700]'>인생그래프</div>
           <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
         </div>
 
@@ -96,6 +105,8 @@ const LifeGraphList: React.FC = () => {
           >
             작성하기
           </button>
+          // fixme
+          {/* updateList 로 get 부르는 fetchLifeGraphs 넘겼는데 동작하지 않음 */}
           {isWriteModalOpen && <GraphWriteModal updateList={fetchLifeGraphs} onClose={() => setIsWriteModalOpen(false)} />}
         </div>
       </div>
@@ -129,6 +140,8 @@ const LifeGraphList: React.FC = () => {
               id={graphData.id}
               activeStarId={activeStarId} // 활성화된 스타 ID 전달
               changeActiveStar={changeActiveStar} // 스타 변경 함수 전달
+              updateList={setGraphListData}
+              getReq={fetchLifeGraphs}
             />
           ))}
         </div>
