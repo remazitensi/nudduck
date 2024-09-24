@@ -6,7 +6,6 @@ export const deleteGraph = async (id: number) => {
     if (data.status === 200) {
       console.log(data);
       alert('성공적으로 인생 그래프가 삭제되었습니다!');
-      // todo : get요청 자동화F
     }
   } catch (err) {
     alert(err.message);
