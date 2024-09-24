@@ -9,7 +9,7 @@
  * 2024.09.24    김민지      Modified     그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
  */
 
-import { api, baseApi } from '../../apis/base-api';
+import { deleteGraph } from '../../apis/lifeGraph/graph-api';
 import { GraphData } from '../../types/graph-type';
 import { CreateListGraph } from './CreateListGraph';
 
@@ -19,19 +19,7 @@ const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, c
   const changeStar = () => {
     changeActiveStar(isActive ? null : id); // 클릭 시 활성화 상태 변경
   };
-
-  const deleteGraph = async () => {
-    try {
-      const data = await baseApi.delete(`${api.lifeGraph}/${id}`, {});
-      if (data.status === 200) {
-        console.log(data);
-        alert('성공적으로 인생 그래프가 삭제되었습니다!');
-        // todo : get요청 자동화F
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
+  console.log(events);
 
   return (
     <div className='flex w-[380px] flex-col'>
@@ -41,7 +29,7 @@ const GraphSection = ({ title, createdAt, updatedAt, events, id, activeStarId, c
           src='/delete-btn.png'
           className='cursor-pointer'
           onClick={() => {
-            deleteGraph();
+            deleteGraph(id);
           }}
         />
       </div>
