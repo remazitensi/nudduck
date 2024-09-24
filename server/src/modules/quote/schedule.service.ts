@@ -2,10 +2,10 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Quote } from '@_modules/Quote/entities/quote.entity';
-import { EnglishSentence } from '@_modules/Quote/entities/english-sentence.entity';
-import { QuoteDto } from '@_modules/Quote/dto/quote.dto';
-import { EnglishSentenceDto } from '@_modules/Quote/dto/english-sentence.dto';
+import { Quote } from '@_modules/quote/entities/quote.entity';
+import { EnglishSentence } from '@_modules/quote/entities/english-sentence.entity';
+import { QuoteDto } from '@_modules/quote/dto/quote.dto';
+import { EnglishSentenceDto } from '@_modules/quote/dto/english-sentence.dto';
 
 @Injectable()
 export class ScheduleService {

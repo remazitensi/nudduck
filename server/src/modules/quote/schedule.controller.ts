@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, getSchemaPath, ApiExtraModels } from '@nestjs/swagger';
-import { ScheduleService } from './schedule.service';
-import { QuoteDto } from './dto/quote.dto';
-import { EnglishSentenceDto } from './dto/english-sentence.dto';
+import { ScheduleService } from '@_modules/quote/schedule.service';
+import { QuoteDto } from '@_modules/quote/dto/quote.dto';
+import { EnglishSentenceDto } from '@_modules/quote/dto/english-sentence.dto';
 
 @ApiTags('Schedule')
 @ApiExtraModels(QuoteDto, EnglishSentenceDto)
