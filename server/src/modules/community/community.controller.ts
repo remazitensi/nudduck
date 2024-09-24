@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Param, Query, Delete, Patch, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, Query, Delete, Patch, Request, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CommunityService } from './community.service';
 import { CreateCommunityDto } from '@_modules/community/dto/request/create-community.dto';
@@ -40,6 +40,9 @@ export class CommunityController {
   @ApiResponse({ status: 404, description: '게시글을 찾을 수 없습니다.' })
   async findPostById(@Param('id') postId: number): Promise<CommunityResponseDto> {
     const post = await this.communityService.findPostById(postId);
+    if (!post) {
+      throw new NotFoundException('게시글을 찾을 수 없습니다.'); // 게시글이 없을 경우 예외 발생
+    }
     return new CommunityResponseDto(post);
   }
 
@@ -166,6 +169,22 @@ export class CommunityController {
     return await this.communityService.deleteReply(commentId, userId);
   }
 
+  // 댓글 목록 조회 (무한 스크롤)
+  @Get(':postId/comments')
+  @ApiOperation({ summary: '댓글 목록 조회 (무한 스크롤)' })
+  @ApiParam({ name: 'postId', required: true, description: '게시글 ID' })
+  @ApiQuery({ name: 'offset', required: true, description: '시작 인덱스', type: Number })
+  @ApiQuery({ name: 'limit', required: true, description: '가져올 댓글 수', type: Number })
+  @ApiResponse({ status: 200, description: '댓글 목록을 성공적으로 조회했습니다.', type: [CommentResponseDto] })
+  @ApiResponse({ status: 404, description: '댓글을 찾을 수 없습니다.' })
+  async getComments(@Param('postId') postId: number, @Query() paginationQuery: PaginationQueryDto): Promise<CommentResponseDto[]> {
+    const comments = await this.communityService.getCommentsWithReplies(postId, paginationQuery);
+    if (!comments.length) {
+      throw new NotFoundException('댓글을 찾을 수 없습니다.');
+    }
+    return comments;
+  }
+
   // 대댓글 목록 조회
   @Get(':postId/comments/:commentId/replies')
   @ApiOperation({ summary: '특정 댓글에 대한 대댓글 목록 조회' })
@@ -176,19 +195,11 @@ export class CommunityController {
   @ApiResponse({ status: 200, description: '대댓글 목록을 성공적으로 조회했습니다.', type: [CommentResponseDto] })
   @ApiResponse({ status: 404, description: '대댓글을 찾을 수 없습니다.' })
   async getRepliesByCommentId(@Param('postId') postId: number, @Param('commentId') commentId: number, @Query() paginationQuery: PaginationQueryDto): Promise<CommentResponseDto[]> {
-    return await this.communityService.getRepliesByCommentId(commentId, paginationQuery);
-  }
-
-  // 댓글 목록 조회 (무한 스크롤)
-  @Get(':postId/comments')
-  @ApiOperation({ summary: '댓글 목록 조회 (무한 스크롤)' })
-  @ApiParam({ name: 'postId', required: true, description: '게시글 ID' })
-  @ApiQuery({ name: 'offset', required: true, description: '시작 인덱스', type: Number })
-  @ApiQuery({ name: 'limit', required: true, description: '가져올 댓글 수', type: Number })
-  @ApiResponse({ status: 200, description: '댓글 목록을 성공적으로 조회했습니다.', type: [CommentResponseDto] })
-  @ApiResponse({ status: 404, description: '댓글을 찾을 수 없습니다.' })
-  async getComments(@Param('postId') postId: number, @Query() paginationQuery: PaginationQueryDto): Promise<CommentResponseDto[]> {
-    return await this.communityService.getCommentsWithReplies(postId, paginationQuery);
+    const replies = await this.communityService.getRepliesByCommentId(commentId, paginationQuery);
+    if (!replies.length) {
+      throw new NotFoundException('대댓글을 찾을 수 없습니다.');
+    }
+    return replies;
   }
 
   // 게시글 조회수 증가

@@ -99,7 +99,7 @@ export class CommunityRepository extends Repository<Community> {
     }
   }
 
-  private handleError(error: any): void {
+  private handleError(error: any): never {
     if (error instanceof QueryFailedError) {
       throw new HttpException('쿼리 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
     }
