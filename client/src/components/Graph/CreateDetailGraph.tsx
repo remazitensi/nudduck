@@ -48,16 +48,17 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         display: false,
       },
       tooltip: {
-        callbacks: {
-          title: (tooltipItems) => {
-            const item = tooltipItems[0].parsed; // Get the current item
-            return item.title; // Set tooltip title to item.title
-          },
-          label: (tooltipItem) => {
-            const item = tooltipItem.parsed; // Get the current item
-            return item.description; // Set tooltip body to item.description
-          },
-        },
+        // 툴팁 커스텀 미완성으로 인한 주석처리
+        // callbacks: {
+        //   title: (tooltipItems) => {
+        //     const item = tooltipItems[0].parsed; // Get the current item
+        //     return item.title; // Set tooltip title to item.title
+        //   },
+        //   label: (tooltipItem) => {
+        //     const item = tooltipItem.parsed; // Get the current item
+        //     return item.description; // Set tooltip body to item.description
+        //   },
+        // },
         bodyFont: {
           size: 15, // Set tooltip font size
         },
@@ -84,7 +85,7 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         max: 6,
         ticks: {
           stepSize: 1,
-          callback: (value) => {
+          callback: (value: number) => {
             if (value === -6 || value === 6) {
               return '';
             }
@@ -124,7 +125,7 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
           return '#6B8E23';
         },
         borderWidth: 15,
-        backgroundColor: (context) => {
+        backgroundColor: () => {
           return 'rgba(173, 216, 175, 0.5)';
         },
       },
