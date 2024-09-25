@@ -25,7 +25,7 @@ export const api = {
 
 export const baseApi = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
-  timeout: 5000,
+  timeout: 20000,
   withCredentials: true, // 자격 증명 포함
   paramsSerializer: (parameters) =>
     qs.stringify(parameters, { arrayFormat: 'repeat', encode: false }),
