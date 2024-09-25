@@ -9,11 +9,13 @@
  * 2024.09.21    황솜귤      Modified    홈페이지 레이아웃 구성
  * 2024.09.22    황솜귤      Modified    스타일 시트 수정 및
  * 2024.09.24    황솜귤      Modified    명언/영문장 데이터 추가
+ * 2024.09.25    황솜귤      Modified    명언/영문잔 전환 로직 추가
  */
 
 import { useEffect, useState } from 'react';
 import { baseApi } from '../apis/base-api'; // baseApi 임포트
-import './HomePage.css'; // 필요한 스타일을 위한 css 파일
+import LoginModal from '../components/LoginModal';
+import './HomePage.css';
 
 // 게시글 타입 정의
 interface Post {
@@ -46,6 +48,17 @@ const HomePage = () => {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [englishSentence, setEnglishSentence] = useState<EnglishSentence | null>(null);
   const [isQuoteVisible, setIsQuoteVisible] = useState(true); // 명언 또는 영문장 표시 여부
+  const [hoverText, setHoverText] = useState<string | null>(null); // 호버 시 표시할 텍스트
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // 마우스 위치
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 모달 상태 관리
+
+  const openLoginModal = () => {
+    setIsLoginModalOpen(true); // 모달 열기
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginModalOpen(false); // 모달 닫기
+  };
 
   // 명언 및 영문장 데이터 가져오기
   useEffect(() => {
@@ -65,14 +78,15 @@ const HomePage = () => {
     fetchQuotesAndSentences();
   }, []);
 
-  // 5초마다 명언과 영문장을 교체하는 로직
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsQuoteVisible((prev) => !prev);
-    }, 5000);
+  // 명언 또는 영문장 전환 함수
+  const toggleQuoteAndSentence = () => {
+    setIsQuoteVisible((prev) => !prev);
+  };
 
-    return () => clearInterval(interval);
-  }, []);
+  // 마우스 움직임에 따른 위치 업데이트
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
+  };
 
   useEffect(() => {
     const fetchPopularPosts = async () => {
@@ -100,9 +114,19 @@ const HomePage = () => {
       <main className="mx-auto max-w-6xl p-4">
         {/* Today's Quote Section */}
         <section className="my-6 flex justify-center">
-          <div className="relative h-[81px] w-[994px]">
+          <div
+            className="relative h-[81px] w-[994px]"
+            onClick={toggleQuoteAndSentence}
+            onMouseEnter={() =>
+              setHoverText(
+                isQuoteVisible ? '오늘의 영문장으로 전환하기!' : '오늘의 명언으로 전환하기!',
+              )
+            }
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setHoverText(null)}
+          >
             <div className="absolute left-0 top-[6px] h-[70px] w-[994px] rounded-[5px] border border-[#313119] bg-white" />
-            <div className="absolute left-[31px] top-[22px] h-[29px] w-[175px] text-center font-['Pretendard'] text-3xl font-medium text-[#909700]">
+            <div className="fontsize-22px absolute left-[31px] top-[22px] h-[29px] w-[175px] text-center font-['Pretendard'] text-3xl font-semibold text-[#909700]">
               {isQuoteVisible ? '오늘의 명언' : '오늘의 영문장'}
             </div>
             <div className="absolute left-[222px] top-[29px] text-center font-['Pretendard'] text-xl font-normal text-[#313119]">
@@ -116,11 +140,26 @@ const HomePage = () => {
                 )
               )}
             </div>
+            {/* 호버 시 나타나는 텍스트 */}
+            {hoverText && (
+              <div
+                style={{
+                  position: 'fixed',
+                  left: mousePosition.x + 10, // 마우스 커서 위치에서 약간 오른쪽에 표시
+                  top: mousePosition.y + 10, // 마우스 커서 위치에서 약간 아래쪽에 표시
+                  padding: '2px 6px', // 약간의 패딩 추가
+                  pointerEvents: 'none', // 이 요소 자체에 마우스 이벤트가 적용되지 않도록 설정
+                }}
+                className="animate-bounce text-sm text-[#AEAC9A]" // Tailwind CSS를 사용한 스타일링
+              >
+                {hoverText}
+              </div>
+            )}
           </div>
         </section>
 
         {/* AI Coach Section */}
-        <section className="my-6 flex items-center justify-between rounded bg-white p-6 shadow shadow-xl">
+        <section className="my-6 flex items-center justify-between rounded bg-white p-6">
           <img src="ai-image1.png" alt="AI Coach" className="h-[600px] w-[500px]" />
           <div className="ml-4 flex flex-col">
             <div className="relative rounded-[10px] bg-[#A1DFFF] p-[20px] shadow-xl">
@@ -135,19 +174,14 @@ const HomePage = () => {
             <p className="m-auto mt-[95px] text-center text-[24px] font-bold">
               구글, 카카오 아이디가 있으신가요?
               <br />
-              <span className="cursor-pointer bg-none text-[#909700]">로그인</span>하고 하단 메뉴를
-              이용해 보세요.
+              <span
+                onClick={openLoginModal} // 클릭 시 모달 열기
+                className="cursor-pointer bg-none text-[#909700]"
+              >
+                로그인
+              </span>
+              하고 하단 메뉴를 이용해 보세요.
             </p>
-          </div>
-        </section>
-
-        {/* 추가 부분 */}
-        <section className="mb-[100px] mt-[50px] flex">
-          <div className="mx-auto flex justify-around text-[18px]">
-            <span>AI 코치</span>
-            <span>전문가 상담</span>
-            <span>커뮤니티</span>
-            <span>인생 그래프</span>
           </div>
         </section>
 
@@ -221,6 +255,8 @@ const HomePage = () => {
             ))}
           </div>
         </section>
+        {/* 로그인 모달 */}
+        {isLoginModalOpen && <LoginModal onClose={closeLoginModal} onLogin={() => {}} />}
       </main>
     </div>
   );
