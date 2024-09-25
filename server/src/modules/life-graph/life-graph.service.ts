@@ -27,6 +27,7 @@ import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.en
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { LifeGraphEventService } from '@_modules/life-graph/life-graph-event.service';
 import { LifeGraphPaginationQueryDto } from './dto/life-graph-pagination-query.dto';
+import { LifeGraphListResponseDto, LifeGraphResponseDto } from './dto/life-graph-response.dto';
 
 @Injectable()
 export class LifeGraphService {
@@ -65,7 +66,12 @@ export class LifeGraphService {
   }
 
   // 전체 인생 그래프 조회
-  async getAllLifeGraph(userId: number, lifeGraphPaginationQueryDto: LifeGraphPaginationQueryDto): Promise<{ data: LifeGraph[]; totalCount: number }> {
+  async getAllLifeGraph(userId: number, lifeGraphPaginationQueryDto: LifeGraphPaginationQueryDto): Promise<LifeGraphListResponseDto> {
+    // 사용자의 즐겨찾기된 인생 그래프 가져오기
+    const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph']);
+    const favoriteGraphId = user.favoriteLifeGraph?.id || null;
+    
+    // 페이징 처리
     const { page, limit } = lifeGraphPaginationQueryDto;
     const actualPage = Math.max(page, 1);
     const totalCount = await this.lifeGraphRepository.countLifeGraphs(userId);
@@ -74,11 +80,11 @@ export class LifeGraphService {
     const finalPage = totalPages === 0 ? 1 : Math.min(actualPage, totalPages);
 
     const data = await this.lifeGraphRepository.findLifeGraphs(userId, finalPage, limit);
-    return { data, totalCount };
+    return { data, totalCount, favoriteGraphId };
   }
 
   // 특정 인생 그래프 조회
-  async getOneLifeGraph(userId: number, graphId: number): Promise<LifeGraph> {
+  async getOneLifeGraph(userId: number, graphId: number): Promise<LifeGraphResponseDto> {
     const lifeGraph = await this.lifeGraphRepository.findOneLifeGraph(userId, graphId, { relations: ['events'] });
     if (!lifeGraph) {
       throw new NotFoundException();
