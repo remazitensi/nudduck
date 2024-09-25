@@ -10,6 +10,7 @@
  */
 import React from 'react';
 import UserEditModal from '../../pages/UserEditModal';
+import { CreateDetailGraph } from '../Graph/CreateDetailGraph';
 
 interface Post {
   id: number;
@@ -75,6 +76,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
   isLoading,
 }) => {
   const currentPosts = userProfile.posts;
+  console.log(userProfile.favoriteLifeGraph);
 
   const renderPagination = () => {
     const pageNumbers = [];
@@ -184,7 +186,9 @@ const MyProfile: React.FC<MyProfileProps> = ({
               ) : (
                 <div className='mt-[27px] flex flex-col gap-[15px]'>
                   {currentPosts.length === 0 ? (
-                    <p>게시글이 없습니다.</p>
+                    <div className='flex justify-center'>
+                      <p>게시글이 없습니다.</p>
+                    </div>
                   ) : (
                     currentPosts.map((post: Post) => (
                       <div key={post.id} className='flex items-center'>
@@ -209,31 +213,19 @@ const MyProfile: React.FC<MyProfileProps> = ({
 
       {/* 인생그래프 영역 */}
       <div className='flex h-[780px] w-[1200px] flex-col rounded-[20px] bg-[#fafafa] shadow-lg'>
-        <div className='pl-[40px] pt-[35px]'>
-          <h3 className='text-[25px]'>인생그래프</h3>
+        <div className='p-[40px]'>
+          <div className='text-[25px]'>나의 대표 인생그래프</div>
           <div className='mt-[25px] w-[415px] border-b border-[#585858]'></div>
 
           {userProfile.favoriteLifeGraph ? (
-            <div className='mt-[40px]'>
-              <h3 className='text-[20px] font-bold'>즐겨찾는 인생 그래프</h3>
-              <div className='mt-[10px]'>
-                <p className='text-[18px] font-semibold'>{userProfile.favoriteLifeGraph.title}</p>
-                <p className='text-[16px]'>현재 나이: {userProfile.favoriteLifeGraph.currentAge}세</p>
-                <div className='mt-[20px]'>
-                  {userProfile.favoriteLifeGraph.events.map((event, index) => (
-                    <div key={index} className='mb-[10px]'>
-                      <p className='text-[18px] font-semibold'>
-                        {event.title} (나이 {event.age})
-                      </p>
-                      <p className='text-[16px]'>{event.description}</p>
-                      <p className='text-[14px] text-gray-500'>점수: {event.score}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className='grid place-items-center'>
+              <div className='py-[20px] text-[20px]'>{userProfile.favoriteLifeGraph.title}</div>
+              <CreateDetailGraph events={userProfile.favoriteLifeGraph.events}></CreateDetailGraph>
             </div>
           ) : (
-            <p className='mt-[40px] text-[16px] text-gray-500'>즐겨찾는 인생그래프가 없습니다.</p>
+            <div className='mt-[100px] flex justify-center'>
+              <p className='mt-[40px] text-[20px] text-gray-500'>대표로 설정한 인생그래프가 없습니다.</p>
+            </div>
           )}
         </div>
       </div>
