@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.13    김우현      Modified     type 지정
  * 2024.09.20    김우현      Updated     api 완성()
+ *
  */
 
 import { isAxiosError } from 'axios';
@@ -80,29 +81,6 @@ export async function updateUserProfile(profile: UpdateUserProfile): Promise<voi
   }
 }
 
-// 계정 탈퇴  탈퇴기능만 있는 모달( 이 부분은 어느정도 이해했음)
-// export async function deleteAccount() {
-//   const url = `${api.myPage}/delete-account`
-//   const navigate = useNavigate();
-
-//   try {
-//     const response = await baseApi.delete(url);
-
-//     if(response.status === 200) {
-
-//       navigate(api.home); // 삭제가 성공이 되면 홈페이지로 이동하게 끔 하는 것으로해석이 되어 navigate를 home으로 설정해 놓음
-//     }
-//   } catch (error: unknown) { // error는 any보다 isAxiosError가 어울리기에 import에서 isAxiosError를 해주었음
-//     if(isAxiosError(error)) {
-//       console.error('Failed to delete user account:', error.response?.data.message || error.message);
-//     } else {
-//       console.error('An unknown error occurred')
-//     }
-//     throw error;
-//   }
-// }
-
-// 계정탈퇴 - 더미데이터 이용할 경우
 // 계정탈퇴 API 호출
 export async function deleteAccount(): Promise<void> {
   const url = `${api.myPage}/account`;
