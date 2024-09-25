@@ -26,7 +26,7 @@ const ExpertCard = ({ expert, setOpen }: ExpertCardProps) => {
   return (
     <div className='modal fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50' onClick={handleBackgroundClick}>
       <div
-        className='modal-content relative flex justify-start rounded-lg bg-white p-6'
+        className='modal-content relative flex justify-start rounded-[20px] bg-white p-6'
         style={{
           width: '800px', // 고정된 너비 설정
           height: '400px', // 고정된 높이 설정
