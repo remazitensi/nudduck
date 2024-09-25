@@ -1,0 +1,36 @@
+# Node.js
+node_modules/
+yarn-error.log
+
+# Build output
+dist/
+build/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Frontend build output
+client/dist/
+client/build/
+
+# Backend build output
+server/dist/
