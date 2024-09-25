@@ -48,19 +48,20 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         display: false,
       },
       tooltip: {
-        callbacks: {
-          title: (tooltipItems) => {
-            const item = tooltipItems[0].parsed; // Get the current item
-            return item.title; // Set tooltip title to item.title
-          },
-          label: (tooltipItem) => {
-            const item = tooltipItem.parsed; // Get the current item
-            return item.description; // Set tooltip body to item.description
-          },
-        },
-        bodyFont: {
-          size: 15, // Set tooltip font size
-        },
+        // 툴팁 콜백 설정
+        // callbacks: {
+        //   title: (tooltipItems) => {
+        //     const item = tooltipItems[0].parsed; // Get the current item
+        //     return item.title; // Set tooltip title to item.title
+        //   },
+        //   label: (tooltipItem) => {
+        //     const item = tooltipItem.parsed; // Get the current item
+        //     return item.description; // Set tooltip body to item.description
+        //   },
+        // },
+        // bodyFont: {
+        //   size: 15, // Set tooltip font size
+        // },
         intersect: false, // Make tooltip show even if mouse is not directly on the point
         mode: 'nearest', // Use 'nearest' to allow tooltip to show for the nearest point
       },
