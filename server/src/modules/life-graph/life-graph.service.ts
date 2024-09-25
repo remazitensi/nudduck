@@ -14,13 +14,14 @@
  * 2024.09.23    이승철      Modified    인생그래프 개수가 0일 경우 조건문 추가
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
  * 2024.09.24    이승철      Modified    limit를 dto에 추가
+ * 2024.09.26    이승철      Modified    즐겨찾기 반환 값 및 age 검증 추가
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
 import { LifeGraphRepository } from '@_modules/life-graph/life-graph.repository';
 import { UserRepository } from '@_modules/user/user.repository';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.entity';
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
@@ -39,6 +40,13 @@ export class LifeGraphService {
   // 인생 그래프 생성
   async createNewLifeGraph(userId: number, createLifeGraphDto: CreateLifeGraphDto): Promise<void> {
     const user = await this.userRepository.findUserById(userId);
+
+    createLifeGraphDto.events.forEach(eventDto => {
+      if (createLifeGraphDto.currentAge < eventDto.age) {
+        throw new BadRequestException('현재 나이는 이벤트 나이보다 낮을 수 없습니다.');
+      }
+    });
+    
     const newLifeGraph = {
       user,
       currentAge: createLifeGraphDto.currentAge,
@@ -90,6 +98,14 @@ export class LifeGraphService {
         throw new NotFoundException();
       }
 
+      if (updateLifeGraphDto.events) {
+        updateLifeGraphDto.events.forEach(eventDto => {
+          if (updateLifeGraphDto.currentAge < eventDto.age) {
+            throw new BadRequestException('현재 나이는 이벤트 나이보다 낮을 수 없습니다.');
+          }
+        });
+      } 
+
       // 수정된 제목과 나이 처리
       this.updateBasicInfo(lifeGraph, updateLifeGraphDto);
 
@@ -133,21 +149,25 @@ export class LifeGraphService {
     await this.lifeGraphRepository.deleteLifeGraph(lifeGraph);
   }
 
-  // 인생 그래프 즐겨찾기
-  async createFavoriteLifeGraph(userId: number, graphId: number): Promise<void> {
-    const user = await this.userRepository.findUserById(userId);
+  // 인생 그래프 즐겨찾기 등록/해제
+  async createFavoriteLifeGraph(userId: number, graphId: number): Promise<boolean> {
+    const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph']);
     const lifeGraph = await this.lifeGraphRepository.findOneLifeGraph(userId, graphId);
-
+  
     if (!lifeGraph) {
-      throw new NotFoundException();
+      throw new NotFoundException('인생 그래프를 찾을 수 없습니다.');
     }
+  
+    const isAlreadyFavorited = user.favoriteLifeGraph?.id === graphId;
 
-    if (user.favoriteLifeGraph?.id === graphId) {
-      user.favoriteLifeGraph = null; // 이미 즐겨찾기 되어 있으면 해제
+    if (isAlreadyFavorited) {
+      user.favoriteLifeGraph = null;  // 즐겨찾기 해제
     } else {
-      user.favoriteLifeGraph = lifeGraph; // 즐겨찾기로 설정
+      user.favoriteLifeGraph = lifeGraph;  // 즐겨찾기 등록
     }
-
+  
     await this.userRepository.updateUser(user);
+  
+    return !isAlreadyFavorited;  // 등록되면 true, 해제되면 false
   }
 }
