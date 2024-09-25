@@ -49,7 +49,8 @@ export class LifeGraphController {
   @ApiResponse({ status: 400, description: '잘못된 요청입니다.' })
   @Get()
   async getAllLifeGraphs(@Req() req: UserRequest, @Query() lifeGraphPaginationQueryDto: LifeGraphPaginationQueryDto): Promise<LifeGraphListResponseDto> {
-    return await this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPaginationQueryDto);
+    const { data, totalCount, favoriteGraphId } = await this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPaginationQueryDto);
+    return { data, totalCount, favoriteGraphId };
   }
 
   @ApiOperation({ summary: '특정 인생 그래프 조회', description: 'ID를 기반으로 특정 인생 그래프를 조회합니다.' })
