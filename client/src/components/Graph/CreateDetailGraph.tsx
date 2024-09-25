@@ -132,8 +132,8 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
   };
 
   return (
-    <div className='flex items-center'>
-      <Line options={options} className='h-full w-full' data={data} />
+    <div className='w-full'>
+      <Line options={options} data={data} />
     </div>
   );
 };

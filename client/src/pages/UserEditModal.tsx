@@ -144,14 +144,11 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
         const profileData = { imageUrl, hashtags: hashTagsArray, nickname };
         await updateUserProfile(profileData);
 
-        alert('프로필이 성공적으로 수정되었습니다.');
-
         // 업데이트된 데이터를 상위 컴포넌트로 전달
         onSaveImage(imageUrl);
         onSaveNickname(nickname);
         onSaveHashTag(hashTagsArray);
-
-        onClose();
+        onClose(); // 모달 닫기
       } catch (error) {
         console.error('Failed to update profile:', error);
         alert('프로필 업데이트 중 오류가 발생했습니다.');
@@ -175,7 +172,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
             <img src={image} alt='userImg' className='mt-[10px] h-[200px] w-[200px] rounded-[100px]' />
             <img onClick={() => fileInputRef.current?.click()} className='absolute bottom-[35px] right-[50px] h-[50px] w-[50px] cursor-pointer' src='/Camera.png' alt='cameraImg' />
             <input ref={fileInputRef} type='file' accept='image/*' className='hidden' onChange={handleClickImg} />
-            <div onClick={deleteFileImg} className='flex cursor-pointer justify-center text-[13px] text-[#999999]'>
+            <div onClick={deleteFileImg} className='mt-[10px] flex cursor-pointer justify-center text-[13px] text-[#999999]'>
               이미지 삭제
             </div>
           </div>
