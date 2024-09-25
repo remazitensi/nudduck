@@ -11,7 +11,7 @@
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsPositive, Min } from 'class-validator';
+import { IsInt, IsOptional, IsPositive, Min } from 'class-validator';
 
 export class PaginationQueryDto {
   @ApiPropertyOptional({
@@ -19,20 +19,21 @@ export class PaginationQueryDto {
     example: 1,
   })
   @IsOptional()
+  @IsInt()
   @IsPositive()
-  page: number = 1; // 기본값을 1
+  page: number = 1; // 기본값 1로 설정
 
   @ApiPropertyOptional({
     description: '페이지당 항목 수 (기본값: 10)',
     example: 10,
   })
   @IsOptional()
+  @IsInt()
   @IsPositive()
-  @Min(1)
-  pageSize: number = 10; // 기본값을 10
+  pageSize: number = 10; // 기본값 10으로 설정
 
   @ApiPropertyOptional({
-    description: '정렬 기준 (예: createdAt:desc, title:asc)',
+    description: '정렬 기준 (예: createdAt:desc)',
     example: 'createdAt:desc',
     required: false,
   })
@@ -43,14 +44,16 @@ export class PaginationQueryDto {
     example: 10,
   })
   @IsOptional()
+  @IsInt()
   @IsPositive()
-  limit: number = 10; // 기본값을 10
+  limit: number = 10; // 기본값 10으로 설정
 
   @ApiPropertyOptional({
     description: '조회 시작 지점 (offset, 기본값: 0)',
     example: 0,
   })
   @IsOptional()
+  @IsInt()
   @Min(0)
-  offset: number = 0; // 기본값을 0
+  offset: number = 0; // 기본값 0으로 설정
 }
