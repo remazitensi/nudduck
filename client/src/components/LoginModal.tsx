@@ -13,8 +13,7 @@
  */
 
 import axios from 'axios';
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate 추가
+import React, { useEffect } from 'react';
 import './LoginModal.css';
 
 interface LoginModalProps {
@@ -23,38 +22,34 @@ interface LoginModalProps {
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin }) => {
-  const navigate = useNavigate(); // navigate hook 사용
-
+  // 구글 로그인 핸들러
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3000/api/auth/google'; // Google 소셜 로그인 URL로 이동
+    window.location.href = 'http://localhost:3000/api/auth/google'; // Google OAuth 인증 시작
   };
 
+  // 카카오 로그인 핸들러
   const handleKakaoLogin = () => {
-    window.location.href = 'http://localhost:3000/api/auth/kakao'; // Kakao 소셜 로그인 URL로 이동
+    window.location.href = 'http://localhost:3000/api/auth/kakao'; // Kakao OAuth 인증 시작
   };
 
-  const handleAuthCallback = async () => {
+  // 로그인 상태 확인
+  const checkLoginStatus = async () => {
     try {
-      // axios를 통해 인증된 사용자의 정보를 가져옵니다.
-      const response = await axios.get('http://localhost:3000/api/my', { withCredentials: true });
+      const response = await axios.get('http://localhost:3000/api/my', {
+        withCredentials: true, // 쿠키 포함 요청
+      });
       if (response.status === 200) {
-        onLogin(); // 로그인 상태 업데이트
-        navigate('/HomePage'); // 로그인 성공 시 HomePage로 리디렉트
+        onLogin(); // 상위 컴포넌트에 로그인 상태 업데이트 요청
         onClose(); // 로그인 모달 닫기
       }
     } catch (error) {
-      console.error('로그인 처리 중 오류 발생:', error);
+      console.error('로그인 상태 확인 실패:', error);
     }
   };
 
-  React.useEffect(() => {
-    const currentUrl = window.location.href;
-    if (
-      currentUrl.includes('/auth/google/callback') ||
-      currentUrl.includes('/auth/kakao/callback')
-    ) {
-      handleAuthCallback();
-    }
+  // 페이지 로드 시 로그인 상태 확인
+  useEffect(() => {
+    checkLoginStatus();
   }, []);
 
   return (

@@ -7,7 +7,8 @@
  * Date          Author      Status      Description
  * 2024.09.12    황솜귤      Created     홈페이지 생성
  * 2024.09.21    황솜귤      Modified    홈페이지 레이아웃 구성
- * 2024.09.22    황솜귤      Modified    스타일 시트 수정
+ * 2024.09.22    황솜귤      Modified    스타일 시트 수정 및
+ * 2024.09.24    황솜귤      Modified    명언/영문장 데이터 추가
  */
 
 import { useEffect, useState } from 'react';
@@ -26,25 +27,51 @@ interface Post {
   createdAt: string;
 }
 
+// 명언 타입 정의
+interface Quote {
+  id: number;
+  author: string;
+  message: string;
+}
+
+// 영문장 타입 정의
+interface EnglishSentence {
+  id: number;
+  english: string;
+  korean: string;
+}
+
 const HomePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [quote, setQuote] = useState('');
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [englishSentence, setEnglishSentence] = useState<EnglishSentence | null>(null);
+  const [isQuoteVisible, setIsQuoteVisible] = useState(true); // 명언 또는 영문장 표시 여부
 
-  const quotes = [
-    '불잡을 가치가 있는 것이었다면 놓지 않았을 것이라는 사실을 꼭 기억하세요.',
-    '성공은 노력의 결과입니다.',
-    '시작이 반입니다.',
-    '도전하지 않으면 아무것도 얻을 수 없습니다.',
-  ];
-
-  const getRandomQuote = () => {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    return quotes[randomIndex];
-  };
-
+  // 명언 및 영문장 데이터 가져오기
   useEffect(() => {
-    const randomQuote = getRandomQuote();
-    setQuote(randomQuote);
+    const fetchQuotesAndSentences = async () => {
+      try {
+        const response = await baseApi.get('/schedule/quotes-and-sentences');
+        if (response.status === 200) {
+          const { quotes, englishSentences } = response.data;
+          setQuote(quotes[0]);
+          setEnglishSentence(englishSentences[0]);
+        }
+      } catch (error) {
+        console.error('명언과 영문장을 가져오는 데 실패했습니다:', error);
+      }
+    };
+
+    fetchQuotesAndSentences();
+  }, []);
+
+  // 5초마다 명언과 영문장을 교체하는 로직
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsQuoteVisible((prev) => !prev);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -69,30 +96,66 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="bg-white-100 min-h-screen">
       <main className="mx-auto max-w-6xl p-4">
-        {/* Today's Quote */}
-        <section className="my-6 rounded bg-white p-6 shadow">
-          <h2 className="text-lg font-bold text-[#909700]">오늘의 명언</h2>
-          <p className="mt-2 text-gray-600">{quote}</p>
+        {/* Today's Quote Section */}
+        <section className="my-6 flex justify-center">
+          <div className="relative h-[81px] w-[994px]">
+            <div className="absolute left-0 top-[6px] h-[70px] w-[994px] rounded-[5px] border border-[#313119] bg-white" />
+            <div className="absolute left-[31px] top-[22px] h-[29px] w-[175px] text-center font-['Pretendard'] text-3xl font-medium text-[#909700]">
+              {isQuoteVisible ? '오늘의 명언' : '오늘의 영문장'}
+            </div>
+            <div className="absolute left-[222px] top-[29px] text-center font-['Pretendard'] text-xl font-normal text-[#313119]">
+              {isQuoteVisible && quote ? (
+                <>{quote.message}</>
+              ) : (
+                englishSentence && (
+                  <>
+                    {englishSentence.korean} <br /> ({englishSentence.english})
+                  </>
+                )
+              )}
+            </div>
+          </div>
         </section>
 
         {/* AI Coach Section */}
-        <section className="my-6 flex items-center justify-between rounded bg-blue-100 p-6 shadow">
-          <img src="ai-image1.png" alt="AI Coach" className="h-48" />
-          <div className="ml-4">
-            <h3 className="text-xl font-bold text-blue-700">AI Coach</h3>
-            <p className="mt-2 text-gray-700">
-              누떡에서 제공하는 AI 서비스는 사용자가 면접 준비를 효율적으로 할 수 있도록 돕는
-              혁신적인 도구입니다.
+        <section className="my-6 flex items-center justify-between rounded bg-white p-6 shadow shadow-xl">
+          <img src="ai-image1.png" alt="AI Coach" className="h-[600px] w-[500px]" />
+          <div className="ml-4 flex flex-col">
+            <div className="relative rounded-[10px] bg-[#A1DFFF] p-[20px] shadow-xl">
+              <h3 className="text-xl font-bold text-blue-700">AI Coach</h3>
+              <p className="mt-2 text-[18px] text-gray-700">
+                <span className="font-bold">누떡</span>에서 제공하는 AI 서비스는 사용자가 면접
+                준비를 효율적으로 할 수 있도록 돕는 혁신적인 도구입니다.
+              </p>
+              {/* 말풍선 꼬리 추가 */}
+              <div className="absolute -left-14 top-10 h-0 w-0 border-[30px] border-transparent border-r-[#A1DFFF]"></div>
+            </div>
+            <p className="m-auto mt-[95px] text-center text-[24px] font-bold">
+              구글, 카카오 아이디가 있으신가요?
+              <br />
+              <span className="cursor-pointer bg-none text-[#909700]">로그인</span>하고 하단 메뉴를
+              이용해 보세요.
             </p>
+          </div>
+        </section>
+
+        {/* 추가 부분 */}
+        <section className="mb-[100px] mt-[50px] flex">
+          <div className="mx-auto flex justify-around text-[18px]">
+            <span>AI 코치</span>
+            <span>전문가 상담</span>
+            <span>커뮤니티</span>
+            <span>인생 그래프</span>
           </div>
         </section>
 
         {/* Feature Cards Section - 로그인 전 상태 */}
         <section className="my-6">
           <h2 className="text-xl font-bold">로그인하고 내 조건에 맞는 서비스 이용하기</h2>
-          <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {/* grid-cols-3 을 4로 변경*/}
+          <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-4">
             <div className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-6 shadow">
               <div className="text-center">
                 <h3 className="mb-2 text-lg font-semibold text-gray-700">
@@ -111,7 +174,7 @@ const HomePage = () => {
               <img src="ai-image2.png" alt="Expert Consulting" className="h-24" />
               <h3 className="mt-4 text-center text-lg font-bold">Expert Consulting</h3>
               <p className="mt-2 text-center text-gray-600">
-                각 분야 전문가의 프로필을 확인하고 1:1 맞춤 상담을 받아보세요.
+                각 분야 전문가의 프로필을 확인하고 1:1 맞춤 상담을 받아 보세요
               </p>
             </div>
 
@@ -134,8 +197,8 @@ const HomePage = () => {
         </section>
 
         {/* Latest Posts Section */}
-        <section className="my-6 rounded bg-white p-6 shadow">
-          <h2 className="text-lg font-bold text-gray-700">지금 뜨는 게시글</h2>
+        <section className="my-6 rounded bg-white">
+          <h2 className="text-xl font-bold">지금 뜨는 게시글</h2>
           <div className="mt-4 space-y-4">
             {posts.map((post) => (
               <div key={post.id} className="rounded border border-gray-200 p-4 shadow-sm">

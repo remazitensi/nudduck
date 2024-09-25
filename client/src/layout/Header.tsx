@@ -12,23 +12,24 @@
  * 2024.09.21    황솜귤      Modified    로고 클릭 시 Link to
  * 2024.09.21    황솜귤      Modified    로그인/로그아웃 상태에 따른 UI 변경 및 메뉴 노출 제어
  * 2024.09.22    황솜귤      Modified    드롭다운 디자인 수정 및 로그인 상태 확인 로직 변경
+ * 2024.09.25    황솜귤      Modified    드롭다운 유저 정보를 이름에서 닉네임으로 변경
  */
 
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { baseApi } from '../apis/base-api'; // baseApi 임포트
 import LoginModal from '../components/LoginModal';
 
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState({
-    name: '',
+    nickname: '',
     email: '',
     profileImage: '',
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchUserData(); // 컴포넌트가 처음 마운트될 때 사용자 정보 요청
   }, []);
@@ -38,9 +39,9 @@ const Header: React.FC = () => {
     try {
       const response = await baseApi.get('/api/my'); // 로그인된 사용자 정보 가져오기
       if (response.status === 200) {
-        const { name, email, imageUrl } = response.data;
+        const { nickname, email, imageUrl } = response.data;
         setUser({
-          name,
+          nickname,
           email,
           profileImage: imageUrl || 'https://via.placeholder.com/32x32', // 프로필 이미지가 없을 때 대체 이미지 사용
         });
@@ -59,11 +60,14 @@ const Header: React.FC = () => {
       localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 제거
       setIsLoggedIn(false);
       setUser({
-        name: '',
+        nickname: '',
         email: '',
         profileImage: '',
       });
       setDropdownOpen(false);
+
+      // 로그아웃 후 '/'로 리다이렉트
+      navigate('/');
     } catch (error) {
       console.error('로그아웃에 실패했습니다.', error);
     }
@@ -124,7 +128,7 @@ const Header: React.FC = () => {
                 alt="Profile"
                 className="h-8 w-8 cursor-pointer rounded-full"
               />
-              <div className="text-sm font-semibold">{user.name}</div>
+              <div className="text-sm font-semibold">{user.nickname}</div>
               {dropdownOpen && (
                 <div className="absolute right-0 z-20 mt-2 flex w-[270px] items-center rounded-lg bg-white p-4 shadow-xl">
                   <img
@@ -134,7 +138,9 @@ const Header: React.FC = () => {
                   />
                   <div className="ml-4">
                     <div className="flex items-center">
-                      <span className="text-[15px] font-semibold text-[#222222]">{user.name}</span>
+                      <span className="text-[15px] font-semibold text-[#222222]">
+                        {user.nickname}
+                      </span>
                       <span className="ml-1 text-[15px] font-normal text-[#555555]">님</span>
                     </div>
                     <div className="text-[13px] text-[#555555]">{user.email}</div>
