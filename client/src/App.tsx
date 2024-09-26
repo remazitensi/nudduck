@@ -1,27 +1,35 @@
-/*
+/**
  * File Name    : App.tsx
- * Description  : 라우트 경로를 설정하는 곳
- * Author       : 김민지
+ * Description  : 라우트 경로 설정 및 헤더, 푸터 적용
+ * Author       : 황솜귤
  *
  * History
  * Date          Author      Status      Description
  * 2024.09.05    김민지      Created
- * 2024.09.07    김민지      Modified       초기화
- * 2024.09.09    황솜귤      Created     헤더 라우터 설정
+ * 2024.09.07    김민지      Modified    초기화
+ * 2024.09.10    황솜귤      Modified    헤더 및 푸터 컴포넌트 추가 및 전역 적용
+ * 2024.09.12    김민지      Modified    라우터 설계
+ * 2024.09.12    황솜귤      Modified    주석 처리
+ * 2024.09.26    김민지      Modified    라우터 변동사항 통합
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
-import Header from './components/header-component';
+import React from 'react';
 
-function App() {
+// import CustomerSupportPage from './pages/CustomerSupportPage';
+// import NotFound from './pages/NotFound';
+// import Unauthorized from './pages/Unauthorized';
+
+const App: React.FC = () => {
   return (
-    <Router>
-     <Header /> {/* 헤더를 모든 페이지에 공통으로 표시 */}
-      <Routes>
-     </Routes>
-    </Router>
-);
-}
+    <>
+      <div></div>
+      <h1>Vite + React</h1>
+      <div className='card'>
+        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
+        <p>셋업 성공!</p>
+      </div>
+    </>
+  );
+};
 
 export default App;
