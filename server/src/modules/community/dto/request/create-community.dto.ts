@@ -12,9 +12,9 @@
  * 2024.09.23    김재영      Modified    제목 30자 이내, 내용 최소 10자 이상으로 제한
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsNumber, IsEnum, Length } from 'class-validator';
 import { Category } from '@_modules/community/enums/category.enum';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsNumber, Length } from 'class-validator';
 
 export class CreateCommunityDto {
   @ApiProperty({
@@ -36,9 +36,8 @@ export class CreateCommunityDto {
   @ApiPropertyOptional({
     description: '커뮤니티 게시글의 카테고리',
     enum: Category,
-    example: 'STUDY',
+    example: 'study',
   })
-  @IsOptional()
   @IsEnum(Category, { message: '유효한 카테고리를 선택해야 합니다.' })
   category?: Category;
 
