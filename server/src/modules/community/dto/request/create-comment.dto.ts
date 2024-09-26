@@ -12,8 +12,8 @@
  * 2024.09.22    김재영      Modified    댓글 ID 추가
  */
 
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCommentDto {
   @ApiProperty({
@@ -53,5 +53,5 @@ export class CreateCommentDto {
     example: 1, // 예시 유저 ID 추가
   })
   @IsNumber()
-  userId: number;
+  user: { id: number };
 }
