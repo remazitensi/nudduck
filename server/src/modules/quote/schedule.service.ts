@@ -1,14 +1,16 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { EnglishSentenceDto } from '@_modules/quote/dto/english-sentence.dto';
+import { QuoteDto } from '@_modules/quote/dto/quote.dto';
+import { EnglishSentence } from '@_modules/quote/entities/english-sentence.entity';
+import { Quote } from '@_modules/quote/entities/quote.entity';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { Quote } from '@_modules/quote/entities/quote.entity';
-import { EnglishSentence } from '@_modules/quote/entities/english-sentence.entity';
-import { QuoteDto } from '@_modules/quote/dto/quote.dto';
-import { EnglishSentenceDto } from '@_modules/quote/dto/english-sentence.dto';
 
 @Injectable()
 export class ScheduleService {
+  private readonly logger = new Logger(ScheduleService.name);
+
   constructor(
     @InjectRepository(Quote)
     private quotesRepository: Repository<Quote>,
@@ -44,13 +46,20 @@ export class ScheduleService {
     }));
   }
 
-  // 매일 오전 7시에 Quotes 조회
-  @Cron(CronExpression.EVERY_DAY_AT_7AM) // 매일 9시에 실행
+  // 매일 오전 7시에 Quotes 조회 및 처리
+  @Cron(CronExpression.EVERY_DAY_AT_7AM)
   async handleCron() {
-    const quotes = await this.findAllQuotes();
-    if (!quotes) {
+    try {
+      const quotes = await this.findAllQuotes();
+
+      // 조회한 데이터를 로그로 남기기 (또는 다른 처리를 추가)
+      this.logger.log('성공적으로 명언을 조회했습니다: ', quotes);
+
+      // 만약 다른 처리 로직이 필요하다면 여기에 추가
+      // 예: 조회한 데이터를 파일로 저장하거나, 다른 API로 전달하는 로직 등
+    } catch (error) {
+      this.logger.error('명언을 가져오는 도중 오류가 발생했습니다.', error);
       throw new HttpException('명언을 가져오는 도중 오류가 발생했습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    throw new HttpException('명언을 성공적으로 가져왔습니다.', HttpStatus.OK);
   }
 }

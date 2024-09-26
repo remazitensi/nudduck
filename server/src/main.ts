@@ -1,10 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { GlobalExceptionFilter } from 'common/filters/global-exception.filter';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
-import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,9 +22,6 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
-
-  // WebSocket 어댑터 설정
-  app.useWebSocketAdapter(new WsAdapter(app));
 
   // Swagger 설정
   const config = new DocumentBuilder()
