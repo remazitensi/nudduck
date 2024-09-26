@@ -13,12 +13,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api, baseApi } from '../../apis/base-api';
 import { getPostDetail } from '../../apis/community/community-post-api';
+import AnotherUserModal from '../../components/Community/AnotherUserModal';
 import { CategoryBtn } from '../../components/Community/CategoryBtn';
-import { PostDetailData } from '../../types/community-type';
+import { Post } from '../../types/community-type';
 
 const CommunityPostDetail: React.FC = () => {
   const { id } = useParams(); // URL 파라미터에서 id 가져오기, 구조분해할당
-  const [postData, setPostData] = useState<PostDetailData>({
+  const [postData, setPostData] = useState<Post>({
     postId: 0,
     title: '',
     viewCount: 0,
@@ -28,6 +29,7 @@ const CommunityPostDetail: React.FC = () => {
     userId: 0,
     nickname: '',
   }); // postData에 타입 지정
+  const [openUserModal, setOpenUserModal] = useState<boolean>(false);
 
   // path의 postId를 사용해서 get
   useEffect(() => {
@@ -58,8 +60,18 @@ const CommunityPostDetail: React.FC = () => {
     return () => clearTimeout(timer);
   }, [id]);
 
+  const handleOpenModal = () => {
+    setOpenUserModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenUserModal(false);
+  };
+
   return (
     <div className='community-titles flex flex-col items-center'>
+      {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={postData.userId} />}
+
       <div className='mt-[140px]'>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[100px] border-b-2 border-[#8D8B67]'></div>
@@ -79,13 +91,15 @@ const CommunityPostDetail: React.FC = () => {
           <span className='ml-[5px] text-[#A1DFFF]'>{postData.viewCount}</span>
         </div>
         {/* img와 nickname을 감싸는 div에 onClick */}
-        <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
-          <img src='/clover-image.png' alt='cloverImg' />
+        <div className='mb-[5px] flex items-center justify-end gap-[5px]' onClick={handleOpenModal}>
+          <div className='h-[50px] w-[50px] rounded-full'>
+            <img className='rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
+          </div>{' '}
           <div>{postData.nickname}</div>
         </div>
         {/* --------------------- */}
       </div>
-
+      {/* 다른 유저 모달 */}
       <div className='mt-[50px] h-[500px] w-[1200px]'>
         <div className='relative h-[500px] w-[1200px] rounded-[20px] border'>
           <div className='p-[50px] text-[16px] leading-loose'>{postData.content}</div>
@@ -103,12 +117,14 @@ const CommunityPostDetail: React.FC = () => {
         <div className='mt-[77px] text-[24px] font-bold'>댓글</div>
         <div className='relative'>
           <input className='mt-[19px] h-[200px] w-[1200px] rounded-[10px] bg-[#F3F3F2] pb-[130px] pl-[20px] text-[24px] outline-none' placeholder='댓글을 입력해 주세요' />
-          <button className='absolute right-[20px] top-[160px] h-[50px] w-[95px] rounded-[5px] bg-[#909700] font-bold text-white'>댓글달기</button>
+          <button className='absolute right-[20px] top-[165px] h-[40px] w-[95px] rounded-[5px] bg-[#909700] font-bold text-white'>댓글달기</button>
         </div>
 
         <div className='Comment mt-[58px] flex w-[1200px] flex-col'>
           <div className='flex gap-[10px] pl-[20px] pt-[20px]'>
-            {/* <img className='' src='/cat_image.png' alt='catImg' /> */}
+            <div className='h-[50px] w-[50px] rounded-full'>
+              <img className='object-cover' src='/cat_image.png' alt='catImg' />
+            </div>
             <div className='flex items-center text-[20px] font-semibold'>스터디구하는자</div>
             <div className='flex items-center text-[12px] text-[#AEAC9A]'>24-09-08 22:22</div>
           </div>
