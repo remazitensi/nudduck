@@ -18,7 +18,9 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "*": ["*"]
-    }
+      "@_modules/*": ["modules/*"]
+    },
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "types": ["node", "express"]
   }
 }
