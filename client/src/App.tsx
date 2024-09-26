@@ -21,11 +21,11 @@ import './App.css';
 
 // import AICoach from './pages/AICoach';
 // import ChatRoom from './pages/ChatRoom';
-import AnotherUserModal from './components/Community/anotherUserModal';
-import CommunityPostCreate from './pages/CommunityPostCreate';
-import CommunityPostDetail from './pages/CommunityPostDetail';
-import CommunityPostEdit from './pages/CommunityPostEdit';
-import CommunityPostList from './pages/CommunityPostList';
+import AnotherUserModal from './components/Community/AnotherUserModal';
+import CommunityPostCreate from './pages/Community/CommunityPostCreate';
+import CommunityPostDetail from './pages/Community/CommunityPostDetail';
+import CommunityPostEdit from './pages/Community/CommunityPostEdit';
+import CommunityPostList from './pages/Community/CommunityPostList';
 // import ExpertsPage from './pages/ExpertsPage';
 // import LifeGraphDetail from './pages/LifeGraphDetail';
 // import LifeGraphList from './pages/LifeGraphList';
