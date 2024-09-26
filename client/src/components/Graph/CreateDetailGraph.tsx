@@ -48,7 +48,7 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         display: false,
       },
       tooltip: {
-        // 툴팁 콜백 설정
+        // 툴팁 커스텀 미완성으로 인한 주석처리
         // callbacks: {
         //   title: (tooltipItems) => {
         //     const item = tooltipItems[0].parsed; // Get the current item
@@ -59,9 +59,9 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         //     return item.description; // Set tooltip body to item.description
         //   },
         // },
-        // bodyFont: {
-        //   size: 15, // Set tooltip font size
-        // },
+        bodyFont: {
+          size: 15, // Set tooltip font size
+        },
         intersect: false, // Make tooltip show even if mouse is not directly on the point
         mode: 'nearest', // Use 'nearest' to allow tooltip to show for the nearest point
       },
@@ -85,7 +85,7 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         max: 6,
         ticks: {
           stepSize: 1,
-          callback: (value) => {
+          callback: (value: number) => {
             if (value === -6 || value === 6) {
               return '';
             }
@@ -125,7 +125,7 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
           return '#6B8E23';
         },
         borderWidth: 15,
-        backgroundColor: (context) => {
+        backgroundColor: () => {
           return 'rgba(173, 216, 175, 0.5)';
         },
       },
@@ -133,8 +133,8 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
   };
 
   return (
-    <div className='flex items-center'>
-      <Line options={options} className='h-full w-full' data={data} />
+    <div className='w-full'>
+      <Line options={options} data={data} />
     </div>
   );
 };
