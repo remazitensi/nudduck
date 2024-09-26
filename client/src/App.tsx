@@ -1,33 +1,38 @@
-// /*
-//  * File Name    : App.tsx
-//  * Description  : 라우트 경로를 설정하는 곳
-//  * Author       : 김민지
-//  *
-//  * History
-//  * Date          Author      Status      Description
-//  * 2024.09.05    김민지      Created
-//  * 2024.09.07    김민지      Modified       초기화
-//  * 2024.09.12    김민지      Modified     라우터 설계
-//  */
+/**
+ * File Name    : App.tsx
+ * Description  : 라우트 경로 설정 및 헤더, 푸터 적용
+ * Author       : 황솜귤
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.05    김민지      Created
+ * 2024.09.07    김민지      Modified    초기화
+ * 2024.09.10    황솜귤      Modified    헤더 및 푸터 컴포넌트 추가 및 전역 적용
+ * 2024.09.12    김민지      Modified    라우터 설계
+ * 2024.09.12    황솜귤      Modified    주석 처리
+ * 2024.09.26    김민지      Modified    라우터 변동사항 통합
+ */
 
 import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-// TODO: Layout 컴포넌트 만들기!
 
-// import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
+import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
 
-// import HomePage from './pages/HomePage';
-// import MainPage from './pages/MainPage';
+import HomePage from './pages/HomePage';
+import MainPage from './pages/MainPage';
 
-// import AICoach from './pages/AICoach';
-// import ChatRoom from './pages/ChatRoom';
-// import CommunityPostCreate from './pages/CommunityPostCreate';
-// import CommunityPostDetail from './pages/CommunityPostDetail';
-// import CommunityPostEdit from './pages/CommunityPostEdit';
-// import CommunityPostList from './pages/CommunityPostList';
-// import ExpertsPage from './pages/ExpertsPage';
-// import LifeGraphDetail from './pages/LifeGraphDetail';
-// import LifeGraphList from './pages/LifeGraphList';
+import AICoach from './pages/AICoach';
+import ChatRoom from './pages/ChatRoom';
+
+import AnotherUserModal from './components/Community/AnotherUserModal'; // AnotherUserModal 개발 후 삭제 예정
+import CommunityPostCreate from './pages/Community/CommunityPostCreate';
+import CommunityPostDetail from './pages/Community/CommunityPostDetail';
+import CommunityPostEdit from './pages/Community/CommunityPostEdit';
+import CommunityPostList from './pages/Community/CommunityPostList';
+
+import { LifeGraphDetail } from './pages/LifeGraph/LifeGraphDetail';
+import LifeGraphList from './pages/LifeGraph/LifeGraphList';
+
 import ExpertsPage from './pages/ExpertsPage';
 import MyPage from './pages/MyPage';
 
@@ -40,36 +45,39 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         {/* Layout을 사용하여 Header와 Footer를 모든 페이지에 적용 */}
-        {/* <Route path='/' element={<Layout />}>  */}
+        <Route path='/' element={<Layout />}> 
         {/* 메인 페이지 */}
-        {/* <Route index element={<MainPage />} /> */}
+        <Route index element={<MainPage />} />
 
         {/* 홈페이지 */}
-        {/* <Route path='home' element={<HomePage />} /> */}
+        <Route path='home' element={<HomePage />} />
 
         {/* 커뮤니티 관련 라우트 */}
         <Route path='community'>
           {/* 기본으로 게시글 리스트를 렌더링 */}
-          {/* <Route index element={<CommunityPostList />} /> */}
+          <Route index element={<CommunityPostList />} />
           {/* 게시글 상세 페이지 */}
-          {/* <Route path=':id' element={<CommunityPostDetail />} /> */}
+          <Route path=':id' element={<CommunityPostDetail />} />
           {/* 게시글 작성 페이지 */}
-          {/* <Route path='create' element={<CommunityPostCreate />} /> */}
+          <Route path='create' element={<CommunityPostCreate />} />
           {/* 게시글 수정 페이지 */}
-          {/* <Route path='edit/:id' element={<CommunityPostEdit />} /> */}
+          <Route path='edit/:id' element={<CommunityPostEdit />} />
+           {/* 다른 유저 모달 확인용 */}
+          <Route path='another' element={<AnotherUserModal />} />
+
         </Route>
 
         {/* 1대1 채팅방 */}
-        {/* <Route path='chat' element={<ChatRoom />} /> */}
+        <Route path='chat' element={<ChatRoom />} />
 
         {/* AI 코치 */}
-        {/* <Route path="ai-coach/:id?" element={<AICoach />} /> */}
+        <Route path="ai-coach/:id?" element={<AICoach />} />
 
         {/* 인생 그래프 관련 라우트 */}
         <Route path='life-graph'>
           {/* 기본 경로에서 표시될 컴포넌트 */}
-          {/* <Route index element={<LifeGraphList />} /> */}
-          {/* <Route path='detail/:id' element={<LifeGraphDetail />} /> */}
+          <Route index element={<LifeGraphList />} />
+            <Route path='detail/:id' element={<LifeGraphDetail />} />
         </Route>
 
         {/* 마이페이지 관련 라우트 */}
@@ -86,7 +94,7 @@ const App: React.FC = () => {
 
         {/* 404 Not Found 페이지 */}
         {/* <Route path='*' element={<NotFound />} /> */}
-        {/* </Route> */}
+        </Route>
       </Routes>
     </Router>
   );
