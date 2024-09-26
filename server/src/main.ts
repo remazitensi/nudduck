@@ -1,9 +1,27 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { GlobalExceptionFilter } from 'common/filters/global-exception.filter';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  app.enableCors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  });
+
+  app.use(cookieParser());
 
   // Swagger 설정
   const config = new DocumentBuilder()
@@ -13,14 +31,12 @@ async function bootstrap() {
     .addServer('http://localhost:3000/api-docs', 'Local Development Server')
     .addTag('Intro', 'API for main and intro pages')
     .addTag('User Management', 'API for user profile and authentication')
-    .addTag('Simulation', 'API for simulation functions')
-    .addTag('Community', 'API for community features')
     .addTag('Expert', 'API for expert consultation services')
-    .addTag('LifeGraph', 'API for life graph generation and management')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   await app.listen(3000);
 }

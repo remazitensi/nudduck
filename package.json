@@ -1,0 +1,12 @@
+{
+    "name": "nudduck",
+    "version": "1.0.0",
+    "scripts": {
+        "start:server": "npm run start --prefix server",
+        "start:client": "npm run dev --prefix client",
+        "dev": "concurrently \"npm run start:server\" \"npm run start:client\""
+    },
+    "devDependencies": {
+        "concurrently": "^9.0.1"
+    }
+}
