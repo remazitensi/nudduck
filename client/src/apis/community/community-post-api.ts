@@ -24,7 +24,7 @@ function isAxiosError(error: unknown): error is AxiosError {
 }
 
 // 전체 게시글 목록 get 요청
-export async function getPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
+export async function getPostList({ page = 1 }: PostListParams) {
   // 카테고리가 있으면 /community/{category}, 없으면 /community
   // 리팩토링 이후 카테고리 선택 시 setCategory가 잘 동작하면 주석 해제할 예정
   // const url = category ? `${api.community}/${category}` : api.community;
@@ -36,15 +36,14 @@ export async function getPostList({ page = 1, sort = 'sort=createdAt:desc' }: Po
       params: {
         page: Number(page),
         pageSize: Number(10),
-        sort: sort,
       },
     });
-    console.log(response);
     return response.data; // 성공 시 data 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
       console.error('Failed to fetch posts:', errorMessage);
+      alert(errorMessage);
     } else {
       console.error('알 수 없는 에러가 발생했습니다.');
     }
@@ -53,14 +52,13 @@ export async function getPostList({ page = 1, sort = 'sort=createdAt:desc' }: Po
 }
 
 // 면접 카테고리 게시글 목록 조회
-export async function getInterviewPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
+export async function getInterviewPostList({ page = 1 }: PostListParams) {
   const url = `${api.community}/interview`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
-        sort: sort,
       },
     });
     console.log(response);
@@ -77,14 +75,13 @@ export async function getInterviewPostList({ page = 1, sort = 'sort=createdAt:de
 }
 
 // 모임 카테고리 게시글 목록 조회
-export async function getMeetingPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
+export async function getMeetingPostList({ page = 1 }: PostListParams) {
   const url = `${api.community}/meeting`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
-        sort: sort,
       },
     });
     console.log(response);
@@ -101,14 +98,13 @@ export async function getMeetingPostList({ page = 1, sort = 'sort=createdAt:desc
 }
 
 // 스터디 카테고리 게시글 목록 조회
-export async function getStudyPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
+export async function getStudyPostList({ page = 1 }: PostListParams) {
   const url = `${api.community}/study`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
-        sort: sort,
       },
     });
     console.log(response);
@@ -125,14 +121,13 @@ export async function getStudyPostList({ page = 1, sort = 'sort=createdAt:desc' 
 }
 
 // 잡담 카테고리 게시글 목록 조회
-export async function getTalkPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
+export async function getTalkPostList({ page = 1 }: PostListParams) {
   const url = `${api.community}/talk`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
-        sort: sort,
       },
     });
     console.log(response);
@@ -151,7 +146,7 @@ export async function getTalkPostList({ page = 1, sort = 'sort=createdAt:desc' }
 // 카테고리 무관 게시글 상세 내역 get 요청
 export async function getPostDetail(id: number) {
   try {
-    const response = await baseApi.get(`${api.community}/${id}`, {});
+    const response = await baseApi.get(`${api.community}/article/${id}`, {});
     console.log(response);
     return response.data;
   } catch (error: unknown) {
@@ -218,6 +213,25 @@ export async function deletePost({ post }: { post: PostDetailData }) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
       console.error('Failed to fetch posts:', errorMessage);
+    } else {
+      console.error('알 수 없는 에러가 발생했습니다.');
+    }
+    throw error;
+  }
+}
+
+// 다른 유저의 프로필 조회
+export async function getUserProfile(userId: number) {
+  const url = `/profile/${userId}`;
+  console.log(url);
+  try {
+    const response = await baseApi.get(url);
+    console.log(response);
+    return response.data; // 성공 시 data 반환
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      const errorMessage = (error.response?.data as { message: string })?.message;
+      console.error('Failed to fetch user profile:', errorMessage);
     } else {
       console.error('알 수 없는 에러가 발생했습니다.');
     }
