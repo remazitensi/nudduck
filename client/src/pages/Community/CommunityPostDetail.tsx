@@ -47,12 +47,12 @@ const CommunityPostDetail: React.FC = () => {
     // 3초 후 조회수 증가 요청
     const timer = setTimeout(async () => {
       try {
-        await baseApi.post(`${api.community}/${id}/view`, {}); // 조회수 증가 POST 요청
+        await baseApi.post(`${api.community}/article/${id}/views`, {}); // 조회수 증가 POST 요청
         console.log('조회수 증가 요청 성공');
       } catch (err) {
         console.error('조회수 증가 요청 실패:', err);
       }
-    }, 3000); // 3초 후 실행
+    }, 5000); // 5초 후 실행
 
     // 컴포넌트 언마운트 시 타이머 정리
     return () => clearTimeout(timer);
