@@ -21,14 +21,14 @@ import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
 import HomePage from './pages/HomePage';
 import MainPage from './pages/MainPage';
 
-import AICoach from './pages/AICoach';
-import ChatRoom from './pages/ChatRoom';
+import { AICoach } from './pages/AICoach';
+import { ChatRoom } from './pages/ChatRoom';
 
-import AnotherUserModal from './components/Community/AnotherUserModal'; // AnotherUserModal 개발 후 삭제 예정
-import CommunityPostCreate from './pages/Community/CommunityPostCreate';
-import CommunityPostDetail from './pages/Community/CommunityPostDetail';
-import CommunityPostEdit from './pages/Community/CommunityPostEdit';
-import CommunityPostList from './pages/Community/CommunityPostList';
+import { AnotherUserModal } from './components/Community/AnotherUserModal'; // AnotherUserModal 개발 후 삭제 예정
+import { CommunityPostCreate } from './pages/Community/CommunityPostCreate';
+import { CommunityPostDetail } from './pages/Community/CommunityPostDetail';
+import { CommunityPostEdit } from './pages/Community/CommunityPostEdit';
+import { CommunityPostList } from './pages/Community/CommunityPostList';
 
 import { LifeGraphDetail } from './pages/LifeGraph/LifeGraphDetail';
 import LifeGraphList from './pages/LifeGraph/LifeGraphList';
@@ -50,7 +50,7 @@ const App: React.FC = () => {
           <Route index element={<MainPage />} />
 
           {/* 홈페이지 */}
-          <Route path='home' element={<HomePage />} />
+          <Route path='HomePage' element={<HomePage />} />
 
           {/* 커뮤니티 관련 라우트 */}
           <Route path='community'>
