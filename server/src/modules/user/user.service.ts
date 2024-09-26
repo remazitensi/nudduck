@@ -15,10 +15,10 @@
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
  * 2024.09.24    이승철      Modified    가입일 반환
  * 2024.09.24    이승철      Modified    인생그래프 조회 인자 순서변경
+ * 2024.09.27    이승철      Modified    프로필 조회 병렬처리
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
-import { LifeGraphRepository } from '@_modules/life-graph/life-graph.repository';
 import { MyProfileDto } from '@_modules/user/dto/my-profile.dto';
 import { UpdateProfileDto } from '@_modules/user/dto/update-profile.dto';
 import { UserHashtag } from '@_modules/user/entity/hashtag.entity';
@@ -33,7 +33,6 @@ import { CommunitySummaryDto } from './dto/community-summary.dto';
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly lifeGraphRepository: LifeGraphRepository,
     private readonly fileUploadService: FileUploadService,
     private readonly dataSource: DataSource,
   ) {}
@@ -42,28 +41,27 @@ export class UserService {
     userId: number,
     myPaginationQueryDto: MyPaginationQueryDto
   ): Promise<MyProfileDto> {
-    const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph', 'hashtags']);
+    const { page, limit } = myPaginationQueryDto;
+    const actualPage = Math.max(page, 1);
+
+    const [user, totalCount, posts, favoriteLifeGraph] = await Promise.all([
+      this.userRepository.findUserById(userId, ['favoriteLifeGraph', 'hashtags']),
+      this.userRepository.countMyPosts(userId),
+      this.userRepository.findMyPosts(userId, actualPage, limit),
+      (async () => {
+        const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph']);
+        if (user?.favoriteLifeGraph) {
+          return this.userRepository.findFavoriteLifeGraph(user.id, user.favoriteLifeGraph.id, ['events']);
+        }
+        return null;
+      })(),
+    ]);
+  
     if (!user) {
       throw new NotFoundException('회원을 찾을 수 없습니다.');
     }
   
     const hashtags = user.hashtags.map((hashtag) => hashtag.name);
-  
-    const favoriteLifeGraph = user.favoriteLifeGraph
-      ? await this.lifeGraphRepository.findOneLifeGraph(user.id, user.favoriteLifeGraph.id, {
-          relations: ['events'],
-        })
-      : null;
-  
-    const { page, limit } = myPaginationQueryDto;
-    const actualPage = Math.max(page, 1);
-    const totalCount = await this.userRepository.countMyPosts(userId);
-    const totalPages = Math.ceil(totalCount / limit);
-
-    const finalPage = totalPages === 0 ? 1 : Math.min(actualPage, totalPages);
-  
-    const posts = await this.userRepository.findMyPosts(userId, finalPage, limit);
-  
     const postSummaries = posts.map((post) => new CommunitySummaryDto(post));
   
     const profile: MyProfileDto = {

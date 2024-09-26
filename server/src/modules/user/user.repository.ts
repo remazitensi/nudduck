@@ -10,10 +10,12 @@
  * 2024.09.16    이승철      Modified    해시태그 중복체크 및 맵핑, bulk insert 반영
  * 2024.09.24    이승철      Modified    나의 게시글, 카운트 추가
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
+ * 2024.09.27    이승철      Modified    즐겨찾기 설정한 인생그래프 메서드 추가
  */
 
 import { UserDto } from '@_modules/auth/dto/user.dto';
 import { Community } from '@_modules/community/entities/community.entity';
+import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { UserHashtag } from '@_modules/user/entity/hashtag.entity';
 import { User } from '@_modules/user/entity/user.entity';
 import { Injectable } from '@nestjs/common';
@@ -29,6 +31,8 @@ export class UserRepository {
     private readonly userHashtagRepository: Repository<UserHashtag>,
     @InjectRepository(Community)
     private readonly communityRepository: Repository<Community>,
+    @InjectRepository(LifeGraph)
+    private readonly lifeGraphRepository: Repository<LifeGraph>,
   ) {}
 
   // Provider로 사용자 찾기 (소셜 로그인용)
@@ -53,6 +57,14 @@ export class UserRepository {
   async countMyPosts(userId: number): Promise<number> {
     return this.communityRepository.count({
       where: { user: { id: userId } },
+    });
+  }
+
+  // 즐겨찾기 인생 그래프 찾기
+  async findFavoriteLifeGraph(userId: number, graphId: number, relations?: string[]): Promise<LifeGraph | null> {
+    return this.lifeGraphRepository.findOne({
+      where: { id: graphId, user: { id: userId } },
+      relations: relations || [],
     });
   }
 
