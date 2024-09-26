@@ -9,7 +9,7 @@
  * 2024.09.21    황솜귤      Modified    홈페이지 레이아웃 구성
  * 2024.09.22    황솜귤      Modified    스타일 시트 수정 및
  * 2024.09.24    황솜귤      Modified    명언/영문장 데이터 추가
- * 2024.09.25    황솜귤      Modified    명언/영문잔 전환 로직 추가
+ * 2024.09.25    황솜귤      Modified    명언/영문장 전환 로직 추가
  */
 
 import { useEffect, useState } from 'react';
@@ -64,7 +64,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchQuotesAndSentences = async () => {
       try {
-        const response = await baseApi.get('/schedule/quotes-and-sentences');
+        const response = await baseApi.get('/api/schedule/quotes-and-sentences');
         if (response.status === 200) {
           const { quotes, englishSentences } = response.data;
           setQuote(quotes[0]);
