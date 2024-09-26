@@ -14,23 +14,20 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getInterviewPostList, getMeetingPostList, getPostList, getStudyPostList, getTalkPostList } from '../../apis/community/community-post-api';
 import { PostList } from '../../components/Community/PostList';
-import { PostListParams, PostListRes } from '../../types/community-type';
+import { Post, PostListParams } from '../../types/community-type';
 
 const CommunityPostList: React.FC = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<PostListRes>({
-    totalItems: 0,
-    currentPage: 1,
-    totalPages: 1,
-    community: [],
-  });
+  const [posts, setPosts] = useState<Post[]>([]); // 게시글 리스트
+  const [totalPostCount, setTotalPostCount] = useState<number>(1); // 전체 게시글 수
+  const [pages, setPages] = useState<{ currentPage: number; totalPage: number }>({ currentPage: 1, totalPage: 1 });
 
-  const [sort, setSort] = useState('createdAt:desc'); // 최신순, 조회순 관리
+  // const [sort, setSort] = useState('createdAt:desc'); // 최신순, 조회순 관리
   const [selectedCategory, setSelectedCategory] = useState('전체'); // 카테고리 상태
 
   // 카테고리에 따라 적절한 fetch 함수 호출
   const fetchPosts = async () => {
-    const params: PostListParams = { page: posts.currentPage, sort: sort };
+    const params: PostListParams = { page: pages.currentPage };
     let data;
 
     switch (selectedCategory) {
@@ -47,34 +44,42 @@ const CommunityPostList: React.FC = () => {
         data = await getTalkPostList(params);
         break;
       default:
-        // data = testPostList; // 전체 카테고리 게시물은 테스트 데이터 사용
         data = await getPostList(params);
     }
-
-    setPosts(data);
+    setPosts(data[0]);
+    setTotalPostCount(data[1]);
   };
+
+  // totalPostCount가 변경되면 totalPage 재계산
+  useEffect(() => {
+    setPages((pages) => ({
+      ...pages,
+      totalPage: Math.ceil(totalPostCount / 10), // 페이지당 10개 게시물
+    }));
+  }, [totalPostCount]);
 
   // 페이지 로드 시 및 sort,selectedCategory 변경 시 fetchPosts 호출
   useEffect(() => {
-    // console.log('Fetching posts with sort:', sort);
     fetchPosts();
-  }, [sort, selectedCategory]);
-
-  // 페이지가 처음 로드될 때 fetchPosts 실행
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+    console.log(posts);
+  }, [selectedCategory, pages.currentPage]);
 
   // 페이지네이션 현재 페이지 설정
   const handleCurrentPage = (newCurrentPage: number) => {
-    setPosts((posts) => ({ ...posts, currentPage: newCurrentPage })); // posts의 currentPage 상태 업데이트
+    setPages((pages) => ({ ...pages, currentPage: newCurrentPage })); // posts의 currentPage 상태 업데이트
   };
 
   // 카테고리 선택 후 페이지 리셋
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    setPosts((posts) => ({ ...posts, currentPage: 1 }));
+    setPages((pages) => ({ ...pages, currentPage: 1 }));
   };
+
+  // 정렬 선택 후 페이지 리셋
+  // const handleSortChange = (sort: string) => {
+  //   setSort(sort);
+  //   setPosts((posts) => ({ ...posts, currentPage: 1 }));
+  // };
 
   return (
     <div className='community-titles flex flex-col items-center'>
@@ -125,18 +130,19 @@ const CommunityPostList: React.FC = () => {
               <button className='h-[46px] w-[180px] rounded-[10px] bg-[#909700] text-[20px] font-bold text-white'>게시글 작성</button>
             </Link>
           </div>
-          <div className='flex items-center gap-[10px] text-[18px]'>
+          {/* 정렬 전부 주석 */}
+          {/* <div className='flex items-center gap-[10px] text-[18px]'>
             <button
               className={`text-[${sort === 'createdAt:desc' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
-                setSort('createdAt:desc');
+                handleSortChange('createdAt:desc');
               }}
             >
               최신순
             </button>
-            <div>|</div>
-            {/* 인기순 삭제 */}
-            {/* <button
+            <div>|</div> */}
+          {/* 인기순 삭제 */}
+          {/* <button
               className={`text-[${sort === 'popular' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
                 // console.log('Sort changed to popular');
@@ -146,35 +152,35 @@ const CommunityPostList: React.FC = () => {
               인기순
             </button>
             <div>|</div> */}
-            <button
+          {/* <button
               className={`text-[${sort === 'viewCount:desc' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
-                setSort('viewCount:desc');
+                handleSortChange('viewCount:desc');
               }}
             >
               조회순
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className='w-[700px]'>
           <div className='mb-[30px] flex flex-col'>
             <div className='mt-[10px] w-full border-b-2 border-[8D8B67]'></div>
             {/* 게시물 목록 컴포넌트 */}
-            <PostList posts={posts.community} />
+            <PostList posts={posts} />
 
             {/* 페이지네이션 컴포넌트 */}
-            <div className='pagination-controls mt-4 flex flex-col items-center'>
+            <div className='pagination-controls mt-10 flex flex-col items-center'>
               <div className='flex space-x-2'>
-                <button onClick={() => handleCurrentPage(posts.currentPage - 1)} disabled={posts.currentPage === 1}>
+                <button onClick={() => handleCurrentPage(pages.currentPage - 1)} disabled={pages.currentPage === 1}>
                   이전
                 </button>
-                {Array.from({ length: posts.totalPages }, (_, index) => (
-                  <button key={index + 1} onClick={() => handleCurrentPage(index + 1)} disabled={index + 1 === posts.currentPage} className={`${index + 1 === posts.currentPage ? 'font-bold' : ''}`}>
+                {Array.from({ length: pages.totalPage }, (_, index) => (
+                  <button key={index + 1} onClick={() => handleCurrentPage(index + 1)} disabled={index + 1 === pages.currentPage} className={`${index + 1 === pages.currentPage ? 'font-bold' : ''}`}>
                     {index + 1}
                   </button>
                 ))}
-                <button onClick={() => handleCurrentPage(posts.currentPage + 1)} disabled={posts.currentPage === posts.totalPages}>
+                <button onClick={() => handleCurrentPage(pages.currentPage + 1)} disabled={pages.currentPage === pages.totalPage}>
                   다음
                 </button>
               </div>

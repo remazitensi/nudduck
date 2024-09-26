@@ -30,28 +30,33 @@ export const PostSection: React.FC<PostSectionProps> = ({ data }) => {
     <div className='mt-[15px] border-b-2 border-[8D8B67]'>
       <div className='flex w-full items-center gap-[70px]'>
         <CategoryBtn category={data.category} />
-        <div className='w-full cursor-pointer text-[20px] hover:font-bold' onClick={handleRoute}>
+        <div className='cursor-pointer text-[20px] hover:font-bold' onClick={handleRoute}>
           {data.title}
+        </div>
+        <div className='ml-auto'>
+          <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
+            <div className='h-[28px] w-[28px] rounded-full'>
+              <img className='rounded-full object-cover' src={data.imageUrl ? data.imageUrl : '/default-img.png'} alt='profile_Img' />
+            </div>
+            <div>{data.nickname}</div>
+          </div>
         </div>
       </div>
 
-      {/* img와 nickname을 감싸는 div태그에 onClick */}
-      <div className='mb-[5px] flex items-center justify-end gap-[5px]'>
-        <img src='/clover-image.png' alt='cloverImg' />
-        <div>{data.nickname}</div>
-      </div>
-      {/* ----------------- */}
-
       <div className='flex justify-end text-[16px]'>
-        <div className='flex'>
-          <div className='text-[#AEAC9A]'>
-            조회수<span className='text-[#A1DFFF]'>{data.viewCount}</span>
+        <div className='flex items-center'>
+          <div className='flex items-center text-[#AEAC9A]'>
+            조회수
+            <span className='min-w-[40px] text-right text-[#A1DFFF]'>{data.viewCount}</span>
           </div>
           {/* 좋아요 삭제 */}
           {/* <div className='ml-[30px] text-[#AEAC9A]'>
-            좋아요 <span className='text-[#FFC5C3]'>{data.likes_count}</span>
-          </div> */}
-          <div className='ml-[320px] text-[#AEAC9A]'>작성일 {data.createdAt.substring(0, 10)}</div> {/*175px은 아래위 정렬 1:1대화방 때문에 진행함*/}
+      좋아요 <span className='text-[#FFC5C3]'>{data.likes_count}</span>
+    </div> */}
+          <div className='ml-[20px] text-[#AEAC9A]'>
+            작성일
+            <span className='min-w-[100px] text-right'>{data.createdAt.substring(0, 10)}</span>
+          </div>
         </div>
       </div>
     </div>
