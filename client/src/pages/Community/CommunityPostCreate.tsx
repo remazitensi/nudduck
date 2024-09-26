@@ -14,7 +14,7 @@ import React, { useRef, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import { useNavigate } from 'react-router-dom';
-import { createPost } from '../apis/community/community-post-api';
+import { createPost } from '../../apis/community/community-post-api';
 
 const CommunityPostCreate: React.FC = () => {
   const navigate = useNavigate();

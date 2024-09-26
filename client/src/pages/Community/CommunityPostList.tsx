@@ -12,9 +12,9 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getInterviewPostList, getMeetingPostList, getPostList, getStudyPostList, getTalkPostList } from '../apis/community/community-post-api';
-import { PostList } from '../components/Community/PostList';
-import { PostListParams, PostListRes } from '../types/community-type';
+import { getInterviewPostList, getMeetingPostList, getPostList, getStudyPostList, getTalkPostList } from '../../apis/community/community-post-api';
+import { PostList } from '../../components/Community/PostList';
+import { PostListParams, PostListRes } from '../../types/community-type';
 
 const CommunityPostList: React.FC = () => {
   const navigate = useNavigate();

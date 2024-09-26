@@ -11,10 +11,10 @@
  */
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { api, baseApi } from '../apis/base-api';
-import { getPostDetail } from '../apis/community/community-post-api';
-import { CategoryBtn } from '../components/Community/CategoryBtn';
-import { PostDetailData } from '../types/community-type';
+import { api, baseApi } from '../../apis/base-api';
+import { getPostDetail } from '../../apis/community/community-post-api';
+import { CategoryBtn } from '../../components/Community/CategoryBtn';
+import { PostDetailData } from '../../types/community-type';
 
 const CommunityPostDetail: React.FC = () => {
   const { id } = useParams(); // URL 파라미터에서 id 가져오기, 구조분해할당
