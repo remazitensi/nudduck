@@ -11,6 +11,7 @@
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsPositive, Min } from 'class-validator';
 
 export class PaginationQueryDto {
@@ -21,6 +22,7 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsInt()
   @IsPositive()
+  @Type(() => Number) // 문자열을 숫자로 변환
   page: number = 1; // 기본값 1로 설정
 
   @ApiPropertyOptional({
@@ -30,6 +32,7 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsInt()
   @IsPositive()
+  @Type(() => Number) // 문자열을 숫자로 변환
   pageSize: number = 10; // 기본값 10으로 설정
 
   @ApiPropertyOptional({
@@ -46,6 +49,7 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsInt()
   @IsPositive()
+  @Type(() => Number) // 문자열을 숫자로 변환
   limit: number = 10; // 기본값 10으로 설정
 
   @ApiPropertyOptional({
@@ -55,5 +59,6 @@ export class PaginationQueryDto {
   @IsOptional()
   @IsInt()
   @Min(0)
+  @Type(() => Number) // 문자열을 숫자로 변환
   offset: number = 0; // 기본값 0으로 설정
 }
