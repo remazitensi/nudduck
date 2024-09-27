@@ -243,3 +243,27 @@ export async function getUserProfile(userId: number) {
     throw error;
   }
 }
+
+// 면접 카테고리 게시글 목록 조회
+export async function getPostList2({ page = 1, sort = 'sort=createdAt:desc', type }: PostListParams) {
+  const url = `${api.community}/${type}`;
+  try {
+    const response = await baseApi.get(url, {
+      params: {
+        page: Number(page),
+        pageSize: Number(10),
+        sort: sort,
+      },
+    });
+    console.log(response);
+    return response.data; // 성공 시 data 반환
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      const errorMessage = (error.response?.data as { message: string })?.message;
+      console.error('Failed to fetch posts:', errorMessage);
+    } else {
+      console.error('알 수 없는 에러가 발생했습니다.');
+    }
+    throw error;
+  }
+}

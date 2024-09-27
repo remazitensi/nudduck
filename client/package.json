@@ -10,11 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@toast-ui/editor": "^3.2.2",
-=======
->>>>>>> feature
-    "@toast-ui/react-editor": "^3.2.3",
     "@types/react-router-dom": "^5.3.3",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",

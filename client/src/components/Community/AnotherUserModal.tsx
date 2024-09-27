@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * File Name    : AnotherUserModal.tsx
  * Description  : 다른 유저 정보 조회
@@ -121,8 +120,3 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
 };
 
 export default AnotherUserModal;
-=======
-export const AnotherUserModal = () => {
-  return <div>AnotherUserModal</div>;
-};
->>>>>>> feature

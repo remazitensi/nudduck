@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * File Name    : CommunityPostList.tsx
  * Description  : Community 페이지, 게시글 랜더 기능
@@ -13,7 +12,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getInterviewPostList, getMeetingPostList, getPostList, getStudyPostList, getTalkPostList } from '../../apis/community/community-post-api';
+import { getPostList2 } from '../../apis/community/community-post-api';
 import { PostList } from '../../components/Community/PostList';
 import { Post, PostListParams } from '../../types/community-type';
 
@@ -25,30 +24,33 @@ const CommunityPostList: React.FC = () => {
   const [sort, setSort] = useState<string>('createdAt:desc');
 
   // const [sort, setSort] = useState('createdAt:desc'); // 최신순, 조회순 관리
-  const [selectedCategory, setSelectedCategory] = useState('전체'); // 카테고리 상태
+  const [selectedCategory, setSelectedCategory] = useState(); // 카테고리 상태
 
   // 카테고리에 따라 적절한 fetch 함수 호출
   const fetchPosts = async () => {
-    const params: PostListParams = { page: pages.currentPage, sort: sort };
+    const params: PostListParams = { page: pages.currentPage, sort };
     console.log(params);
-    let data;
+    // let data;
 
-    switch (selectedCategory) {
-      case '면접':
-        data = await getInterviewPostList(params);
-        break;
-      case '모임':
-        data = await getMeetingPostList(params);
-        break;
-      case '스터디':
-        data = await getStudyPostList(params);
-        break;
-      case '잡담':
-        data = await getTalkPostList(params);
-        break;
-      default:
-        data = await getPostList(params);
-    }
+    // switch (selectedCategory) {
+    //   case '면접':
+    //     data = await getInterviewPostList(params);
+    //     break;
+    //   case '모임':
+    //     data = await getMeetingPostList(params);
+    //     break;
+    //   case '스터디':
+    //     data = await getStudyPostList(params);
+    //     break;
+    //   case '잡담':
+    //     data = await getTalkPostList(params);
+    //     break;
+    //   default:
+    //     data = await getPostList(params);
+    // }
+    console.log('sort', sort);
+    const data = await getPostList2({ ...params, type: selectedCategory || '' });
+    console.log('data', data);
     setPosts(data[0]);
     setTotalPostCount(data[1]);
   };
@@ -65,7 +67,7 @@ const CommunityPostList: React.FC = () => {
   useEffect(() => {
     fetchPosts();
     console.log('useEffect save posts :', posts);
-  }, [selectedCategory, pages.currentPage]);
+  }, [selectedCategory, sort, pages.currentPage]);
 
   // 페이지네이션 현재 페이지 설정
   const handleCurrentPage = (newCurrentPage: number) => {
@@ -80,10 +82,10 @@ const CommunityPostList: React.FC = () => {
 
   // 정렬 선택 후 페이지 리셋
   const handleSortChange = (sort: string) => {
+    setPages({ currentPage: 1, totalPage: 1 });
     setSort(sort);
-    setPosts((pages) => ({ ...pages, currentPage: 1 }));
   };
-
+  console.log('posts', posts);
   return (
     <div className='community-titles flex flex-col items-center'>
       <div className='mt-[140px] cursor-pointer' onClick={() => navigate('/community')}>
@@ -195,8 +197,3 @@ const CommunityPostList: React.FC = () => {
 };
 
 export default CommunityPostList;
-=======
-export const CommunityPostList = () => {
-  return <div>CommunityPostList</div>;
-};
->>>>>>> feature

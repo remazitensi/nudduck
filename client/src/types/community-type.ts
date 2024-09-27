@@ -10,7 +10,7 @@
  * 2024.09.19    김민지      Modified    PostTitleData, PostDetailData 명시
  */
 
-export type PostListParams = { category?: string; page: number; sort: string };
+export type PostListParams = { category?: string; page: number; sort: string; type?: string };
 
 export type PostDetailParams = { category?: string; id: string };
 

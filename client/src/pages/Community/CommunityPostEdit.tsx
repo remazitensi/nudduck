@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * File Name    : CommunityPostEdit.tsx
  * Description  : 커뮤니티 게시글 작성 페이지
@@ -10,8 +9,8 @@
  */
 import React, { useRef, useState } from 'react';
 
-import '@toast-ui/editor/dist/toastui-editor.css';
-import { Editor } from '@toast-ui/react-editor';
+// import '@toast-ui/editor/dist/toastui-editor.css';
+// import { Editor } from '@toast-ui/react-editor';
 import { useNavigate } from 'react-router-dom';
 import { createPost } from '../../apis/community/community-post-api';
 
@@ -128,7 +127,7 @@ const CommunityPostEdit: React.FC = () => {
       </div>
       <div className='mt-[40px] h-[800px] w-[1300px] border'>
         <div className='mx-auto mt-[37px] h-[600px] w-[1200px]'>
-          <Editor
+          {/* <Editor
             // weight='100%'
             ref={editorRef}
             height='100%'
@@ -136,7 +135,7 @@ const CommunityPostEdit: React.FC = () => {
             previewStyle='vertical'
             initialValue=' '
             toolbarItems={toolbarItems}
-          />
+          /> */}
           <div className='mt-[80px] flex justify-end gap-[23px]'>
             <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
               취소
@@ -152,8 +151,3 @@ const CommunityPostEdit: React.FC = () => {
 };
 
 export default CommunityPostEdit;
-=======
-export const CommunityPostEdit = () => {
-  return <div>CommunityPostEdit</div>;
-};
->>>>>>> feature
