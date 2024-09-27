@@ -13,29 +13,32 @@ export class CommunityRepository extends Repository<Community> {
     super(Community, dataSource.createEntityManager());
   }
 
-  private buildPaginationQuery(paginationQuery: PaginationQueryDto) {
+  // 커뮤니티 페이징 쿼리 빌드 함수
+  private buildCommunityPaginationQuery(paginationQuery: PaginationQueryDto) {
     const page = paginationQuery.page || 1;
     const pageSize = paginationQuery.pageSize || 10;
-    const sort = paginationQuery.sort || 'createdAt:DESC';
-    const take = pageSize;
-    const skip = (page - 1) * pageSize;
+    const sort = paginationQuery.sort || 'createdAt:desc'; // 기본값 설정
 
+    // 정렬 필드와 순서를 추출
     const [sortField, sortOrder] = sort.split(':');
     const validSortFields = ['createdAt', 'viewCount'];
-    const validSortOrders = ['ASC', 'DESC'];
+    const validSortOrders = ['asc', 'desc'];
 
+    // 유효성 검사
     if (!validSortFields.includes(sortField)) {
-      throw new HttpException('유효하지 않은 정렬 필드입니다.', HttpStatus.BAD_REQUEST);
+      throw new HttpException(`유효하지 않은 정렬 필드입니다: ${sortField}`, HttpStatus.BAD_REQUEST);
     }
-    if (!validSortOrders.includes(sortOrder)) {
-      throw new HttpException('유효하지 않은 정렬 순서입니다.', HttpStatus.BAD_REQUEST);
+    if (!validSortOrders.includes(sortOrder.toLowerCase())) {
+      throw new HttpException(`유효하지 않은 정렬 순서입니다: ${sortOrder}`, HttpStatus.BAD_REQUEST);
     }
 
-    return { take, skip, sortField, sortOrder };
+    const skip = (page - 1) * pageSize;
+    return { take: pageSize, skip, sortField, sortOrder: sortOrder.toUpperCase() };
   }
 
+  // 전체 게시글 조회 함수
   async findAll(paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
-    const { take, skip, sortField, sortOrder } = this.buildPaginationQuery(paginationQuery);
+    const { take, skip, sortField, sortOrder } = this.buildCommunityPaginationQuery(paginationQuery);
 
     try {
       const [posts, total] = await this.createQueryBuilder('community')
@@ -54,19 +57,19 @@ export class CommunityRepository extends Repository<Community> {
     }
   }
 
+  // 카테고리별 게시글 조회 함수
   async findByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
-    const { take, skip, sortField, sortOrder } = this.buildPaginationQuery(paginationQuery);
+    const { take, skip, sortField, sortOrder } = this.buildCommunityPaginationQuery(paginationQuery);
 
     try {
-      const queryBuilder = this.createQueryBuilder('community')
+      const [posts, total] = await this.createQueryBuilder('community')
         .leftJoinAndSelect('community.user', 'user')
         .where('community.category = :category', { category })
         .select(['community.postId', 'community.title', 'community.viewCount', 'community.createdAt', 'community.category', 'user.id', 'user.nickname', 'user.imageUrl'])
-        .orderBy(`community.${sortField}`, sortOrder as 'ASC' | 'DESC')
+        .orderBy(`community.${sortField}`, sortOrder as 'ASC' | 'DESC') // sortOrder를 타입으로 변환
         .take(take)
-        .skip(skip);
-
-      const [posts, total] = await queryBuilder.getManyAndCount();
+        .skip(skip)
+        .getManyAndCount();
 
       const postsDto = posts.map((post) => new CommunityResponseDto(post));
 

@@ -27,6 +27,7 @@ export class CommunityController {
   @ApiOperation({ summary: '게시글 목록 조회 (페이지네이션)' })
   @ApiQuery({ name: 'page', required: false, description: '페이지 번호', type: Number })
   @ApiQuery({ name: 'pageSize', required: false, description: '페이지 당 게시글 수', type: Number })
+  @ApiQuery({ name: 'sort', required: false, description: '정렬 기준 (예: createdAt:desc)', type: String }) // sort 추가
   @ApiResponse({ status: 200, description: '게시글 목록을 성공적으로 조회했습니다.', type: [CommunityResponseDto] })
   async findAll(@Query() paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
     return await this.communityService.findAll(paginationQuery);
@@ -38,12 +39,13 @@ export class CommunityController {
   @ApiParam({ name: 'category', required: true, description: '카테고리 이름', enum: Category })
   @ApiQuery({ name: 'page', required: false, description: '페이지 번호', type: Number })
   @ApiQuery({ name: 'pageSize', required: false, description: '페이지 당 게시글 수', type: Number })
+  @ApiQuery({ name: 'sort', required: false, description: '정렬 기준 (예: createdAt:desc)', type: String }) // sort 추가
   @ApiResponse({ status: 200, description: '카테고리별 게시글 목록을 성공적으로 조회했습니다.', type: [CommunityResponseDto] })
-  @ApiResponse({ status: 404, description: '유효하지 않은 카테고리입니다.' }) // 추가된 부분
+  @ApiResponse({ status: 404, description: '유효하지 않은 카테고리입니다.' })
   async findByCategory(@Param('category') category: Category, @Query() paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
     // 카테고리 유효성 검사
     if (!Object.values(Category).includes(category)) {
-      throw new NotFoundException('유효하지 않은 카테고리입니다.'); // 유효하지 않은 카테고리일 경우 예외 발생
+      throw new NotFoundException('유효하지 않은 카테고리입니다.');
     }
     return await this.communityService.findByCategory(category, paginationQuery);
   }
@@ -175,20 +177,36 @@ export class CommunityController {
     return await this.communityService.deleteReply(commentId, userId);
   }
 
-  // 댓글 목록 조회 (무한 스크롤)
-  @Get('article/:postId/comments')
-  @ApiOperation({ summary: '댓글 목록 조회 (무한 스크롤)' })
+  // 상위 댓글 조회 (페이징 지원)
+  @Get('article/:postId/comments/root')
+  @ApiOperation({ summary: '상위 댓글 조회 (페이징 지원)' })
   @ApiParam({ name: 'postId', required: true, description: '게시글 ID' })
   @ApiQuery({ name: 'offset', required: true, description: '시작 인덱스', type: Number })
   @ApiQuery({ name: 'limit', required: true, description: '가져올 댓글 수', type: Number })
-  @ApiResponse({ status: 200, description: '댓글 목록을 성공적으로 조회했습니다.', type: [CommentResponseDto] })
-  @ApiResponse({ status: 404, description: '댓글을 찾을 수 없습니다.' })
-  async getComments(@Param('postId') postId: number, @Query() paginationQuery: PaginationQueryDto): Promise<CommentResponseDto[]> {
-    const comments = await this.communityService.getCommentsWithReplies(postId, paginationQuery);
-    if (!comments.comments.length) {
-      throw new NotFoundException('댓글을 찾을 수 없습니다.');
+  @ApiResponse({ status: 200, description: '상위 댓글 목록을 성공적으로 조회했습니다.', type: [CommentResponseDto] })
+  @ApiResponse({ status: 404, description: '상위 댓글을 찾을 수 없습니다.' })
+  async getRootComments(@Param('postId') postId: number, @Query() paginationQuery: PaginationQueryDto): Promise<{ comments: CommentResponseDto[]; total: number }> {
+    const [comments, total] = await this.communityService.getParentComments(postId, paginationQuery);
+    if (!comments.length) {
+      throw new NotFoundException('상위 댓글을 찾을 수 없습니다.');
     }
-    return comments.comments;
+    return { comments, total };
+  }
+
+  // 대댓글 조회 (페이징 지원)
+  @Get('comments/:commentId/replies')
+  @ApiOperation({ summary: '대댓글 조회 (페이징 지원)' })
+  @ApiParam({ name: 'commentId', required: true, description: '상위 댓글 ID' })
+  @ApiQuery({ name: 'offset', required: true, description: '시작 인덱스', type: Number })
+  @ApiQuery({ name: 'limit', required: true, description: '가져올 대댓글 수', type: Number })
+  @ApiResponse({ status: 200, description: '대댓글 목록을 성공적으로 조회했습니다.', type: [CommentResponseDto] })
+  @ApiResponse({ status: 404, description: '대댓글을 찾을 수 없습니다.' })
+  async getReplies(@Param('commentId') commentId: number, @Query() paginationQuery: PaginationQueryDto): Promise<{ replies: CommentResponseDto[]; total: number }> {
+    const [replies, total] = await this.communityService.getReplies(commentId, paginationQuery);
+    if (!replies.length) {
+      throw new NotFoundException('대댓글을 찾을 수 없습니다.');
+    }
+    return { replies, total };
   }
 
   // 게시글 조회수 증가
