@@ -12,6 +12,7 @@
  * 2024.09.22    김재영      Modified    대댓글 수정 및 삭제 메소드 추가
  * 2024.09.22    김재영      Modified    replyCount 로직을 조회 시 계산하도록 변경
  * 2024.09.22    김재영      Modified    무한 스크롤 지원
+ * 2024.09.27    김재영      Modified    sort 버그 수정
  */
 
 import { CreateCommentDto } from '@_modules/community/dto/request/create-comment.dto';
@@ -106,24 +107,22 @@ export class CommentRepository extends Repository<Comment> {
   async deleteReply(replyId: number): Promise<void> {
     await this.deleteComment(replyId);
   }
-
-  // 댓글 및 대댓글 조회 (페이징 지원)
-  async getCommentsWithReplies(postId: number, paginationQuery: PaginationQueryDto): Promise<{ comments: CommentResponseDto[]; total: number }> {
-    const { limit, offset, sortField, sortOrder } = this.buildPaginationQuery(paginationQuery);
+  // 부모 댓글 조회 (페이징 지원)
+  async getParentComments(postId: number, paginationQuery: PaginationQueryDto): Promise<{ comments: CommentResponseDto[]; total: number }> {
+    const { limit, offset } = this.buildCommentPaginationQuery(paginationQuery);
 
     try {
       // 부모 댓글만 조회하고, 대댓글 수를 포함한 쿼리
       const [comments, total] = await this.createQueryBuilder('comment')
         .where('comment.postId = :postId', { postId })
-        .andWhere('comment.parentId IS NULL') // 부모 댓글만 조회
+        .andWhere('comment.parentId IS NULL')
         .leftJoinAndSelect('comment.user', 'user')
-        .addSelect('(SELECT COUNT(*) FROM comment AS child WHERE child.parentId = comment.id) AS replyCount') // 대댓글 수 계산
-        .orderBy(`comment.${sortField}`, sortOrder.toUpperCase() as 'ASC' | 'DESC')
+        .addSelect('(SELECT COUNT(*) FROM comment AS child WHERE child.parentId = comment.id) AS replyCount')
+        .orderBy('comment.createdAt', 'ASC')
         .skip(offset)
         .take(limit)
         .getManyAndCount();
 
-      // CommentResponseDto 생성
       const commentDtos = comments.map((comment) => new CommentResponseDto(comment));
 
       return { comments: commentDtos, total };
@@ -132,23 +131,33 @@ export class CommentRepository extends Repository<Comment> {
     }
   }
 
-  private buildPaginationQuery(paginationQuery: PaginationQueryDto) {
+  // 대댓글 조회 (페이징 지원)
+  async getReplies(parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<{ replies: CommentResponseDto[]; total: number }> {
+    const { limit, offset } = this.buildCommentPaginationQuery(paginationQuery);
+
+    try {
+      const [replies, total] = await this.createQueryBuilder('comment')
+        .where('comment.parentId = :parentCommentId', { parentCommentId })
+        .leftJoinAndSelect('comment.user', 'user')
+        .orderBy('comment.createdAt', 'ASC') // 정렬을 오래된 순으로 고정
+        .skip(offset)
+        .take(limit)
+        .getManyAndCount();
+
+      const replyDtos = replies.map((reply) => new CommentResponseDto(reply));
+
+      return { replies: replyDtos, total };
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // 댓글 페이징 쿼리 빌드 함수
+  private buildCommentPaginationQuery(paginationQuery: PaginationQueryDto) {
     const limit = paginationQuery.limit || 10;
     const offset = paginationQuery.offset || 0;
-    const sort = paginationQuery.sort || 'createdAt:desc';
 
-    const [sortField, sortOrder] = sort.split(':');
-    const validSortFields = ['createdAt', 'updatedAt'];
-    const validSortOrders = ['asc', 'desc'];
-
-    if (!validSortFields.includes(sortField)) {
-      throw new HttpException('유효하지 않은 정렬 필드입니다.', HttpStatus.BAD_REQUEST);
-    }
-    if (!validSortOrders.includes(sortOrder.toLowerCase())) {
-      throw new HttpException('유효하지 않은 정렬 순서입니다.', HttpStatus.BAD_REQUEST);
-    }
-
-    return { limit, offset, sortField, sortOrder };
+    return { limit, offset }; // 정렬 필드는 고정되어 있으므로 반환하지 않음
   }
 
   private handleError(error: unknown): void {

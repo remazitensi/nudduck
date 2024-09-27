@@ -23,7 +23,6 @@ import { CreateCommunityDto } from '@_modules/community/dto/request/create-commu
 import { PaginationQueryDto } from '@_modules/community/dto/request/pagination-query.dto';
 import { UpdateCommentDto } from '@_modules/community/dto/request/update-comment.dto';
 import { UpdateCommunityDto } from '@_modules/community/dto/request/update-community.dto';
-import { CommentResponseDto } from '@_modules/community/dto/response/comment-response.dto';
 import { CommunityResponseDto } from '@_modules/community/dto/response/community-response.dto';
 import { Comment } from '@_modules/community/entities/comment.entity';
 import { Community } from '@_modules/community/entities/community.entity';
@@ -31,6 +30,7 @@ import { CommentRepository } from '@_modules/community/repositories/comment.repo
 import { CommunityRepository } from '@_modules/community/repositories/community.repository';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { CommentResponseDto } from './dto/response/comment-response.dto';
 import { Category } from './enums/category.enum';
 
 @Injectable()
@@ -124,16 +124,18 @@ export class CommunityService {
     await this.commentRepository.deleteReply(replyId);
   }
 
- // 댓글 및 대댓글 조회 (페이징 지원)
- async getCommentsWithReplies(
-  postId: number,
-  paginationQuery: PaginationQueryDto,
-): Promise<{ comments: CommentResponseDto[]; total: number }> {
-  const { comments, total } = await this.commentRepository.getCommentsWithReplies(
-    postId,
-    paginationQuery,
-  );
-  return { comments, total };
+// 부모 댓글 조회 (페이징 지원)
+async getParentComments(postId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
+  const { comments, total } = await this.commentRepository.getParentComments(postId, paginationQuery);
+
+  return [comments, total];
+}
+
+// 대댓글 조회 (페이징 지원)
+async getReplies(parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
+  const { replies, total } = await this.commentRepository.getReplies(parentCommentId, paginationQuery);
+
+  return [replies, total];
 }
 
   // 댓글 ID로 찾기
