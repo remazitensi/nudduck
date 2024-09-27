@@ -24,7 +24,7 @@ function isAxiosError(error: unknown): error is AxiosError {
 }
 
 // 전체 게시글 목록 get 요청
-export async function getPostList({ page = 1 }: PostListParams) {
+export async function getPostList({ page, sort }: PostListParams) {
   // 카테고리가 있으면 /community/{category}, 없으면 /community
   // 리팩토링 이후 카테고리 선택 시 setCategory가 잘 동작하면 주석 해제할 예정
   // const url = category ? `${api.community}/${category}` : api.community;
@@ -36,6 +36,7 @@ export async function getPostList({ page = 1 }: PostListParams) {
       params: {
         page: Number(page),
         pageSize: Number(10),
+        sort: sort,
       },
     });
     return response.data; // 성공 시 data 반환
@@ -52,13 +53,14 @@ export async function getPostList({ page = 1 }: PostListParams) {
 }
 
 // 면접 카테고리 게시글 목록 조회
-export async function getInterviewPostList({ page = 1 }: PostListParams) {
+export async function getInterviewPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
   const url = `${api.community}/interview`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
+        sort: sort,
       },
     });
     console.log(response);
@@ -75,13 +77,14 @@ export async function getInterviewPostList({ page = 1 }: PostListParams) {
 }
 
 // 모임 카테고리 게시글 목록 조회
-export async function getMeetingPostList({ page = 1 }: PostListParams) {
+export async function getMeetingPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
   const url = `${api.community}/meeting`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
+        sort: sort,
       },
     });
     console.log(response);
@@ -98,13 +101,14 @@ export async function getMeetingPostList({ page = 1 }: PostListParams) {
 }
 
 // 스터디 카테고리 게시글 목록 조회
-export async function getStudyPostList({ page = 1 }: PostListParams) {
+export async function getStudyPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
   const url = `${api.community}/study`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
+        sort: sort,
       },
     });
     console.log(response);
@@ -121,13 +125,14 @@ export async function getStudyPostList({ page = 1 }: PostListParams) {
 }
 
 // 잡담 카테고리 게시글 목록 조회
-export async function getTalkPostList({ page = 1 }: PostListParams) {
+export async function getTalkPostList({ page = 1, sort = 'sort=createdAt:desc' }: PostListParams) {
   const url = `${api.community}/talk`;
   try {
     const response = await baseApi.get(url, {
       params: {
         page: Number(page),
         pageSize: Number(10),
+        sort: sort,
       },
     });
     console.log(response);
