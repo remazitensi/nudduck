@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /**
  * File Name    : community.service.ts
  * Description  : 커뮤니티 서비스
@@ -44,8 +43,8 @@ export class CommunityService {
 
   // 게시글 작성
   async createPost(createCommunityDto: CreateCommunityDto, userId: number): Promise<void> {
-  await this.communityRepository.createPost(createCommunityDto, userId);
-}
+    await this.communityRepository.createPost(createCommunityDto, userId);
+  }
 
   // 게시글 수정
   async updatePost(postId: number, updateCommunityDto: UpdateCommunityDto, userId: number): Promise<void> {
@@ -61,19 +60,19 @@ export class CommunityService {
     await this.communityRepository.deletePost(postId);
   }
 
-    // 게시글 전체 조회
-    async findAll(paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
-      return await this.communityRepository.findAll(paginationQuery);
-    }
-  
-    // 카테고리별 게시글 조회
-    async findByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
-      return await this.communityRepository.findByCategory(category, paginationQuery);
-    }
+  // 게시글 전체 조회
+  async findAll(paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
+    return await this.communityRepository.findAll(paginationQuery);
+  }
+
+  // 카테고리별 게시글 조회
+  async findByCategory(category: Category, paginationQuery: PaginationQueryDto): Promise<[CommunityResponseDto[], number]> {
+    return await this.communityRepository.findByCategory(category, paginationQuery);
+  }
 
   // 게시글 ID로 찾기
   public async findPostById(postId: number): Promise<Community> {
-    const post = await this.communityRepository.findOne({ where: { postId },  relations: ['user']  });
+    const post = await this.communityRepository.findOne({ where: { postId }, relations: ['user'] });
     if (!post) {
       throw new NotFoundException(`ID가 ${postId}인 게시글을 찾을 수 없습니다.`);
     }
@@ -98,25 +97,24 @@ export class CommunityService {
   }
 
   // 댓글 삭제 (대댓글 포함 삭제)
-async deleteComment(commentId: number, userId: number): Promise<void> {
-  const comment = await this.findCommentById(commentId);
-  this.checkCommentOwnership(userId, comment.user.id);
+  async deleteComment(commentId: number, userId: number): Promise<void> {
+    const comment = await this.findCommentById(commentId);
+    this.checkCommentOwnership(userId, comment.user.id);
 
-  if (comment.parentId === null) {
-    const replies = await this.commentRepository.findRepliesByParentId(commentId);
+    if (comment.parentId === null) {
+      const replies = await this.commentRepository.findRepliesByParentId(commentId);
 
-    if (replies.length > 0) {
-      const replyIds = replies.map(reply => reply.id);
-      await this.commentRepository.deleteReplies(replyIds);
+      if (replies.length > 0) {
+        const replyIds = replies.map((reply) => reply.id);
+        await this.commentRepository.deleteReplies(replyIds);
+      }
     }
+    await this.commentRepository.deleteComment(commentId);
   }
-  await this.commentRepository.deleteComment(commentId);
-}
 
-  
   // 대댓글 작성
   async createReply(commentId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<void> {
-    createCommentDto.parentId = commentId; // 대댓글인 경우 parentId 설정
+    createCommentDto.parentId = commentId;
     await this.commentRepository.createReply(commentId, createCommentDto, userId, manager);
   }
 
@@ -128,52 +126,51 @@ async deleteComment(commentId: number, userId: number): Promise<void> {
   }
 
   // 대댓글 삭제
-async deleteReply(replyId: number, userId: number): Promise<void> {
-  const reply = await this.findCommentById(replyId);
-  this.checkCommentOwnership(userId, reply.user.id);
+  async deleteReply(replyId: number, userId: number): Promise<void> {
+    const reply = await this.findCommentById(replyId);
+    this.checkCommentOwnership(userId, reply.user.id);
 
-  // 대댓글이므로 바로 삭제
-  await this.commentRepository.deleteComment(replyId);
-}
+    // 대댓글이므로 바로 삭제
+    await this.commentRepository.deleteComment(replyId);
+  }
 
-// 부모 댓글 조회 (페이징 지원)
-async getParentComments(postId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
-  const { comments, total } = await this.commentRepository.getParentComments(postId, paginationQuery);
+  // 부모 댓글 조회 (페이징 지원)
+  async getParentComments(postId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
+    const { comments, total } = await this.commentRepository.getParentComments(postId, paginationQuery);
 
-  return [comments, total];
-}
+    return [comments, total];
+  }
 
-// 대댓글 조회 (페이징 지원)
-async getReplies(parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
-  const { replies, total } = await this.commentRepository.getReplies(parentCommentId, paginationQuery);
+  // 대댓글 조회 (페이징 지원)
+  async getReplies(parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
+    const { replies, total } = await this.commentRepository.getReplies(parentCommentId, paginationQuery);
 
-  return [replies, total];
-}
+    return [replies, total];
+  }
 
   // 댓글 ID로 찾기
   public async findCommentById(commentId: number): Promise<Comment> {
     const comment = await this.commentRepository.findOne({
-        where: { id: commentId },
-        relations: ['user']
+      where: { id: commentId },
+      relations: ['user'],
     });
     if (!comment) {
-        throw new NotFoundException(`${commentId}인 댓글을 찾을 수 없습니다.`);
+      throw new NotFoundException(`${commentId}인 댓글을 찾을 수 없습니다.`);
     }
     return comment;
-}
+  }
 
-// 게시글 소유권 확인
-private checkPostOwnership(userId: number, postUserId: number): void {
-  if (userId !== postUserId) {
+  // 게시글 소유권 확인
+  private checkPostOwnership(userId: number, postUserId: number): void {
+    if (userId !== postUserId) {
       throw new ForbiddenException('본인이 작성한 게시글만 수정/삭제할 수 있습니다.');
+    }
   }
-}
 
-// 댓글 소유권 확인
-private checkCommentOwnership(userId: number, commentUserId: number): void {
-  if (userId !== commentUserId) {
+  // 댓글 소유권 확인
+  private checkCommentOwnership(userId: number, commentUserId: number): void {
+    if (userId !== commentUserId) {
       throw new ForbiddenException('본인이 작성한 댓글만 수정/삭제할 수 있습니다.');
+    }
   }
-}
-
 }
