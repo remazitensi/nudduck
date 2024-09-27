@@ -62,7 +62,6 @@ export async function inviteChat(loggedInUserId: number, recipientId: number, lo
 // return dummyResponse; // 실제 서버 응답처럼 처리
 // }
 
-
 // 채팅 목록 조희 get api 사용자의 채팅 목록을 확인하고, 특정 대화방의 메시지를 불러오는데 필요, 대화방에 들어갈 때 호출됨
 export async function checkChat(recipientId: number) {
   const url = `${api.chat}/rooms/${recipientId}`; // recipientId는 상대방을 고유하게 식별하는 값으로, 1:1 채팅의 목록에서 해당 상대방과의 대화방을 식별하는 중요한 역할
@@ -106,12 +105,13 @@ export async function whichCheckchatRoom(roomId: string) {
 // 채팅방에 메시지 전송 사용자가 메시지를 보낼 때, 그 메시지를 서버에 저장하기 위한 api호출 소켓을 통해 실시간으로 전송하는 것과 별개로, 메시지를 저장하기 위해 필요
 export async function sendMessage(loggedInUserId: number, roomId: string, message: string) {
   // roomId를 사용하여 URL 설정
+
   const url = `${api.chat}/rooms/${roomId}/send`;
   console.log(url);
   try {
     const response = await baseApi.post(url, {
       content: message,
-      sendId: loggedInUserId
+      sendId: loggedInUserId,
     });
     if (response.status === 200) {
       console.log('send Message:', response.data);
@@ -126,7 +126,6 @@ export async function sendMessage(loggedInUserId: number, roomId: string, messag
     throw error;
   }
 }
-
 
 // 더미 메시지 전송 sendMessage 함수
 // export async function sendMessage(loggedInUserId: number, loggedInUserNickname: string, roomId: string, message: string) {

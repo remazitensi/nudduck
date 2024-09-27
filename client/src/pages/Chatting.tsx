@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { inviteChat, checkChat } from '../apis/chatRoom-api';
+import { checkChat, inviteChat } from '../apis/chatRoom-api';
 import ChatCheck from '../components/chat/ChatCheck';
 import ViewChat from '../components/chat/ViewChat';
-import { ChatRoomData, CreateRoomData } from '../types/chat-type'
+import { ChatRoomData, CreateRoomData } from '../types/chat-type';
 // import { useLocation } from 'react-router-dom'
 
 interface ChattingProps {
@@ -13,10 +13,8 @@ interface ChattingProps {
 }
 
 const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId, loggedInUserNickname, recipientNickname }) => {
-
   // const location = useLocation();
   // const{ roomId } = location.state || {}; // roomId를 이전 페이지에서 받아옴
-
 
   // const loggedInUserId = 1;
   // const loggedInUserNickname = "UserA";
@@ -35,14 +33,13 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId, logged
 
   // type 채팅방 데이터 구조
   const [ChatData, setChatData] = useState<ChatRoomData>({
-    roomId: '', // 채팅방 ID 
+    roomId: '', // 채팅방 ID
     participants: [], // 참가자 ID 목록
     // messages: [] // messages 필드 추가
-  })
+  });
 
   // const [selectedChat, setSelectedChat] = useState<null | {roomId: number, message: Array<{ name: string; msg: string; time: string }> }>(null);
   const [chatHistory, setChatHistory] = useState<Array<{ name: string; msg: string; time: string }>>([]);
-  
 
   // 메시지 전송 시, 새로운 메시지를 chatHistory에 추가하는 함수 임시
   const handleSendMessage = (newMessage: { name: string; msg: string; time: string }) => {
@@ -52,16 +49,17 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId, logged
   // 채팅 시작 및 대화방 만들기
   const startChat = async (loggedInUserId: number, recipientId: number) => {
     try {
-      console.log("inviteChat 호출 시작:")
+      console.log('inviteChat 호출 시작:');
       const response = await inviteChat(loggedInUserId, recipientId, loggedInUserNickname, recipientNickname);
 
-      console.log("inviteChat 응답:", response); // api 응답 확인
+      console.log('inviteChat 응답:', response); // api 응답 확인
 
       // 대화방 생성 api 호출
-      if (response && response.roomData) {  // 대화방 정보가 제대로 반환되었는지 확인
-        
+      if (response && response.roomData) {
+        // 대화방 정보가 제대로 반환되었는지 확인
+
         const newRoom = response.roomData;
-        console.log("새로운 방의 roomId:', newRoom.roomId")
+        console.log("새로운 방의 roomId:', newRoom.roomId");
 
         // 대화방 정보 설정
         // setCreateData((prevData) => ({
@@ -77,7 +75,7 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId, logged
         }); // 새로 생성된 대화방을 선택
 
         // roomId가 설정된 후에 로그 출력
-        console.log("방 생성 후 roomId 확인:", newRoom.roomId);
+        console.log('방 생성 후 roomId 확인:', newRoom.roomId);
 
         setChatHistory(newRoom.messages || []); // 새로 생성된 대화방의 채팅 이력 설정
         // 새로 생성된 대화방의 채팅 이력 설정
@@ -111,13 +109,12 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId, logged
 
       <div className='mt-[90px] flex w-[1300px] justify-center'>
         <div className='flex gap-[30px]'>
-          {/* 채팅 선택 시 함수 호출  onChatSelect={handleChatSelect} */ }
+          {/* 채팅 선택 시 함수 호출  onChatSelect={handleChatSelect} */}
           <ChatCheck rooms={[]} onChatSelect={handleChatSelect} />
           {/* 선택된 채팅과 이력 전달 */}
-          <ViewChat chatData={ChatData} chatHistory={chatHistory} loggedInUserId={loggedInUserId} loggedInUserNickname={loggedInUserNickname} />
+          {ChatData.roomId ? <ViewChat chatData={ChatData} chatHistory={chatHistory} loggedInUserId={loggedInUserId} loggedInUserNickname={loggedInUserNickname} /> : <div>채팅방을 선택해주세요!</div>}
         </div>
       </div>
-
     </div>
   );
 };
