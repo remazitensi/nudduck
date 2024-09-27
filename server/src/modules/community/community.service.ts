@@ -44,8 +44,8 @@ export class CommunityService {
 
   // 게시글 작성
   async createPost(createCommunityDto: CreateCommunityDto, userId: number): Promise<void> {
-    await this.communityRepository.createPost({ ...createCommunityDto, userId });
-  }
+  await this.communityRepository.createPost(createCommunityDto, userId);
+}
 
   // 게시글 수정
   async updatePost(postId: number, updateCommunityDto: UpdateCommunityDto, userId: number): Promise<void> {

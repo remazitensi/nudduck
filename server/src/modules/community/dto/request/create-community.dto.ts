@@ -14,7 +14,7 @@
 
 import { Category } from '@_modules/community/enums/category.enum';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, Length } from 'class-validator';
+import { IsEnum, IsNotEmpty, Length } from 'class-validator';
 
 export class CreateCommunityDto {
   @ApiProperty({
@@ -40,11 +40,4 @@ export class CreateCommunityDto {
   })
   @IsEnum(Category, { message: '유효한 카테고리를 선택해야 합니다.' })
   category?: Category;
-
-  @ApiProperty({
-    description: '유저 ID',
-    example: 1, // 예시 유저 ID 추가
-  })
-  @IsNumber()
-  userId: number;
 }
