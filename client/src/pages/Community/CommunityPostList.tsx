@@ -21,13 +21,15 @@ const CommunityPostList: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]); // 게시글 리스트
   const [totalPostCount, setTotalPostCount] = useState<number>(1); // 전체 게시글 수
   const [pages, setPages] = useState<{ currentPage: number; totalPage: number }>({ currentPage: 1, totalPage: 1 });
+  const [sort, setSort] = useState<string>('createdAt:desc');
 
   // const [sort, setSort] = useState('createdAt:desc'); // 최신순, 조회순 관리
   const [selectedCategory, setSelectedCategory] = useState('전체'); // 카테고리 상태
 
   // 카테고리에 따라 적절한 fetch 함수 호출
   const fetchPosts = async () => {
-    const params: PostListParams = { page: pages.currentPage };
+    const params: PostListParams = { page: pages.currentPage, sort: sort };
+    console.log(params);
     let data;
 
     switch (selectedCategory) {
@@ -61,7 +63,7 @@ const CommunityPostList: React.FC = () => {
   // 페이지 로드 시 및 sort,selectedCategory 변경 시 fetchPosts 호출
   useEffect(() => {
     fetchPosts();
-    console.log(posts);
+    console.log('useEffect save posts :', posts);
   }, [selectedCategory, pages.currentPage]);
 
   // 페이지네이션 현재 페이지 설정
@@ -76,10 +78,10 @@ const CommunityPostList: React.FC = () => {
   };
 
   // 정렬 선택 후 페이지 리셋
-  // const handleSortChange = (sort: string) => {
-  //   setSort(sort);
-  //   setPosts((posts) => ({ ...posts, currentPage: 1 }));
-  // };
+  const handleSortChange = (sort: string) => {
+    setSort(sort);
+    setPosts((pages) => ({ ...pages, currentPage: 1 }));
+  };
 
   return (
     <div className='community-titles flex flex-col items-center'>
@@ -130,8 +132,7 @@ const CommunityPostList: React.FC = () => {
               <button className='h-[46px] w-[180px] rounded-[10px] bg-[#909700] text-[20px] font-bold text-white'>게시글 작성</button>
             </Link>
           </div>
-          {/* 정렬 전부 주석 */}
-          {/* <div className='flex items-center gap-[10px] text-[18px]'>
+          <div className='flex items-center gap-[10px] text-[18px]'>
             <button
               className={`text-[${sort === 'createdAt:desc' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
@@ -140,9 +141,9 @@ const CommunityPostList: React.FC = () => {
             >
               최신순
             </button>
-            <div>|</div> */}
-          {/* 인기순 삭제 */}
-          {/* <button
+            <div>|</div>
+            {/* 인기순 삭제 */}
+            {/* <button
               className={`text-[${sort === 'popular' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
                 // console.log('Sort changed to popular');
@@ -152,7 +153,7 @@ const CommunityPostList: React.FC = () => {
               인기순
             </button>
             <div>|</div> */}
-          {/* <button
+            <button
               className={`text-[${sort === 'viewCount:desc' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
                 handleSortChange('viewCount:desc');
@@ -160,7 +161,7 @@ const CommunityPostList: React.FC = () => {
             >
               조회순
             </button>
-          </div> */}
+          </div>
         </div>
 
         <div className='w-[700px]'>
