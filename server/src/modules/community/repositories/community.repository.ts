@@ -78,11 +78,10 @@ export class CommunityRepository extends Repository<Community> {
       throw new HttpException(`카테고리별 게시글 조회 중 오류 발생: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  async createPost(postData: CreateCommunityDto): Promise<Community> {
+  async createPost(postData: CreateCommunityDto, userId: number): Promise<Community> {
     const newPost = this.create({
       ...postData,
-      user: { id: postData.userId },
+      user: { id: userId }, // userId를 사용하여 작성자 설정
     });
 
     try {
