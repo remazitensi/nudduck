@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * File Name    : CommunityPostCreate.tsx
  * Description  : 커뮤니티 게시글 작성 페이지
@@ -153,3 +154,8 @@ const CommunityPostCreate: React.FC = () => {
 };
 
 export default CommunityPostCreate;
+=======
+export const CommunityPostCreate = () => {
+  return <div>CommunityPostCreate</div>;
+};
+>>>>>>> feature

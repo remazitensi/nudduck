@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * File Name    : CommunityPostList.tsx
  * Description  : Community 페이지, 게시글 랜더 기능
@@ -194,3 +195,8 @@ const CommunityPostList: React.FC = () => {
 };
 
 export default CommunityPostList;
+=======
+export const CommunityPostList = () => {
+  return <div>CommunityPostList</div>;
+};
+>>>>>>> feature

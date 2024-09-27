@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * File Name    : Header.tsx
  * Description  : layout - 헤더 -
@@ -154,3 +155,8 @@ const CommunityPostDetail: React.FC = () => {
 };
 
 export default CommunityPostDetail;
+=======
+export const CommunityPostDetail = () => {
+  return <div>CommunityPostDetail</div>;
+};
+>>>>>>> feature

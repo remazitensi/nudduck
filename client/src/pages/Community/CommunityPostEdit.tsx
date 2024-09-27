@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * File Name    : CommunityPostEdit.tsx
  * Description  : 커뮤니티 게시글 작성 페이지
@@ -151,3 +152,8 @@ const CommunityPostEdit: React.FC = () => {
 };
 
 export default CommunityPostEdit;
+=======
+export const CommunityPostEdit = () => {
+  return <div>CommunityPostEdit</div>;
+};
+>>>>>>> feature
