@@ -46,7 +46,7 @@ const CommunityPostDetail: React.FC = () => {
 
     fetchPostData(); // API 요청 함수 호출
 
-    // 3초 후 조회수 증가 요청
+    // 5초 후 조회수 증가 요청
     const timer = setTimeout(async () => {
       try {
         await baseApi.post(`${api.community}/article/${id}/views`, {}); // 조회수 증가 POST 요청
@@ -82,22 +82,26 @@ const CommunityPostDetail: React.FC = () => {
           <CategoryBtn category={postData.category} />
           <div className='text-[24px]'>{postData.title}</div>
         </div>
-        <div className='flex gap-[8px] text-[#AEAC9A]'>
-          <div>작성일</div>
-          <div>{postData.createdAt.substring(0, 10)}</div>
+        <div className='flex items-center gap-[30px]'>
+          <div className='flex gap-[20px]'>
+            <div className='flex gap-[8px] text-[#AEAC9A]'>
+              <div>작성일</div>
+              <div>{postData.createdAt.substring(0, 10)}</div>
+            </div>
+            <div className='text-[#AEAC9A]'>
+              조회수
+              <span className='ml-[5px] text-[#A1DFFF]'>{postData.viewCount}</span>
+            </div>
+          </div>
+          {/* img와 nickname을 감싸는 div에 onClick */}
+          <div className='mb-[5px] flex items-center justify-end gap-[5px]' onClick={handleOpenModal}>
+            <div className='h-[50px] w-[50px] rounded-full'>
+              <img className='rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
+            </div>{' '}
+            <div>{postData.nickname}</div>
+          </div>
+          {/* --------------------- */}
         </div>
-        <div className='text-[#AEAC9A]'>
-          조회수
-          <span className='ml-[5px] text-[#A1DFFF]'>{postData.viewCount}</span>
-        </div>
-        {/* img와 nickname을 감싸는 div에 onClick */}
-        <div className='mb-[5px] flex items-center justify-end gap-[5px]' onClick={handleOpenModal}>
-          <div className='h-[50px] w-[50px] rounded-full'>
-            <img className='rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
-          </div>{' '}
-          <div>{postData.nickname}</div>
-        </div>
-        {/* --------------------- */}
       </div>
       {/* 다른 유저 모달 */}
       <div className='mt-[50px] h-[500px] w-[1200px]'>
@@ -116,8 +120,10 @@ const CommunityPostDetail: React.FC = () => {
       <div className='w-[1200px]'>
         <div className='mt-[77px] text-[24px] font-bold'>댓글</div>
         <div className='relative'>
-          <input className='mt-[19px] h-[200px] w-[1200px] rounded-[10px] bg-[#F3F3F2] pb-[130px] pl-[20px] text-[24px] outline-none' placeholder='댓글을 입력해 주세요' />
-          <button className='absolute right-[20px] top-[165px] h-[40px] w-[95px] rounded-[5px] bg-[#909700] font-bold text-white'>댓글달기</button>
+          <div className='mt-[19px] h-[150px] w-[1200px] rounded-[10px] bg-[#F3F3F2] p-[20px] text-[24px] outline-none'>
+            <input className='h-full w-full bg-[#F3F3F2] text-[24px] outline-none' placeholder='댓글을 입력해 주세요' />
+          </div>
+          <button className='absolute right-[20px] top-[90px] h-[40px] w-[95px] rounded-[5px] bg-[#909700] font-bold text-white'>댓글달기</button>
         </div>
 
         <div className='Comment mt-[58px] flex w-[1200px] flex-col'>
