@@ -135,7 +135,7 @@ export class CommunityController {
   @ApiResponse({ status: 404, description: '댓글 또는 게시글을 찾을 수 없습니다.' })
   async deleteComment(@Param('postId') postId: number, @Param('commentId') commentId: number, @Request() req: UserRequest): Promise<void> {
     const userId = req.user.id;
-    return await this.communityService.deleteComment(commentId, userId);
+    await this.communityService.deleteComment(commentId, userId);
   }
 
   // 대댓글 생성
@@ -200,13 +200,17 @@ export class CommunityController {
   @ApiQuery({ name: 'offset', required: true, description: '시작 인덱스', type: Number })
   @ApiQuery({ name: 'limit', required: true, description: '가져올 대댓글 수', type: Number })
   @ApiResponse({ status: 200, description: '대댓글 목록을 성공적으로 조회했습니다.', type: [CommentResponseDto] })
-  @ApiResponse({ status: 404, description: '대댓글을 찾을 수 없습니다.' })
+  @ApiResponse({ status: 404, description: '상위 댓글을 찾을 수 없습니다.' })
   async getReplies(@Param('commentId') commentId: number, @Query() paginationQuery: PaginationQueryDto): Promise<{ replies: CommentResponseDto[]; total: number }> {
-    const [replies, total] = await this.communityService.getReplies(commentId, paginationQuery);
-    if (!replies.length) {
-      throw new NotFoundException('대댓글을 찾을 수 없습니다.');
+    // 상위 댓글 존재 여부 확인
+    const parentComment = await this.communityService.findCommentById(commentId);
+    if (!parentComment) {
+      throw new NotFoundException('상위 댓글을 찾을 수 없습니다.');
     }
-    return { replies, total };
+
+    const [replies, total] = await this.communityService.getReplies(commentId, paginationQuery);
+
+    return { replies: replies || [], total };
   }
 
   // 게시글 조회수 증가

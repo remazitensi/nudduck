@@ -81,7 +81,7 @@ export class CommentRepository extends Repository<Comment> {
     await this.updateComment(replyId, updateCommentDto);
   }
 
-  // 댓글 삭제
+  // 댓글 삭제 (대댓글 포함 삭제)
   async deleteComment(commentId: number): Promise<void> {
     try {
       const comment = await this.findOne({ where: { id: commentId } });
@@ -89,10 +89,16 @@ export class CommentRepository extends Repository<Comment> {
       if (!comment) {
         throw new HttpException('댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
       }
-
+      if (comment.parentId === null) {
+        // 상위 댓글인 경우에만 대댓글 삭제
+        const replies = await this.findRepliesByParentId(commentId);
+        if (replies.length > 0) {
+          const replyIds = replies.map((reply) => reply.id);
+          await this.deleteReplies(replyIds); // 대댓글 일괄 삭제
+        }
+      }
       await this.remove(comment);
 
-      // 댓글 수 감소
       await this.createQueryBuilder()
         .update(Community)
         .set({ commentCount: () => 'commentCount - 1' })
@@ -103,10 +109,20 @@ export class CommentRepository extends Repository<Comment> {
     }
   }
 
-  // 대댓글 삭제
-  async deleteReply(replyId: number): Promise<void> {
-    await this.deleteComment(replyId);
+  // 대댓글 일괄 삭제
+  async deleteReplies(replyIds: number[]): Promise<void> {
+    try {
+      await this.createQueryBuilder().delete().from(Comment).whereInIds(replyIds).execute();
+    } catch (error) {
+      this.handleError(error);
+    }
   }
+
+  // 대댓글 조회 (parentId로 조회)
+  async findRepliesByParentId(commentId: number): Promise<Comment[]> {
+    return await this.createQueryBuilder('comment').where('comment.parentId = :commentId', { commentId }).getMany();
+  }
+
   // 부모 댓글 조회 (페이징 지원)
   async getParentComments(postId: number, paginationQuery: PaginationQueryDto): Promise<{ comments: CommentResponseDto[]; total: number }> {
     const { limit, offset } = this.buildCommentPaginationQuery(paginationQuery);
