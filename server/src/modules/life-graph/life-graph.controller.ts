@@ -13,13 +13,14 @@
  * 2024.09.21    이승철      Modified    응답 dto 추가
  * 2024.09.21    이승철      Modified    절대경로 변경
  * 2024.09.24    이승철      Modified    limit를 dto에 추가
+ * 2024.09.26    이승철      Modified    즐겨찾기 반환 값 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
 import { FavoriteLifeGraphDto } from '@_modules/life-graph/dto/favorite-life-graph.dto';
 import { LifeGraphPaginationQueryDto } from '@_modules/life-graph/dto/life-graph-pagination-query.dto';
-import { LifeGraphListResponseDto, LifeGraphResponseDto } from '@_modules/life-graph/dto/life-graph-response.dto';
+import { FavoriteLifeGraphResponseDto, LifeGraphListResponseDto, LifeGraphResponseDto } from '@_modules/life-graph/dto/life-graph-response.dto';
 import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
 import { LifeGraphService } from '@_modules/life-graph/life-graph.service';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
@@ -48,7 +49,8 @@ export class LifeGraphController {
   @ApiResponse({ status: 400, description: '잘못된 요청입니다.' })
   @Get()
   async getAllLifeGraphs(@Req() req: UserRequest, @Query() lifeGraphPaginationQueryDto: LifeGraphPaginationQueryDto): Promise<LifeGraphListResponseDto> {
-    return await this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPaginationQueryDto);
+    const { data, totalCount, favoriteGraphId } = await this.lifeGraphService.getAllLifeGraph(req.user.id, lifeGraphPaginationQueryDto);
+    return { data, totalCount, favoriteGraphId };
   }
 
   @ApiOperation({ summary: '특정 인생 그래프 조회', description: 'ID를 기반으로 특정 인생 그래프를 조회합니다.' })
@@ -81,13 +83,13 @@ export class LifeGraphController {
     return { message: '인생그래프가 삭제되었습니다.' };
   }
 
-  @ApiOperation({ summary: '인생 그래프 즐겨찾기 등록', description: '특정 인생 그래프를 즐겨찾기에 등록합니다.' })
+  @ApiOperation({ summary: '인생 그래프 즐겨찾기 등록/해제', description: '특정 인생 그래프를 즐겨찾기에 등록하거나 해제합니다.' })
   @ApiBody({ type: FavoriteLifeGraphDto, description: '즐겨찾기할 그래프 ID 정보' })
-  @ApiResponse({ status: 200, description: '성공적으로 인생 그래프가 즐겨찾기에 등록되었습니다.' })
+  @ApiResponse({ status: 200, description: '즐겨찾기 상태가 성공적으로 변경되었습니다.', type: FavoriteLifeGraphResponseDto })
   @ApiResponse({ status: 404, description: '인생 그래프를 찾을 수 없습니다.' })
   @Post('favorite')
-  async createFavoriteLifeGraph(@Req() req: UserRequest, @Body() favoriteDto: FavoriteLifeGraphDto): Promise<{ message: string }> {
-    await this.lifeGraphService.createFavoriteLifeGraph(req.user.id, favoriteDto.graphId);
-    return { message: '인생그래프가 즐겨찾기에 등록되었습니다.' };
+  async createFavoriteLifeGraph(@Req() req: UserRequest, @Body() favoriteDto: FavoriteLifeGraphDto): Promise<FavoriteLifeGraphResponseDto> {
+    const isFavorited = await this.lifeGraphService.createFavoriteLifeGraph(req.user.id, favoriteDto.graphId);
+    return { isFavorited };
   }
 }

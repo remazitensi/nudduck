@@ -14,7 +14,7 @@ import { api, baseApi } from './base-api';
 
 // 게시글 리스트 get 요청
 // props
-export function getPostList(category = '', page = 1, sort = 'latest', success: unknown, fail: unknown) {
+export function getPostList(category = '', page = 1, sort = 'latest', success: any, fail: any) {
   // 카테고리가 있으면 /community/{category}, 없으면 /community
   const url = category ? `${api.community}/${category}` : api.community;
 
@@ -30,7 +30,7 @@ export function getPostList(category = '', page = 1, sort = 'latest', success: u
 }
 
 // 게시글 상세 내역 get 요청
-export function getPostDetail({ id, success, fail }: { id: string; success: unknown; fail: unknown }) {
+export function getPostDetail({ id, success, fail }: { id: string; success: any; fail: any }) {
   const location = useLocation();
 
   // pathname

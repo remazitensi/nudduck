@@ -9,11 +9,11 @@
  * 2024.09.10    김재영      Modified    대댓글에 대한 parentId 속성 추가
  * 2024.09.12    김재영      Modified    Swagger 데코레이터 추가
  * 2024.09.16    김재영      Modified    camelcase로 변경
- * 2024.09.22    김재영      Modified    댓글 ID 추가
+ * 2024.09.27    김재영      Modified    댓글 ID 삭제
  */
 
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCommentDto {
   @ApiProperty({
@@ -47,11 +47,4 @@ export class CreateCommentDto {
   @IsNumber()
   @IsOptional()
   parentId?: number;
-
-  @ApiProperty({
-    description: '유저 ID',
-    example: 1, // 예시 유저 ID 추가
-  })
-  @IsNumber()
-  userId: number;
 }
