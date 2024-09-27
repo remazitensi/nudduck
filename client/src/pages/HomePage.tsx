@@ -10,6 +10,7 @@
  * 2024.09.22    황솜귤      Modified    스타일 시트 수정 및
  * 2024.09.24    황솜귤      Modified    명언/영문장 데이터 추가
  * 2024.09.25    황솜귤      Modified    명언/영문장 전환 로직 추가
+ * 2024.09.26    황솜귤      Modified    명언/영문장 섹션 리사이징
  */
 
 import { useEffect, useState } from 'react';
@@ -33,6 +34,7 @@ interface Post {
 interface Quote {
   id: number;
   author: string;
+  authorProfile: string;
   message: string;
 }
 
@@ -41,6 +43,7 @@ interface EnglishSentence {
   id: number;
   english: string;
   korean: string;
+  note: string;
 }
 
 const HomePage = () => {
@@ -64,7 +67,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchQuotesAndSentences = async () => {
       try {
-        const response = await baseApi.get('/api/schedule/quotes-and-sentences');
+        const response = await baseApi.get('/schedule/quotes-and-sentences');
         if (response.status === 200) {
           const { quotes, englishSentences } = response.data;
           setQuote(quotes[0]);
@@ -110,32 +113,35 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="bg-white-100 min-h-screen">
-      <main className="mx-auto max-w-6xl p-4">
+    <div className='bg-white-100 min-h-screen'>
+      <main className='mx-auto max-w-6xl p-4'>
         {/* Today's Quote Section */}
-        <section className="my-6 flex justify-center">
+        <section className='my-6 flex justify-center'>
           <div
-            className="relative h-[81px] w-[994px]"
+            className='relative h-[150px] w-[1100px]'
             onClick={toggleQuoteAndSentence}
-            onMouseEnter={() =>
-              setHoverText(
-                isQuoteVisible ? '오늘의 영문장으로 전환하기!' : '오늘의 명언으로 전환하기!',
-              )
-            }
+            onMouseEnter={() => setHoverText(isQuoteVisible ? '오늘의 영문장으로 전환하기!' : '오늘의 명언으로 전환하기!')}
             onMouseMove={handleMouseMove}
             onMouseLeave={() => setHoverText(null)}
           >
-            <div className="absolute left-0 top-[6px] h-[70px] w-[994px] rounded-[5px] border border-[#313119] bg-white" />
-            <div className="fontsize-22px absolute left-[31px] top-[22px] h-[29px] w-[175px] text-center font-['Pretendard'] text-3xl font-semibold text-[#909700]">
+            <div className='absolute left-0 top-[6px] h-[140px] w-[1100px] rounded-[5px] bg-white' />
+            <div className="absolute left-[31px] top-1/2 h-[29px] w-[175px] -translate-y-1/2 transform text-center font-['Pretendard'] text-2xl font-semibold text-[#909700]">
               {isQuoteVisible ? '오늘의 명언' : '오늘의 영문장'}
             </div>
-            <div className="absolute left-[222px] top-[29px] text-center font-['Pretendard'] text-xl font-normal text-[#313119]">
+            <div className="absolute left-[222px] top-[50px] text-left font-['Pretendard'] text-base font-normal text-[#313119]">
               {isQuoteVisible && quote ? (
-                <>{quote.message}</>
+                <>
+                  <div className='text-base'>"{quote.message}"</div>
+                  <div className='mt-1 text-sm text-gray-500'>
+                    - {quote.author} ({quote.authorProfile})
+                  </div>
+                </>
               ) : (
                 englishSentence && (
                   <>
-                    {englishSentence.korean} <br /> ({englishSentence.english})
+                    <div>{englishSentence.korean}</div>
+                    <div className='text-sm text-gray-500'>({englishSentence.english})</div>
+                    <div className='mt-1 text-sm italic text-gray-400'>{englishSentence.note}</div>
                   </>
                 )
               )}
@@ -145,12 +151,12 @@ const HomePage = () => {
               <div
                 style={{
                   position: 'fixed',
-                  left: mousePosition.x + 10, // 마우스 커서 위치에서 약간 오른쪽에 표시
-                  top: mousePosition.y + 10, // 마우스 커서 위치에서 약간 아래쪽에 표시
-                  padding: '2px 6px', // 약간의 패딩 추가
-                  pointerEvents: 'none', // 이 요소 자체에 마우스 이벤트가 적용되지 않도록 설정
+                  left: mousePosition.x + 10,
+                  top: mousePosition.y + 10,
+                  padding: '2px 6px',
+                  pointerEvents: 'none',
                 }}
-                className="animate-bounce text-sm text-[#AEAC9A]" // Tailwind CSS를 사용한 스타일링
+                className='animate-bounce text-sm text-[#AEAC9A]'
               >
                 {hoverText}
               </div>
@@ -158,26 +164,23 @@ const HomePage = () => {
           </div>
         </section>
 
+        {/* 이하 코드는 변경사항 없이 유지됨 */}
+
         {/* AI Coach Section */}
-        <section className="my-6 flex items-center justify-between rounded bg-white p-6">
-          <img src="ai-image1.png" alt="AI Coach" className="h-[600px] w-[500px]" />
-          <div className="ml-4 flex flex-col">
-            <div className="relative rounded-[10px] bg-[#A1DFFF] p-[20px] shadow-xl">
-              <h3 className="text-xl font-bold text-blue-700">AI Coach</h3>
-              <p className="mt-2 text-[18px] text-gray-700">
-                <span className="font-bold">누떡</span>에서 제공하는 AI 서비스는 사용자가 면접
-                준비를 효율적으로 할 수 있도록 돕는 혁신적인 도구입니다.
+        <section className='my-6 flex items-center justify-between rounded bg-white p-6'>
+          <img src='ai-image1.png' alt='AI Coach' className='h-[600px] w-[700px]' />
+          <div className='ml-4 flex flex-col'>
+            <div className='relative rounded-[10px] bg-[#A1DFFF] p-[20px] shadow-xl'>
+              <h3 className='text-xl font-bold text-blue-700'>AI Coach</h3>
+              <p className='mt-2 text-[18px] text-gray-700'>
+                <span className='font-bold'>누떡</span>에서 제공하는 AI 서비스는 사용자가 면접 준비를 효율적으로 할 수 있도록 돕는 혁신적인 도구입니다.
               </p>
-              {/* 말풍선 꼬리 추가 */}
-              <div className="absolute -left-14 top-10 h-0 w-0 border-[30px] border-transparent border-r-[#A1DFFF]"></div>
+              <div className='absolute -left-14 top-10 h-0 w-0 border-[30px] border-transparent border-r-[#A1DFFF]'></div>
             </div>
-            <p className="m-auto mt-[95px] text-center text-[24px] font-bold">
+            <p className='m-auto mt-[95px] text-center text-[24px] font-bold'>
               구글, 카카오 아이디가 있으신가요?
               <br />
-              <span
-                onClick={openLoginModal} // 클릭 시 모달 열기
-                className="cursor-pointer bg-none text-[#909700]"
-              >
+              <span onClick={openLoginModal} className='cursor-pointer bg-none text-[#909700]'>
                 로그인
               </span>
               하고 하단 메뉴를 이용해 보세요.
@@ -186,70 +189,73 @@ const HomePage = () => {
         </section>
 
         {/* Feature Cards Section - 로그인 전 상태 */}
-        <section className="my-6">
-          <h2 className="text-xl font-bold">로그인하고 내 조건에 맞는 서비스 이용하기</h2>
-          {/* grid-cols-3 을 4로 변경*/}
-          <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-4">
-            <div className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-6 shadow">
-              <div className="text-center">
-                <h3 className="mb-2 text-lg font-semibold text-gray-700">
-                  프로필 채우고 나에게 딱 맞는
-                </h3>
-                <h2 className="text-xl font-bold text-black">
-                  AI 가상 면접과 실전 면접 시나리오를 확인해 보세요!
-                </h2>
-              </div>
-              <button className="mt-4 w-full rounded bg-[#909700] py-2 text-white">
-                프로필 입력하기
-              </button>
+        <section className='my-6'>
+          <h2 className='text-2xl font-bold leading-[30px]'>로그인하고 내 조건에 맞는 서비스 이용하기</h2>
+          {/* grid-cols-3 을 4로 변경 */}
+          <div className='mt-4 grid grid-cols-1 justify-center gap-4 md:grid-cols-4'>
+            {' '}
+            {/* gap-4로 간격을 반으로 줄였습니다 */}
+            {/* 첫 번째 카드 */}
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-[#fbfaec] p-4'>
+              {' '}
+              {/* 크기를 줄였습니다 */}
+              <div className='absolute left-[15px] top-[76px] text-sm font-semibold leading-[25px] text-[#aeac9a]'>프로필 채우고 나에게 딱 맞는</div>
+              <div className='absolute left-[15px] top-[100px] text-lg font-bold leading-[25px] text-black'>AI 가상 면접과 실전 면접 시나리오를 확인해 보세요!</div>
+              <button className='absolute bottom-[12px] left-[15px] h-[35px] w-[200px] rounded-[5px] bg-[#313119] text-center text-xs font-bold leading-[25px] text-[#aeac9a]'>프로필 입력하기</button>
             </div>
-
-            <div className="flex flex-col items-center justify-between rounded-lg border border-gray-200 bg-white p-6 shadow">
-              <img src="ai-image2.png" alt="Expert Consulting" className="h-24" />
-              <h3 className="mt-4 text-center text-lg font-bold">Expert Consulting</h3>
-              <p className="mt-2 text-center text-gray-600">
-                각 분야 전문가의 프로필을 확인하고 1:1 맞춤 상담을 받아 보세요
-              </p>
+            {/* 두 번째 카드 */}
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4'>
+              {' '}
+              {/* 크기를 줄였습니다 */}
+              <img src='ai-image2.png' alt='Expert Consulting' className='absolute left-[68px] h-[150px] w-[150px]' />
+              <h3 className='absolute left-[15px] top-[160px] text-base font-bold leading-[25px] text-black'>
+                {' '}
+                {/* 왼쪽 정렬과 크기 조절 */}
+                Expert Consulting
+              </h3>
+              <p className='absolute left-[15px] top-[190px] w-[210px] text-sm font-normal leading-[20px] text-black'>각 분야 전문가의 프로필을 확인하고 1:1 맞춤 상담을 받아 보세요</p>
             </div>
-
-            <div className="flex flex-col items-center justify-between rounded-lg border border-gray-200 bg-white p-6 shadow">
-              <img src="ai-image3.png" alt="Community" className="h-24" />
-              <h3 className="mt-4 text-center text-lg font-bold">Community</h3>
-              <p className="mt-2 text-center text-gray-600">
-                게시판과 채팅방을 통해 누떡 유저들과 커뮤니티를 형성하세요
-              </p>
+            {/* 세 번째 카드 */}
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4'>
+              {' '}
+              {/* 크기를 줄였습니다 */}
+              <img src='ai-image3.png' alt='Community' className='absolute left-[40px] h-[160px] w-[180px]' />
+              <h3 className='absolute left-[15px] top-[160px] text-base font-bold leading-[25px] text-black'>
+                {' '}
+                {/* 왼쪽 정렬과 크기 조절 */}
+                Community
+              </h3>
+              <p className='absolute left-[15px] top-[190px] w-[210px] text-sm font-normal leading-[20px] text-black'>게시판과 채팅방을 통해 누떡 유저들과의 커뮤니티를 형성하세요</p>
             </div>
-
-            <div className="flex flex-col items-center justify-between rounded-lg border border-gray-200 bg-white p-6 shadow">
-              <img src="ai-image4.png" alt="Life Graph" className="h-24" />
-              <h3 className="mt-4 text-center text-lg font-bold">Life Graph</h3>
-              <p className="mt-2 text-center text-gray-600">
-                인생의 여러 가지 사건들을 그래프로 만들어 보세요
-              </p>
+            {/* 네 번째 카드 */}
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4'>
+              {' '}
+              {/* 크기를 줄였습니다 */}
+              <img src='ai-image4.png' alt='Life Graph' className='absolute left-[50px] top-[20px] h-[140px] w-[130px]' />
+              <h3 className='absolute left-[15px] top-[160px] text-base font-bold leading-[25px] text-black'>
+                {' '}
+                {/* 왼쪽 정렬과 크기 조절 */}
+                Life Graph
+              </h3>
+              <p className='absolute left-[15px] top-[190px] w-[210px] text-sm font-normal leading-[20px] text-black'>인생의 여러 가지 사건들을 그래프로 만들어 보세요</p>
             </div>
           </div>
         </section>
 
         {/* Latest Posts Section */}
-        <section className="my-6 rounded bg-white">
-          <h2 className="text-xl font-bold">지금 뜨는 게시글</h2>
-          <div className="mt-4 space-y-4">
+        <section className='my-6 rounded bg-white'>
+          <h2 className='text-2xl font-bold leading-[30px]'>지금 뜨는 게시글</h2>
+          <div className='mt-4 space-y-4'>
             {posts.map((post) => (
-              <div key={post.id} className="rounded border border-gray-200 p-4 shadow-sm">
-                <h3 className="font-bold">{post.title}</h3>
-                <p className="mt-2 text-gray-600">조회수: {post.views}</p>
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="flex items-center">
-                    <img
-                      src={post.author.profileImage || 'https://via.placeholder.com/32'}
-                      alt="User Profile"
-                      className="h-8 w-8 rounded-full"
-                    />
-                    <span className="ml-2 text-sm text-gray-500">{post.author.name}</span>
+              <div key={post.id} className='rounded border border-gray-200 p-4 shadow-sm'>
+                <h3 className='font-bold'>{post.title}</h3>
+                <p className='mt-2 text-gray-600'>조회수: {post.views}</p>
+                <div className='mt-4 flex items-center justify-between'>
+                  <div className='flex items-center'>
+                    <img src={post.author.profileImage || 'https://via.placeholder.com/32'} alt='User Profile' className='h-8 w-8 rounded-full' />
+                    <span className='ml-2 text-sm text-gray-500'>{post.author.name}</span>
                   </div>
-                  <span className="text-sm text-gray-500">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </span>
+                  <span className='text-sm text-gray-500'>{new Date(post.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
             ))}

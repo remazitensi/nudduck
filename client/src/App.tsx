@@ -21,14 +21,14 @@ import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
 import HomePage from './pages/HomePage';
 import MainPage from './pages/MainPage';
 
-import AICoach from './pages/AICoach';
-import ChatRoom from './pages/ChatRoom';
+// import AICoach from './pages/AICoach';
+// import ChatRoom from './pages/ChatRoom';
 
-import AnotherUserModal from './components/Community/AnotherUserModal'; // AnotherUserModal 개발 후 삭제 예정
-import CommunityPostCreate from './pages/Community/CommunityPostCreate';
-import CommunityPostDetail from './pages/Community/CommunityPostDetail';
-import CommunityPostEdit from './pages/Community/CommunityPostEdit';
-import CommunityPostList from './pages/Community/CommunityPostList';
+// import AnotherUserModal from './components/Community/AnotherUserModal'; // AnotherUserModal 개발 후 삭제 예정
+// import CommunityPostCreate from './pages/Community/CommunityPostCreate';
+// import CommunityPostDetail from './pages/Community/CommunityPostDetail';
+// import CommunityPostEdit from './pages/Community/CommunityPostEdit';
+// import CommunityPostList from './pages/Community/CommunityPostList';
 
 import { LifeGraphDetail } from './pages/LifeGraph/LifeGraphDetail';
 import LifeGraphList from './pages/LifeGraph/LifeGraphList';
@@ -50,27 +50,27 @@ const App: React.FC = () => {
           <Route index element={<MainPage />} />
 
           {/* 홈페이지 */}
-          <Route path='home' element={<HomePage />} />
+          <Route path='HomePage' element={<HomePage />} />
 
           {/* 커뮤니티 관련 라우트 */}
           <Route path='community'>
             {/* 기본으로 게시글 리스트를 렌더링 */}
-            <Route index element={<CommunityPostList />} />
+            {/* <Route index element={<CommunityPostList />} /> */}
             {/* 게시글 상세 페이지 */}
-            <Route path=':id' element={<CommunityPostDetail />} />
+            {/* <Route path=':id' element={<CommunityPostDetail />} /> */}
             {/* 게시글 작성 페이지 */}
-            <Route path='create' element={<CommunityPostCreate />} />
+            {/* <Route path='create' element={<CommunityPostCreate />} /> */}
             {/* 게시글 수정 페이지 */}
-            <Route path='edit/:id' element={<CommunityPostEdit />} />
+            {/* <Route path='edit/:id' element={<CommunityPostEdit />} /> */}
             {/* 다른 유저 모달 확인용 */}
-            <Route path='another' element={<AnotherUserModal />} />
+            {/* <Route path='another' element={<AnotherUserModal />} /> */}
           </Route>
 
           {/* 1대1 채팅방 */}
-          <Route path='chat' element={<ChatRoom />} />
+          {/* <Route path='chat' element={<ChatRoom />} /> */}
 
           {/* AI 코치 */}
-          <Route path='ai-coach/:id?' element={<AICoach />} />
+          {/* <Route path='ai-coach/:id?' element={<AICoach />} /> */}
 
           {/* 인생 그래프 관련 라우트 */}
           <Route path='life-graph'>

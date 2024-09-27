@@ -37,7 +37,7 @@ const Header: React.FC = () => {
   // 사용자 정보 요청 함수
   const fetchUserData = async () => {
     try {
-      const response = await baseApi.get('/api/my'); // 로그인된 사용자 정보 가져오기
+      const response = await baseApi.get('/my'); // 로그인된 사용자 정보 가져오기
       if (response.status === 200) {
         const { nickname, email, imageUrl } = response.data;
         setUser({
@@ -56,7 +56,7 @@ const Header: React.FC = () => {
   // 로그아웃 상태 변경 핸들러
   const handleLogoutClick = async () => {
     try {
-      await baseApi.post('/api/my/logout'); // 서버에 로그아웃 요청
+      await baseApi.post('/my/logout'); // 서버에 로그아웃 요청
       localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 제거
       setIsLoggedIn(false);
       setUser({
@@ -83,73 +83,63 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full bg-white shadow-md">
-      <div className="container mx-auto flex items-center justify-between px-8 py-4">
+    <header className='w-full bg-white shadow-md'>
+      <div className='container mx-auto flex items-center justify-between px-8 py-4'>
         {/* 로고 및 사이트명 */}
-        <Link to="/HomePage" className="flex items-center">
-          <img src="/logo.png" className="mr-4 h-[66px] w-[66px]" alt="Nudduck Logo" />
-          <span className="text-4xl font-bold text-gray-800">NUDDUCK</span>
+        <Link to='/HomePage' className='flex items-center'>
+          <img src='/logo_image.png' className='mr-4 h-[66px] w-[66px]' alt='Nudduck Logo' />
+          <span className='text-4xl font-bold text-gray-800'>NUDDUCK</span>
         </Link>
 
         {/* 로그인 후에만 메뉴 표시 */}
         {isLoggedIn && (
-          <nav className="flex space-x-8">
-            <Link to="/AICoach" className="hover:text-[#909700]">
+          <nav className='flex space-x-8'>
+            <Link to='/AICoach' className='hover:text-[#909700]'>
               AI 코치
             </Link>
-            <Link to="/ExpertsPage" className="hover:text-[#909700]">
+            <Link to='/ExpertsPage' className='hover:text-[#909700]'>
               전문가 상담
             </Link>
-            <Link to="/community" className="hover:text-[#909700]">
+            <Link to='/community' className='hover:text-[#909700]'>
               커뮤니티
             </Link>
-            <Link to="/LifeGraphDetail" className="hover:text-[#909700]">
+            <Link to='/life-graph' className='hover:text-[#909700]'>
               인생 그래프
             </Link>
           </nav>
         )}
 
         {/* 로그인 여부에 따른 사용자 정보 표시 */}
-        <div className="flex items-center space-x-4">
+        <div className='flex items-center space-x-4'>
           {!isLoggedIn ? (
-            <div className="space-x-2">
-              <button onClick={openLoginModal} className="hover:underline">
+            <div className='space-x-2'>
+              <button onClick={openLoginModal} className='hover:underline'>
                 로그인
               </button>
               <span>|</span>
-              <button onClick={openLoginModal} className="hover:underline">
+              <button onClick={openLoginModal} className='hover:underline'>
                 회원가입
               </button>
             </div>
           ) : (
-            <div className="relative" onClick={handleProfileClick}>
-              <img
-                src={user.profileImage}
-                alt="Profile"
-                className="h-8 w-8 cursor-pointer rounded-full"
-              />
-              <div className="text-sm font-semibold">{user.nickname}</div>
+            <div className='relative' onClick={handleProfileClick}>
+              <img src={user.profileImage} alt='Profile' className='h-8 w-8 cursor-pointer rounded-full' />
+              <div className='text-sm font-semibold'>{user.nickname}</div>
               {dropdownOpen && (
-                <div className="absolute right-0 z-20 mt-2 flex w-[270px] items-center rounded-lg bg-white p-4 shadow-xl">
-                  <img
-                    src={user.profileImage}
-                    alt="Profile"
-                    className="h-[72px] w-[72px] rounded-full"
-                  />
-                  <div className="ml-4">
-                    <div className="flex items-center">
-                      <span className="text-[15px] font-semibold text-[#222222]">
-                        {user.nickname}
-                      </span>
-                      <span className="ml-1 text-[15px] font-normal text-[#555555]">님</span>
+                <div className='absolute right-0 z-20 mt-2 flex w-[270px] items-center rounded-lg bg-white p-4 shadow-xl'>
+                  <img src={user.profileImage} alt='Profile' className='h-[72px] w-[72px] rounded-full' />
+                  <div className='ml-4'>
+                    <div className='flex items-center'>
+                      <span className='text-[15px] font-semibold text-[#222222]'>{user.nickname}</span>
+                      <span className='ml-1 text-[15px] font-normal text-[#555555]'>님</span>
                     </div>
-                    <div className="text-[13px] text-[#555555]">{user.email}</div>
-                    <div className="mt-1 flex items-center space-x-2 text-[13px] text-[#333333]">
-                      <Link to="/mypage" className="hover:underline">
+                    <div className='text-[13px] text-[#555555]'>{user.email}</div>
+                    <div className='mt-1 flex items-center space-x-2 text-[13px] text-[#333333]'>
+                      <Link to='/my-page' className='hover:underline'>
                         마이페이지
                       </Link>
-                      <span className="text-[#888888]">|</span>
-                      <button onClick={handleLogoutClick} className="hover:underline">
+                      <span className='text-[#888888]'>|</span>
+                      <button onClick={handleLogoutClick} className='hover:underline'>
                         로그아웃
                       </button>
                     </div>
