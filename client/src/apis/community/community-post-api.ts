@@ -166,9 +166,9 @@ export async function getPostDetail(id: number) {
 }
 
 // 게시글 작성 post 요청
-export async function createPost({ post }: { post: PostBodyData }) {
+export async function createPost(post: PostBodyData) {
   try {
-    const response = await baseApi.post(api.community, { post });
+    const response = await baseApi.post(api.community, post);
 
     if (response.status === 201) {
       // Todo : 게시글이 성공적으로 생성된 경우
