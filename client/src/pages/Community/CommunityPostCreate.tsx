@@ -11,15 +11,12 @@
  */
 import React, { useRef, useState } from 'react';
 
-import '@toast-ui/editor/dist/toastui-editor.css';
-import { Editor } from '@toast-ui/react-editor';
 import { useNavigate } from 'react-router-dom';
 import { createPost } from '../../apis/community/community-post-api';
 
 const CommunityPostCreate: React.FC = () => {
   const navigate = useNavigate();
-  const editorRef = useRef<any>(null); // useRef로 Editor의 값을 참조
-
+  const editorRef = useRef<HTMLTextAreaElement>(null); // textarea에 대한 참조
   const [view, setView] = useState(false);
   const [typing, setTyping] = useState('');
   const [message, setMessage] = useState('');
@@ -45,17 +42,36 @@ const CommunityPostCreate: React.FC = () => {
 
   // 게시글을 저장하는 함수
   const savePost = async () => {
-    const content = editorRef.current?.getInstance().getMarkdown();
+    const content = editorRef.current?.value || ''; // textarea의 내용 가져오기
+    // 카테고리 값 변환
+    let categoryValue;
+    switch (category) {
+      case '면접':
+        categoryValue = 'interview';
+        break;
+      case '모임':
+        categoryValue = 'meeting';
+        break;
+      case '스터디':
+        categoryValue = 'study';
+        break;
+      case '잡담':
+        categoryValue = 'talk';
+        break;
+      default:
+        return alert('카테고리 설정이 필요합니다!');
+    }
     const post = {
       title: typing,
       content: content,
-      category: category,
+      category: categoryValue,
     };
+    console.log(post);
 
     try {
       // API 호출 및 성공 시 리다이렉트
       await createPost({ post });
-      alert('게시글이 성공적으로 저장되었습니다.');
+      alert('게시글이 성공적으로 작성되었습니다.');
       navigate(`/community`);
     } catch (error: any) {
       // 에러 발생 시 처리
@@ -63,11 +79,6 @@ const CommunityPostCreate: React.FC = () => {
       navigate(`/community`);
     }
   };
-
-  const toolbarItems = [
-    ['heading', 'bold', 'italic', 'strike'],
-    ['ul', 'ol', 'task', 'link'],
-  ];
 
   return (
     <div className='community-titles flex flex-col items-center'>
@@ -121,31 +132,21 @@ const CommunityPostCreate: React.FC = () => {
         <input
           value={typing}
           onChange={onTyping}
-          className='h-[60px] w-full rounded-[10px] border pl-[35px] text-[24px] text-[#808080]'
+          className='h-[60px] w-full rounded-[10px] border pl-[35px] text-[20px] text-[#808080]'
           placeholder='게시글의 주제나 목적이 드러날 수 있도록 작성해 주세요'
         />
         {/* 유효성 검사 문구 유효성 검사 함수: onTyping */}
         {message && <p className='mt-[5px] text-red-500'>{message}</p>}
       </div>
-      <div className='mt-[40px] h-[800px] w-[1300px] border'>
-        <div className='mx-auto mt-[37px] h-[600px] w-[1200px]'>
-          <Editor
-            // weight='100%'
-            ref={editorRef}
-            height='100%'
-            initialEditType='wysiwyg'
-            previewStyle='vertical'
-            initialValue=' '
-            toolbarItems={toolbarItems}
-          />
-          <div className='mt-[80px] flex justify-end gap-[23px]'>
-            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
-              취소
-            </button>
-            <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
-              저장
-            </button>
-          </div>
+      <div className='mt-[40px] w-[1300px] rounded-[10px] border'>
+        <textarea className='m-[30px] w-[1240px] resize-none overflow-auto' ref={editorRef} rows={10} placeholder='30자 이상 입력해주세요.'></textarea>
+        <div className='flex justify-end gap-[23px] p-[20px]'>
+          <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
+            취소
+          </button>
+          <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
+            저장
+          </button>
         </div>
       </div>
     </div>
