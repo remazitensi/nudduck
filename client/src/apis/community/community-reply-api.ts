@@ -8,13 +8,13 @@
  * 2024.09.20    김민지      Created     댓글 CRUD api 작성, 파일 이동
  */
 
-import { CommentsDto, CreateCommentDto } from '../../types/commets-type';
+import { CommentsResDto, CreateCommentDto } from '../../types/commets-type';
 import { api, baseApi } from '../base-api';
 
 // 댓글 목록 조회 (페이지네이션 포함)
-export const getComments = async (postId: number, limit = 10, offset = 0): Promise<CommentsDto[]> => {
+export const getComments = async (postId: number, limit = 10, offset = 0): Promise<CommentsResDto> => {
   try {
-    const response = await baseApi.get<CommentsDto[]>(`${api.community}/article/${postId}/comments/root`, {
+    const response = await baseApi.get<CommentsResDto>(`${api.community}/article/${postId}/comments/root`, {
       params: { limit, offset },
     });
     return response.data;
