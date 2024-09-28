@@ -113,8 +113,8 @@ const CommunityPostList: React.FC = () => {
         </div>
       </div>
 
-      <div className='community-post mt-[60px]'>
-        <div className='flex w-[900px] justify-between'>
+      <div className='community-post mb-[90px] mt-[60px] flex flex-col items-center'>
+        <div className='flex w-[840px] justify-between'>
           <div>
             <Link to='/community/create'>
               <button className='h-[46px] w-[180px] rounded-[10px] bg-[#909700] text-[20px] font-bold text-white'>게시글 작성</button>
@@ -153,7 +153,7 @@ const CommunityPostList: React.FC = () => {
         </div>
 
         <div className='w-[900px]'>
-          <div className='mb-[30px] flex flex-col'>
+          <div className='mx-[30px] flex flex-col'>
             <div className='mt-[10px] w-full border-b-2 border-[8D8B67]'></div>
             {/* 게시물 목록 컴포넌트 */}
             <PostList posts={posts} />
