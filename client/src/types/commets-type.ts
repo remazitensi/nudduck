@@ -4,3 +4,16 @@ export type CreateCommentDto = {
   commentId?: number;
   parentId?: number;
 };
+
+export type CommentsDto = {
+  postId: number;
+  commentId: number;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  replyCount: number;
+  parentId: number;
+  userId: number;
+  nickname: string;
+  imageUrl: string;
+};
