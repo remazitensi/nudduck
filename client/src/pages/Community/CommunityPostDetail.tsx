@@ -121,27 +121,32 @@ const CommunityPostDetail: React.FC = () => {
         <div className='mt-[77px] text-[24px] font-bold'>댓글</div>
         <div className='relative'>
           <div className='mt-[19px] h-[150px] w-[1200px] rounded-[10px] bg-[#F3F3F2] p-[20px] text-[24px] outline-none'>
-            <input className='h-full w-full bg-[#F3F3F2] text-[24px] outline-none' placeholder='댓글을 입력해 주세요' />
+            <textarea className='h-full w-full bg-[#F3F3F2] text-[24px] outline-none' placeholder='댓글을 입력해 주세요'></textarea>
           </div>
           <button className='absolute right-[20px] top-[90px] h-[40px] w-[95px] rounded-[5px] bg-[#909700] font-bold text-white'>댓글달기</button>
         </div>
 
         <div className='Comment mt-[58px] flex w-[1200px] flex-col'>
-          <div className='flex gap-[10px] pl-[20px] pt-[20px]'>
-            <div className='h-[50px] w-[50px] rounded-full'>
-              <img className='object-cover' src='/cat_image.png' alt='catImg' />
+          {/* 이 안에 댓글 생성 */}
+          <div>
+            <div className='flex gap-[10px] pl-[20px] pt-[20px]'>
+              <div className='h-[50px] w-[50px] rounded-full'>
+                <img className='object-cover' src='/cat_image.png' alt='catImg' />
+              </div>
+              <div className='flex items-center text-[20px] font-semibold'>스터디구하는자</div>
+              <div className='flex items-center text-[12px] text-[#AEAC9A]'>24-09-08 22:22</div>
             </div>
-            <div className='flex items-center text-[20px] font-semibold'>스터디구하는자</div>
-            <div className='flex items-center text-[12px] text-[#AEAC9A]'>24-09-08 22:22</div>
+            <div className='pl-[20px] pt-[7px] text-[16px]'>안녕하세요 글 정말 많이 썼네요 무슨 내용인지 모르겠어요</div>
+            <div className='mt-[35px] w-[1200px] border-b-2 border-[8D8B67]'></div>
           </div>
-          <div className='pl-[20px] pt-[7px] text-[16px]'>안녕하세요 글 정말 많이 썼네요 무슨 내용인지 모르겠어요</div>
-          <div className='mt-[35px] w-[1200px] border-b-2 border-[8D8B67]'></div>
+          {/* --------------------- */}
         </div>
 
         <div className='Reply mt-[20px] flex w-[1200px] flex-col'>
-          <div className='flex gap-[10px] pl-[20px] pt-[20px]'>
-            <img className='h-[32px] w-[32px]' src='/reply_arrow.png' alt='replyImg' />
-            {/* <img className='' src='/cat_image.png' alt='catImg' /> */}
+          <div className='flex items-center gap-[10px] pl-[20px] pt-[20px]'>
+            {/* 대댓글 화살표 */}
+            <img className='h-[32px] w-[32px]' src='/comment-arrow.png' alt='replyImg' />
+            <img className='' src='/cat_image.png' alt='catImg' />
             <div className='flex items-center text-[20px] font-semibold'>스터디구하는자</div>
             <div className='flex items-center text-[12px] text-[#AEAC9A]'>24-09-08 22:22</div>
           </div>
