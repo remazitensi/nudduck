@@ -6,6 +6,7 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.10    이승철      Created
+ * 2024.09.28    이승철      Modified    해시태그 글자수 제한 변경
  */
 
 import { ApiProperty } from '@nestjs/swagger';
@@ -39,7 +40,7 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @ArrayMaxSize(5) // 최대 5개의 해시태그 제한
-  @Length(1, 5, { each: true }) // 각 해시태그는 1~5자
+  @ArrayMaxSize(5)
+  @Length(2, 6, { each: true })
   hashtags?: string[];
 }
