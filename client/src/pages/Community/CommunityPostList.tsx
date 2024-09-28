@@ -12,7 +12,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getInterviewPostList, getMeetingPostList, getPostList, getStudyPostList, getTalkPostList } from '../../apis/community/community-post-api';
+import { getPostList } from '../../apis/community/community-post-api';
 import { PostList } from '../../components/Community/PostList';
 import { Post, PostListParams } from '../../types/community-type';
 
@@ -24,30 +24,13 @@ const CommunityPostList: React.FC = () => {
   const [sort, setSort] = useState<string>('createdAt:desc');
 
   // const [sort, setSort] = useState('createdAt:desc'); // 최신순, 조회순 관리
-  const [selectedCategory, setSelectedCategory] = useState('전체'); // 카테고리 상태
+  const [selectedCategory, setSelectedCategory] = useState(''); // 카테고리 상태
 
   // 카테고리에 따라 적절한 fetch 함수 호출
   const fetchPosts = async () => {
-    const params: PostListParams = { page: pages.currentPage, sort: sort };
+    const params: PostListParams = { page: pages.currentPage, sort, category: selectedCategory };
     console.log(params);
-    let data;
-
-    switch (selectedCategory) {
-      case '면접':
-        data = await getInterviewPostList(params);
-        break;
-      case '모임':
-        data = await getMeetingPostList(params);
-        break;
-      case '스터디':
-        data = await getStudyPostList(params);
-        break;
-      case '잡담':
-        data = await getTalkPostList(params);
-        break;
-      default:
-        data = await getPostList(params);
-    }
+    const data = await getPostList(params);
     setPosts(data[0]);
     setTotalPostCount(data[1]);
   };
@@ -64,23 +47,28 @@ const CommunityPostList: React.FC = () => {
   useEffect(() => {
     fetchPosts();
     console.log('useEffect save posts :', posts);
-  }, [selectedCategory, pages.currentPage]);
+  }, [selectedCategory, pages.currentPage, sort]);
 
   // 페이지네이션 현재 페이지 설정
   const handleCurrentPage = (newCurrentPage: number) => {
     setPages((pages) => ({ ...pages, currentPage: newCurrentPage })); // posts의 currentPage 상태 업데이트
   };
 
-  // 카테고리 선택 후 페이지 리셋
+  // 카테고리 선택
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
-    setPages((pages) => ({ ...pages, currentPage: 1 }));
+    resetCurrentPage();
   };
 
-  // 정렬 선택 후 페이지 리셋
+  // 정렬 선택
   const handleSortChange = (sort: string) => {
     setSort(sort);
-    setPosts((pages) => ({ ...pages, currentPage: 1 }));
+    resetCurrentPage();
+  };
+
+  // 현재 페이지 1페이지로 리셋
+  const resetCurrentPage = () => {
+    setPages((pages) => ({ ...pages, currentPage: 1 }));
   };
 
   return (
@@ -92,19 +80,19 @@ const CommunityPostList: React.FC = () => {
       <div className='mt-[55px]'>
         <div className='flex items-center'>
           <div className='flex cursor-pointer gap-[80px] text-[20px]'>
-            <div onClick={() => handleCategoryChange('전체')} className={`text-[${selectedCategory === '전체' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('')} className={`text-[${selectedCategory === '' ? '#59573D' : '#AEAC9A'}]`}>
               전체
             </div>
-            <div onClick={() => handleCategoryChange('면접')} className={`text-[${selectedCategory === '면접' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('interview')} className={`text-[${selectedCategory === 'interview' ? '#59573D' : '#AEAC9A'}]`}>
               면접
             </div>
-            <div onClick={() => handleCategoryChange('모임')} className={`text-[${selectedCategory === '모임' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('meeting')} className={`text-[${selectedCategory === 'meeting' ? '#59573D' : '#AEAC9A'}]`}>
               모임
             </div>
-            <div onClick={() => handleCategoryChange('스터디')} className={`text-[${selectedCategory === '스터디' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('study')} className={`text-[${selectedCategory === 'study' ? '#59573D' : '#AEAC9A'}]`}>
               스터디
             </div>
-            <div onClick={() => handleCategoryChange('잡담')} className={`text-[${selectedCategory === '잡담' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('talk')} className={`text-[${selectedCategory === 'talk' ? '#59573D' : '#AEAC9A'}]`}>
               잡담
             </div>
           </div>

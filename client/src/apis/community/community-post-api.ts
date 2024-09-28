@@ -24,12 +24,12 @@ function isAxiosError(error: unknown): error is AxiosError {
 }
 
 // 전체 게시글 목록 get 요청
-export async function getPostList({ page, sort }: PostListParams) {
+export async function getPostList({ page, sort, category }: PostListParams) {
   // 카테고리가 있으면 /community/{category}, 없으면 /community
   // 리팩토링 이후 카테고리 선택 시 setCategory가 잘 동작하면 주석 해제할 예정
   // const url = category ? `${api.community}/${category}` : api.community;
 
-  const url = api.community;
+  const url = `${api.community}/${category}`;
   try {
     // get 요청으로 받은 응답을 response에 저장
     const response = await baseApi.get(url, {
