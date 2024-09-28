@@ -11,6 +11,7 @@
  * 2024.09.23    이승철      Modified    UserProfileDto로 변경
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
  * 2024.09.26    이승철      Modified    인생그래프 조회 인자 순서변경
+ * 2024.09.29    이승철      Modified    expression 리턴 결과 통일
  */
 
 import { LifeGraphRepository } from '@_modules/life-graph/life-graph.repository';
@@ -33,7 +34,9 @@ export class ProfileService {
 
     const hashtags = user.hashtags.map((hashtag) => hashtag.name);
 
-    const favoriteLifeGraph = user.favoriteLifeGraph ? await this.lifeGraphRepository.findOneLifeGraph( user.id, user.favoriteLifeGraph.id, { relations: ['events'] }) : null;
+    const favoriteLifeGraph = await (user.favoriteLifeGraph 
+      ? this.lifeGraphRepository.findOneLifeGraph(user.id, user.favoriteLifeGraph.id, { relations: ['events'] }) 
+      : Promise.resolve(null));
 
     return {
       nickname: user.nickname,
