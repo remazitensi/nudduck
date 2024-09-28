@@ -63,7 +63,7 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
               </div>
               <div className='flex flex-col justify-center'>
                 <div className='text-[24px] font-bold'>{userData.nickname}</div>
-                <div className='text-[20px] font-bold text-[#8D8B67]'>{userData.hashtags?.join(' ') || '해시태그 없음'}</div>
+                <div className='text-[20px] font-bold text-[#8D8B67]'>{userData.hashtags?.join(' ') || ''}</div>
               </div>
             </div>
             <div className='flex h-[40px] w-[180px] justify-center rounded-[10px] border border-[#8D8B67] hover:border-[#A1DFFF] hover:bg-[#EEF9FF] hover:font-bold'>
