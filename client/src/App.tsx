@@ -24,11 +24,10 @@ import MainPage from './pages/MainPage';
 import { AICoach } from './pages/AICoach';
 import { ChatRoom } from './pages/ChatRoom';
 
-import { AnotherUserModal } from './components/Community/AnotherUserModal'; // AnotherUserModal 개발 후 삭제 예정
-import { CommunityPostCreate } from './pages/Community/CommunityPostCreate';
-import { CommunityPostDetail } from './pages/Community/CommunityPostDetail';
-import { CommunityPostEdit } from './pages/Community/CommunityPostEdit';
-import { CommunityPostList } from './pages/Community/CommunityPostList';
+import CommunityPostCreate from './pages/Community/CommunityPostCreate';
+import CommunityPostDetail from './pages/Community/CommunityPostDetail';
+import CommunityPostEdit from './pages/Community/CommunityPostEdit';
+import CommunityPostList from './pages/Community/CommunityPostList';
 
 import { LifeGraphDetail } from './pages/LifeGraph/LifeGraphDetail';
 import LifeGraphList from './pages/LifeGraph/LifeGraphList';
@@ -62,8 +61,6 @@ const App: React.FC = () => {
             <Route path='create' element={<CommunityPostCreate />} />
             {/* 게시글 수정 페이지 */}
             <Route path='edit/:id' element={<CommunityPostEdit />} />
-            {/* 다른 유저 모달 확인용 */}
-            <Route path='another' element={<AnotherUserModal />} />
           </Route>
 
           {/* 1대1 채팅방 */}
