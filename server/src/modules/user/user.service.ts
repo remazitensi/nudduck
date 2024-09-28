@@ -16,6 +16,7 @@
  * 2024.09.24    이승철      Modified    가입일 반환
  * 2024.09.24    이승철      Modified    인생그래프 조회 인자 순서변경
  * 2024.09.27    이승철      Modified    프로필 조회 병렬처리
+ * 2024.09.29    이승철      Modified    조회 에러처리 및 수정 read도 transaction에 포함
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
@@ -43,23 +44,25 @@ export class UserService {
   ): Promise<MyProfileDto> {
     const { page, limit } = myPaginationQueryDto;
     const actualPage = Math.max(page, 1);
-
-    const [user, totalCount, posts, favoriteLifeGraph] = await Promise.all([
-      this.userRepository.findUserById(userId, ['favoriteLifeGraph', 'hashtags']),
-      this.userRepository.countMyPosts(userId),
-      this.userRepository.findMyPosts(userId, actualPage, limit),
-      (async () => {
-        const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph']);
-        if (user?.favoriteLifeGraph) {
-          return this.userRepository.findFavoriteLifeGraph(user.id, user.favoriteLifeGraph.id, ['events']);
-        }
-        return null;
-      })(),
-    ]);
   
+    // 유저 조회는 가장 중요한 작업이므로 별도로 처리
+    const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph', 'hashtags']);
     if (!user) {
       throw new NotFoundException('회원을 찾을 수 없습니다.');
     }
+  
+    const [totalCountResult, postsResult, favoriteLifeGraphResult] = await Promise.allSettled([
+      this.userRepository.countMyPosts(userId),
+      this.userRepository.findMyPosts(userId, actualPage, limit),
+      user.favoriteLifeGraph 
+        ? this.userRepository.findFavoriteLifeGraph(user.id, user.favoriteLifeGraph.id, ['events'])
+        : Promise.resolve(null),
+    ]);
+  
+    // 다른 작업들은 실패해도 기본값을 설정
+    const totalCount = totalCountResult.status === 'fulfilled' ? totalCountResult.value : 0;
+    const posts = postsResult.status === 'fulfilled' ? postsResult.value : [];
+    const favoriteLifeGraph = favoriteLifeGraphResult.status === 'fulfilled' ? favoriteLifeGraphResult.value : null;
   
     const hashtags = user.hashtags.map((hashtag) => hashtag.name);
     const postSummaries = posts.map((post) => new CommunitySummaryDto(post));
@@ -84,14 +87,14 @@ export class UserService {
     await queryRunner.startTransaction();
 
     try {
-      const user = await this.userRepository.findUserById(userId);
+      const user = await queryRunner.manager.findOne(User, { where: { id: userId }, relations: ['hashtags'] });
       if (!user) {
         throw new NotFoundException('회원을 찾을 수 없습니다.');
       }
 
       // 닉네임 유효성 검사 및 업데이트 (닉네임이 undefined가 아니고 기존과 다른 경우에만)
       if (updateProfileDto.nickname && user.nickname !== updateProfileDto.nickname) {
-        await this.updateNickname(user, updateProfileDto.nickname);
+        await this.updateNickname(queryRunner, user, updateProfileDto.nickname);
       }
 
       // 프로필 이미지 수정/삭제 (imageUrl이 undefined가 아니고 기존과 다른 경우에만)
@@ -101,7 +104,7 @@ export class UserService {
 
       // 해시태그 수정 (해시태그가 undefined가 아니고 기존과 다른 경우에만)
       if (updateProfileDto.hashtags && updateProfileDto.hashtags.length > 0) {
-        await this.updateHashtags(userId, updateProfileDto.hashtags);
+        await this.updateHashtags(queryRunner, userId, updateProfileDto.hashtags);
       }
 
       // 변경 사항을 DB에 저장
@@ -116,8 +119,8 @@ export class UserService {
     }
   }
 
-  private async updateNickname(user, nickname: string): Promise<void> {
-    const existingUser = await this.userRepository.findUserByNickname(nickname);
+  private async updateNickname(queryRunner, user, nickname: string): Promise<void> {
+    const existingUser = await queryRunner.manager.findOne(User, { where: { nickname } });
     if (existingUser) {
       throw new ConflictException('이미 사용 중인 닉네임입니다.');
     }
@@ -132,19 +135,19 @@ export class UserService {
     }
   }
 
-  private async updateHashtags(userId: number, hashtags: string[]): Promise<void> {
-    const currentHashtagsSet = new Set(await this.userRepository.findHashtagsByUserId(userId)); // 기존 해시태그를 Set으로 변환
-    const uniqueHashtagsSet = new Set(hashtags); // 새로운 해시태그 목록을 Set으로 변환
-
-    const hashtagsToAdd = Array.from(uniqueHashtagsSet).filter((tag) => !currentHashtagsSet.has(tag)); // Set을 사용해 추가할 해시태그 필터링
-    const hashtagsToRemove = Array.from(currentHashtagsSet).filter((tag) => !uniqueHashtagsSet.has(tag)); // Set을 사용해 삭제할 해시태그 필터링
-
+  private async updateHashtags(queryRunner, userId: number, hashtags: string[]): Promise<void> {
+    const currentHashtagsSet = new Set<string>(await this.userRepository.findHashtagsByUserId(userId)); // Set<string>으로 명시
+    const uniqueHashtagsSet = new Set<string>(hashtags); 
+  
+    const hashtagsToAdd = Array.from(uniqueHashtagsSet).filter((tag: string) => !currentHashtagsSet.has(tag));
+    const hashtagsToRemove = Array.from(currentHashtagsSet).filter((tag: string) => !uniqueHashtagsSet.has(tag));
+  
     if (hashtagsToRemove.length > 0) {
-      await this.userRepository.deleteHashtags(userId, hashtagsToRemove);
+      await this.userRepository.deleteHashtags(userId, hashtagsToRemove); // 트랜잭션 내에서 해시태그 삭제
     }
-
+  
     if (hashtagsToAdd.length > 0) {
-      const userHashtagsToAdd = hashtagsToAdd.map((tag) => {
+      const userHashtagsToAdd = hashtagsToAdd.map((tag: string) => {
         const userHashtag = new UserHashtag();
         const user = new User();
         user.id = userId;
@@ -152,7 +155,7 @@ export class UserService {
         userHashtag.name = tag;
         return userHashtag;
       });
-      await this.userRepository.createHashtags(userHashtagsToAdd);
+      await this.userRepository.createHashtags(userHashtagsToAdd); // 트랜잭션 내에서 해시태그 추가
     }
   }
 

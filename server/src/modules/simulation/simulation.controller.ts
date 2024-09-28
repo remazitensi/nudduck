@@ -10,6 +10,7 @@
  * 2024.09.19    이승철      Modified    ApiResponse 추가
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
  * 2024.09.21    이승철      Modified    절대경로 변경
+ * 2024.09.29    이승철      Modified    주석 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
@@ -66,8 +67,9 @@ export class SimulationController {
   async askAI(@Body() askAIDto: AskAIDto): Promise<AIChatResponseDto> {
     const aiResponse = await this.simulationService.getAIResponse(askAIDto.query);
 
-    // 유저 질문과 AI 응답을 실시간으로 저장
+    // 유저 질문 먼저 저장 후,
     await this.simulationService.createUserMessage(askAIDto.sessionId, askAIDto.query);
+    // AI 응답 저장
     await this.simulationService.createAIMessage(askAIDto.sessionId, aiResponse.Answer);
 
     return {

@@ -7,19 +7,23 @@
  * Date          Author      Status      Description
  * 2024.09.12    이승철      Created
  * 2024.09.16    이승철      Modified    절대경로 변경
+ * 2024.09.29    이승철      Modified    HttpService 삽입
  */
 
 import { AIChatMessage, AIChatSession } from '@_modules/simulation/entity/ai-chat.entity';
 import { SimulationRepository } from '@_modules/simulation/simulation.repository';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+import { HttpService } from '@nestjs/axios'; 
+import { firstValueFrom } from 'rxjs';
+
 
 @Injectable()
 export class SimulationService {
   constructor(
     private readonly simulationRepository: SimulationRepository,
     private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {}
 
   // 특정 유저의 채팅 세션 조회
@@ -71,7 +75,9 @@ export class SimulationService {
   // AI 서버로 질문을 보내고 응답 받기 (예외 처리 추가)
   async getAIResponse(query: string): Promise<{ Answer: string }> {
     try {
-      const response = await axios.post(this.configService.get('AI_QUERY_URL'), { query });
+      const response = await firstValueFrom(
+        this.httpService.post(this.configService.get('AI_QUERY_URL'), { query }),
+      );
       return response.data;
     } catch (error) {
       if (error.response) {
