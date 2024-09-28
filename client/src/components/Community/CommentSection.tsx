@@ -8,15 +8,15 @@
  * 2024.09.28    김민지      Created
  */
 
+import { CommentsDto } from '../../types/commets-type';
 import { CommentThread } from './CommentThread';
 
-export const CommentSection = ({ postId }: { postId: number }) => {
-  console.log('Post ID:', postId); // postId는 숫자 값입니다.
-  //댓글불러오기
-
+export const CommentSection: React.FC<{ comments: CommentsDto[] }> = ({ comments }) => {
+  console.log(comments);
   return (
     <div>
-      <CommentThread></CommentThread>
+      {/* comments 배열이 null 또는 undefined일 때 빈 배열로 처리 */}
+      {comments.length > 0 ? comments.map((comment) => <CommentThread key={comment.commentId} comment={comment} />) : <div>댓글이 없습니다.</div>}
     </div>
   );
 };

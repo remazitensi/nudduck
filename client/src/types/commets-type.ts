@@ -17,3 +17,8 @@ export type CommentsDto = {
   nickname: string;
   imageUrl: string;
 };
+
+export type CommentsResDto = {
+  comments: CommentsDto[];
+  total: number;
+};

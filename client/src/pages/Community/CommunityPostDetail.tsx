@@ -18,7 +18,7 @@ import AnotherUserModal from '../../components/Community/AnotherUserModal';
 import { CategoryBtn } from '../../components/Community/CategoryBtn';
 import { CommentSection } from '../../components/Community/CommentSection';
 import { CreateComment } from '../../components/Community/CreateComment';
-import { CommentsDto } from '../../types/commets-type';
+import { CommentsDto, CommentsResDto } from '../../types/commets-type';
 import { Post } from '../../types/community-type';
 
 const CommunityPostDetail: React.FC = () => {
@@ -33,8 +33,9 @@ const CommunityPostDetail: React.FC = () => {
     userId: 0,
     nickname: '',
   });
-  const [comments, setComments] = useState<CommentsDto[] | null>(); // 댓글 목록 state 추가
+  const [comments, setComments] = useState<CommentsDto[]>([]); // 댓글 목록 state 추가
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
+  const [totalPage, setTotalPage] = useState<number>(0);
 
   const handleOpenModal = () => {
     setOpenUserModal(true);
@@ -58,12 +59,13 @@ const CommunityPostDetail: React.FC = () => {
   // 댓글 조회 함수
   const fetchComments = async () => {
     try {
-      const data = await getComments(Number(postData.postId));
-      setComments(data);
-      console.log(comments);
+      const data: CommentsResDto = await getComments(Number(postData.postId));
+      setComments(data.comments);
+      setTotalPage(data.total);
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
+    await console.log(comments);
   };
 
   // postData.postId가 업데이트될 때 댓글 가져오기
@@ -136,9 +138,7 @@ const CommunityPostDetail: React.FC = () => {
 
         <div className='Comment my-[58px] flex w-[1200px] flex-col'>
           {/* 댓글 목록을 보여줍니다 */}
-          {/* {comments.map((comment) => ( */}
-          <CommentSection postId={postData.postId}></CommentSection>
-          {/* ))} */}
+          <CommentSection comments={comments}></CommentSection>
         </div>
       </div>
     </div>
