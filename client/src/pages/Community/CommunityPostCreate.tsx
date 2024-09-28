@@ -43,6 +43,11 @@ const CommunityPostCreate: React.FC = () => {
   // 게시글을 저장하는 함수
   const savePost = async () => {
     const content = editorRef.current?.value || ''; // textarea의 내용 가져오기
+
+    if (!typing) return alert('제목을 입력해주세요!');
+    if (!content) return alert('내용을 입력해주세요!');
+    if (!category) return alert('카테고리를 선택해주세요!');
+
     // 카테고리 값 변환
     let categoryValue;
     switch (category) {
@@ -70,13 +75,12 @@ const CommunityPostCreate: React.FC = () => {
 
     try {
       // API 호출 및 성공 시 리다이렉트
-      await createPost({ post });
+      await createPost(post);
       alert('게시글이 성공적으로 작성되었습니다.');
       navigate(`/community`);
     } catch (error: any) {
       // 에러 발생 시 처리
       alert(error.message || '게시글 저장 중 에러가 발생했습니다.');
-      navigate(`/community`);
     }
   };
 
@@ -139,7 +143,7 @@ const CommunityPostCreate: React.FC = () => {
         {message && <p className='mt-[5px] text-red-500'>{message}</p>}
       </div>
       <div className='mt-[40px] w-[1300px] rounded-[10px] border'>
-        <textarea className='m-[30px] w-[1240px] resize-none overflow-auto' ref={editorRef} rows={10} placeholder='30자 이상 입력해주세요.'></textarea>
+        <textarea className='m-[30px] w-[1240px] resize-none overflow-auto' ref={editorRef} rows={10} placeholder='10자 이상 입력해주세요.'></textarea>
         <div className='flex justify-end gap-[23px] p-[20px]'>
           <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
             취소
