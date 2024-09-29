@@ -15,20 +15,20 @@ import { api, baseApi } from './base-api';
 // 채팅 목록 조회: get /api/chat/rooms
 // 특정 채팅방의 메시지 조회: get /api/chat/rooms/:roomId/messages
 
-// 대화 신청 post api 새로운 채팅방을 생성하고 사용자를 초대하는 기능이 필요, 사용자가 대화를 시작할 떄 호출됨
-export async function inviteChat(loggedInUserId: number, recipientId: number, loggedInUserNickname: string, recipientNickname: string) {
+// 대화 신청 post api 새로운 채팅방을 생성하고 사용자를 초대하는 기능이 필요, 사용자가 대화를 시작할 떄 호출됨 loggedInUserNickname: string, recipientNickname: string
+export async function inviteChat(loggedInUserId: number, recipientId: number) {
   const url = `${api.chat}/rooms`;
 
   try {
     const response = await baseApi.post(url, {
       participants: [loggedInUserId, recipientId],
-      chatroomName: `${loggedInUserNickname}과 ${recipientNickname}의 채팅방`,
+      // chatroomName: `${loggedInUserNickname}과 ${recipientNickname}의 채팅방`,
     });
 
     // 응답 데이터를 로그로 확인
     console.log('inviteChat response data:', response.data);
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       console.log('invite chat:', response.data);
       return response.data;
     } else {
@@ -64,8 +64,8 @@ export async function inviteChat(loggedInUserId: number, recipientId: number, lo
 
 
 // 채팅 목록 조희 get api 사용자의 채팅 목록을 확인하고, 특정 대화방의 메시지를 불러오는데 필요, 대화방에 들어갈 때 호출됨
-export async function checkChat(recipientId: number) {
-  const url = `${api.chat}/rooms/${recipientId}`; // recipientId는 상대방을 고유하게 식별하는 값으로, 1:1 채팅의 목록에서 해당 상대방과의 대화방을 식별하는 중요한 역할
+export async function checkChat(recipientId: number) { // recipientId: number
+  const url = `${api.chat}/rooms/recipientId`; // recipientId는 상대방을 고유하게 식별하는 값으로, 1:1 채팅의 목록에서 해당 상대방과의 대화방을 식별하는 중요한 역할
 
   try {
     const response = await baseApi.get(url);
@@ -104,28 +104,28 @@ export async function whichCheckchatRoom(roomId: string) {
 }
 
 // 채팅방에 메시지 전송 사용자가 메시지를 보낼 때, 그 메시지를 서버에 저장하기 위한 api호출 소켓을 통해 실시간으로 전송하는 것과 별개로, 메시지를 저장하기 위해 필요
-export async function sendMessage(loggedInUserId: number, roomId: string, message: string) {
-  // roomId를 사용하여 URL 설정
-  const url = `${api.chat}/rooms/${roomId}/send`;
-  console.log(url);
-  try {
-    const response = await baseApi.post(url, {
-      content: message,
-      sendId: loggedInUserId
-    });
-    if (response.status === 200) {
-      console.log('send Message:', response.data);
-    }
-    return response.data;
-  } catch (error: unknown) {
-    if (isAxiosError(error)) {
-      console.error('Failed to sendMessage:', error.response?.data?.message || error.message);
-    } else {
-      console.error('An unknown error occurred');
-    }
-    throw error;
-  }
-}
+// export async function sendMessage(loggedInUserId: number, roomId: string, message: string) {
+//   // roomId를 사용하여 URL 설정
+//   const url = `${api.chat}/rooms/${roomId}/send`;
+//   console.log(url);
+//   try {
+//     const response = await baseApi.post(url, {
+//       content: message,
+//       sendId: loggedInUserId
+//     });
+//     if (response.status === 200) {
+//       console.log('send Message:', response.data);
+//     }
+//     return response.data;
+//   } catch (error: unknown) {
+//     if (isAxiosError(error)) {
+//       console.error('Failed to sendMessage:', error.response?.data?.message || error.message);
+//     } else {
+//       console.error('An unknown error occurred');
+//     }
+//     throw error;
+//   }
+// }
 
 
 // 더미 메시지 전송 sendMessage 함수

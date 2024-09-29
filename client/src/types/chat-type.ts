@@ -22,4 +22,5 @@ export interface ChatMessageData {
 export interface ChatRoomData {
   roomId: string; // 채팅방 ID
   participants: number[]; // 참가자 ID 목록
+  messages?: Array<{ name: string; msg: string; time: string }>; // 메시지 배열 추가
 }
