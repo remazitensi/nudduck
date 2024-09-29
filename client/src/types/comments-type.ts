@@ -22,3 +22,11 @@ export type CommentsResDto = {
   comments: CommentsDto[];
   total: number;
 };
+
+export type UserInfo = {
+  id: number;
+  nickname: string;
+  email: string;
+  imageUrl: string;
+  name: string;
+};
