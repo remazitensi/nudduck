@@ -38,7 +38,7 @@ export const PostSection: React.FC<PostSectionProps> = ({ data }) => {
   };
 
   return (
-    <div className='mt-[15px] border-b-2 border-[8D8B67]'>
+    <div className='my-[5px] border-b-2 border-[8D8B67]'>
       {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={data.userId} />}
 
       <div className='flex w-full items-center gap-[20px]'>
@@ -47,7 +47,7 @@ export const PostSection: React.FC<PostSectionProps> = ({ data }) => {
           {data.title}
         </div>
         <div className='ml-auto'>
-          <div className='mb-[5px] flex items-center justify-end'>
+          <div className='flex items-center justify-end'>
             <div className='flex gap-[5px] p-[5px]' onClick={handleOpenModal}>
               <div className='h-[28px] w-[28px] rounded-full'>
                 <img className='rounded-full object-cover' src={data.imageUrl ? data.imageUrl : '/default-img.png'} alt='profile_Img' />

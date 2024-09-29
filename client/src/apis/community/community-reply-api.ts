@@ -8,20 +8,30 @@
  * 2024.09.20    김민지      Created     댓글 CRUD api 작성, 파일 이동
  */
 
-import { baseApi } from '../base-api';
+import { CommentsResDto, CreateCommentDto } from '../../types/commets-type';
+import { api, baseApi } from '../base-api';
 
 // 댓글 목록 조회 (페이지네이션 포함)
-export const getComments = async (postId: number, page = 1, pageSize = 10): Promise<Comment[]> => {
-  const response = await baseApi.get<Comment[]>(`/${postId}/comments`, {
-    params: { page, pageSize },
-  });
-  return response.data;
+export const getComments = async (postId: number, limit = 10, offset = 0): Promise<CommentsResDto> => {
+  try {
+    const response = await baseApi.get<CommentsResDto>(`${api.community}/article/${postId}/comments/root`, {
+      params: { limit, offset },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.log('error', error.message);
+    throw error;
+  }
 };
 
 // 댓글 생성
-export const createComment = async (postId: number, data: CreateCommentDto): Promise<Comment> => {
-  const response = await baseApi.post<Comment>(`/${postId}/comments`, data);
-  return response.data;
+export const createComment = async (postId: number, data: CreateCommentDto) => {
+  try {
+    const response = await baseApi.post<Comment>(`${api.community}/article/${postId}/comments`, data);
+    return response.data;
+  } catch (error) {
+    console.log(error.message);
+  }
 };
 
 // 댓글 수정
