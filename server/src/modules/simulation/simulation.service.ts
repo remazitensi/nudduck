@@ -8,6 +8,7 @@
  * 2024.09.12    이승철      Created
  * 2024.09.16    이승철      Modified    절대경로 변경
  * 2024.09.29    이승철      Modified    HttpService 삽입
+ * 2024.09.29    이승철      Modified    세션 삭제 로직 추가
  */
 
 import { AIChatMessage, AIChatSession } from '@_modules/simulation/entity/ai-chat.entity';
@@ -109,4 +110,22 @@ export class SimulationService {
   async createAIMessage(sessionId: number, message: string): Promise<void> {
     await this.simulationRepository.createMessage(sessionId, message, 'ai');
   }
+
+  // 특정 세션 삭제 로직 추가
+  async deleteSession(sessionId: number): Promise<void> {
+    const session = await this.simulationRepository.findSessionById(sessionId);
+
+    if (!session) {
+      throw new BadRequestException(`세션을 찾을 수 없습니다. sessionId: ${sessionId}`);
+    }
+
+    try {
+      // 세션의 메시지 먼저 삭제 후,
+      await this.simulationRepository.deleteMessagesBySessionId(sessionId);
+      // 세션 삭제
+      await this.simulationRepository.deleteSession(sessionId); 
+    } catch (error) {
+      throw new InternalServerErrorException('세션 삭제 중 오류가 발생했습니다.');
+    }
+  }  
 }
