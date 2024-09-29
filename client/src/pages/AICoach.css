@@ -7,6 +7,9 @@
   animation: spin 1s linear infinite;
   display: inline-block;
   margin-left: 25px;
+  position: relative;
+  top: 10px;
+  
 }
 
 @keyframes spin {

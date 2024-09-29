@@ -253,7 +253,7 @@ const AICoach: React.FC = () => {
           <div className='ID-container h-[1000px] w-[970px] rounded-[30px] border border-[#8D8B67]'>
             <div className='flex h-[100px] w-full items-center justify-between rounded-t-[30px] border bg-[#FBFAEC] pl-[30px] pr-[20px]'>
               <div className='flex text-[25px] font-bold'>
-                <div className='mr-[5px]'>설기</div>
+                <div className='mr-[5px]'>AI 코치</div>
               </div>
               <button onClick={() => newChat(true)} className='h-[60px] w-[140px] rounded-xl bg-[#C7C4A7] text-[33px] text-[#626146] hover:bg-[#626146] hover:text-white'>
                 새 채팅
@@ -270,7 +270,7 @@ const AICoach: React.FC = () => {
                     {item.sender === 'ai' && <img src='../AI_image.png' className='AI-image-class' />}
                     <div className='flex max-w-[80%] flex-col justify-end gap-[5px]'>
                       <div className={`flex ${item.sender === 'user' ? 'justify-end' : ''}`}>
-                        <div className='text-[20px] font-bold'>{item.sender === 'user' ? '나' : 'AI코치 설기'}</div> {/* 유저와 AI 구분 */}
+                        <div className='text-[20px] font-bold'>{item.sender === 'user' ? '나' : '설기'}</div> {/* 유저와 AI 구분 */}
                       </div>
                       <div className='flex items-start gap-[5px]'>
                         <span className={`max-w-[300px] break-words rounded-[10px] p-3 text-[20px] shadow-xl ${item.sender === 'user' ? 'bg-[#FFEABA]' : 'bg-[#FBFAEC]'}`}>
