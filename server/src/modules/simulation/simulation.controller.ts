@@ -11,6 +11,7 @@
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
  * 2024.09.21    이승철      Modified    절대경로 변경
  * 2024.09.29    이승철      Modified    주석 추가
+ * 2024.09.29    이승철      Modified    세션 삭제 api 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
@@ -20,7 +21,7 @@ import { AIChatResponseDto } from '@_modules/simulation/dto/ai-chat-response.dto
 import { AskAIDto } from '@_modules/simulation/dto/ask-ai.dto';
 import { StartAIDto } from '@_modules/simulation/dto/start-ai.dto';
 import { SimulationService } from '@_modules/simulation/simulation.service';
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Simulation')
@@ -77,4 +78,15 @@ export class SimulationController {
       answer: aiResponse.Answer,
     };
   }
+
+  @ApiOperation({ summary: '특정 대화 세션 삭제' })
+  @ApiParam({ name: 'sessionId', description: '삭제할 채팅 세션 ID', example: 1 })
+  @ApiResponse({ status: 200, description: '세션을 성공적으로 삭제' })
+  @ApiResponse({ status: 404, description: '해당 세션을 찾을 수 없습니다.' })
+  @ApiResponse({ status: 500, description: '서버 에러' })
+  @Delete('/:sessionId')
+  async deleteSession(@Param('sessionId') sessionId: number): Promise<{ success: boolean }> {
+    await this.simulationService.deleteSession(sessionId);
+    return { success: true };
+  }  
 }

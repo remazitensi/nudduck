@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.12    이승철      Created
  * 2024.09.16    이승철      Modified    쿼리하는 Row 개수 제한
+ * 2024.09.29    이승철      Modified    세션 삭제 메서드 추가
  */
 
 import { AIChatMessage, AIChatSession } from '@_modules/simulation/entity/ai-chat.entity';
@@ -68,4 +69,19 @@ export class SimulationRepository {
     const chatMessage = this.messageRepository.create({ sessionId, message, sender });
     return this.messageRepository.save(chatMessage);
   }
+
+  // 특정 세션 조회 (세션 존재 여부 확인을 위한 메서드)
+  async findSessionById(sessionId: number): Promise<AIChatSession | null> {
+    return this.sessionRepository.findOne({ where: { id: sessionId } });
+  }
+
+  // 특정 세션의 모든 메시지 삭제
+  async deleteMessagesBySessionId(sessionId: number): Promise<void> {
+    await this.messageRepository.delete({ sessionId });
+  }
+
+  // 특정 세션 삭제
+  async deleteSession(sessionId: number): Promise<void> {
+    await this.sessionRepository.delete({ id: sessionId });
+  }  
 }
