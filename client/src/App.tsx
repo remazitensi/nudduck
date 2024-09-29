@@ -21,7 +21,7 @@ import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
 import HomePage from './pages/HomePage';
 import MainPage from './pages/MainPage';
 
-import { AICoach } from './pages/AICoach';
+import AICoach from './pages/AICoach';
 import { ChatRoom } from './pages/ChatRoom';
 
 import CommunityPostCreate from './pages/Community/CommunityPostCreate';
