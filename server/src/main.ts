@@ -1,14 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { GlobalExceptionFilter } from 'common/filters/global-exception.filter';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
-// import { WsAdapter } from '@nestjs/platform-ws';
-
-// import { IoAdapter } from '@nestjs/platform-socket.io';
-// import { ServerOptions } from 'socket.io';
-// import { ServerOptions } from 'socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,22 +23,6 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  // // WebSocket 어댑터 설정
-  // app.useWebSocketAdapter(new WsAdapter(app));
-
-  // // WebSocket 어댑터 설정을 Socket.io에 맞게 변경
-  // const ioAdapter = new IoAdapter(app);
-  // ioAdapter.createIOServer = (port: number, options?: ServerOptions) => {
-  //   return require('socket.io')(port, {  // HTTP 서버 포트와 동일한 포트 사용
-  //     cors: {
-  //       origin: 'http://localhost:5173', // 프론트엔드 URL
-  //       credentials: true,
-  //     },
-  //     path: '/socket.io', // 기본 경로 명시적으로 설정 (변경 가능)
-  //   });
-  // };
-  // app.useWebSocketAdapter(new IoAdapter(app));
-  // app.useWebSocketAdapter(new IoAdapter(app));
   // Swagger 설정
   const config = new DocumentBuilder()
     .setTitle('nudduck API')

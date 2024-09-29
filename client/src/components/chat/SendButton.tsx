@@ -1,7 +1,12 @@
 import data from '@emoji-mart/data'; // emoji-mart 스타일 npm install @emoji-mart/react
 import Picker from '@emoji-mart/react';
 import { KeyboardEvent, useState } from 'react';
+<<<<<<< HEAD
 import socket from '../../pages/socket'
+=======
+import { sendMessage } from '../../apis/chatRoom-api';
+import socket from '../../pages/socket';
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
 import { SendMessageData } from '../../types/chat-type';
 
 interface SendButtonProps {
@@ -18,16 +23,28 @@ const SendButton: React.FC<SendButtonProps> = ({onClick, roomId, loggedInUserId,
   const [sendData, setSendData] = useState<SendMessageData | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // 이모티콘 선택기 표시 여부
   const [message, setMessage] = useState<string>(''); // 사용자가 입력한 메시지 상태
+<<<<<<< HEAD
   const [chatHistory, setChatHistory] = useState<Array<{ name: string; msg: string; time: string }>>([]); // 빈 배열로 초기화
-
+=======
+  const [chatHistory, setChatHistory] = useState<Array<{ name: string; msg: string; time: string }> | null>(null); // 채팅 메시지를 저장하는 배열
+  // const [loggedInUserId, setLoggedInUserId] = useState<number>(0); // 로그인한 사용자 ID 초기화
+  // const [loggedInUserNickname, setLoggedInUserNickname] = useState<string>(''); // 로그인한 사용자 닉네임 초기화
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
 
   // 메시지 전송 함수
   const sendChatMessage = async () => {
+<<<<<<< HEAD
     
+=======
+    // const loggedInUserId = 1;  // 가상의 사용자 ID
+    // const loggedInUserNickname = 'hihia';  // 가상의 사용자 닉네임
+    // const roomId = "dummyRoomId";  // 가상의 방 ID (실제 API 호출로 받은 값이어야 함)
+
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
     console.log('sendChatMessage 함수 호출됨'); // 글을 쓰게 되면 함수 호출이 된다
-    console.log('Room Id 확인:', roomId)
-    
-    if (!message.trim()) { 
+    console.log('Room Id 확인:', roomId);
+
+    if (!message.trim()) {
       console.error('Message cannot be empty'); // message가 빈 문자열이거나, 공백일 경우 오류 출력
       return;
     }
@@ -35,13 +52,19 @@ const SendButton: React.FC<SendButtonProps> = ({onClick, roomId, loggedInUserId,
       // 부모로 메시지를 전달 click을 하게 되면 해당 input에 적은 메시지가 나타남
     onClick(message);
 
+<<<<<<< HEAD
     if(!roomId) { // roomId가 없을 때 오류 메시지를 출력하도록 수정
+=======
+    if (!roomId || roomId.trim() === '') {
+      // roomId가 없을 때 오류 메시지를 출력하도록 수정
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
       console.error('Room is not defined');
-      return; 
+      return;
     }
 
     try {
       // 메시지 전송
+<<<<<<< HEAD
       console.log('Sending message to room:', roomId, 'with message:', message); // 메시지 전송에 대한 로그 출력
 
       // socket을 사용해서 서버에 메시지를 전송
@@ -56,6 +79,19 @@ const SendButton: React.FC<SendButtonProps> = ({onClick, roomId, loggedInUserId,
       { id: Date.now().toString(), name: loggedInUserNickname, msg: message, time: new Date().toLocaleTimeString() },
     ]);
 
+=======
+      console.log('Sending message to room:', 'with message:', message); // 메시지 전송에 대한 로그 출력
+      console.log('??', roomId);
+      // 실제로 메시지를 전송하는 API 호출
+      await sendMessage(loggedInUserId, roomId, message); // 세 개의 인자를 개별적으로 전달
+
+      // socket을 사용해서 서버에 메시지를 전송
+      socket.emit('createRoom', { chatroomName: 'Room 1', participants: ['user1', 'user2'] });
+      setMessage(''); // 메시지 입력란 초기화
+
+      // 채팅 기록 업데이트 (기존 기록에 새 메시지를 추가)
+      setChatHistory((prev) => [...prev, { name: roomId, msg: message, time: new Date().toLocaleTimeString() }]);
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
     } catch (error) {
       console.log('Failed to sendMessage:', error);
     }

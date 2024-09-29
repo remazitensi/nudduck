@@ -12,50 +12,33 @@
  * 2024.09.22    김재영      Modified    대댓글 수정 및 삭제 메소드 추가
  * 2024.09.22    김재영      Modified    replyCount 로직을 조회 시 계산하도록 변경
  * 2024.09.22    김재영      Modified    무한 스크롤 지원
+ * 2024.09.27    김재영      Modified    sort 버그 수정
  */
 
-import { Repository, EntityManager, QueryFailedError } from 'typeorm';
-import { Comment } from '@_modules/community/entities/comment.entity';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { Community } from '@_modules/community/entities/community.entity';
 import { CreateCommentDto } from '@_modules/community/dto/request/create-comment.dto';
 import { UpdateCommentDto } from '@_modules/community/dto/request/update-comment.dto';
-import { User } from '@_modules/user/entity/user.entity';
+import { Comment } from '@_modules/community/entities/comment.entity';
+import { Community } from '@_modules/community/entities/community.entity';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { DataSource, EntityManager, QueryFailedError, Repository } from 'typeorm';
+import { PaginationQueryDto } from '../dto/request/pagination-query.dto';
+import { CommentResponseDto } from '../dto/response/comment-response.dto';
 
+@Injectable()
 export class CommentRepository extends Repository<Comment> {
-  private handleError(error: unknown): void {
-    if (error instanceof QueryFailedError) {
-      throw new HttpException('쿼리 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    throw new HttpException('서버 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+  constructor(dataSource: DataSource) {
+    super(Comment, dataSource.createEntityManager());
   }
 
-  async findCommentsWithReplyCount(postId: number, limit: number, offset: number): Promise<Comment[]> {
-    try {
-      return await this.createQueryBuilder('comment')
-        .leftJoinAndSelect('comment.user', 'user')
-        .where('comment.postId = :postId', { postId })
-        .andWhere('comment.parentId IS NULL')
-        .orderBy('comment.createdAt', 'DESC')
-        .skip(offset)
-        .take(limit)
-        .select(['comment.id', 'comment.content', 'comment.createdAt', 'comment.updatedAt', 'comment.parentId', 'user.nickname', 'user.image_url', 'user.id'])
-        .getMany();
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  async createComment(postId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<Comment> {
-    const comment = new Comment();
-    comment.content = createCommentDto.content;
-    comment.postId = postId;
-    comment.parentId = createCommentDto.parentId;
-    comment.community = { postId } as Community;
-
-    const user = new User();
-    user.id = userId;
-    comment.user = user;
+  // 댓글 작성
+  async createComment(postId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<void> {
+    const comment = this.create({
+      content: createCommentDto.content,
+      postId,
+      parentId: createCommentDto.parentId || null,
+      user: { id: userId },
+      community: { postId } as Community,
+    });
 
     try {
       await manager.transaction(async (transactionalEntityManager: EntityManager) => {
@@ -67,95 +50,13 @@ export class CommentRepository extends Repository<Comment> {
           .where('postId = :postId', { postId })
           .execute();
       });
-      return comment;
     } catch (error) {
       this.handleError(error);
     }
   }
 
-  async findCommentById(commentId: number): Promise<Comment | undefined> {
-    try {
-      return await this.createQueryBuilder('comment')
-        .leftJoinAndSelect('comment.user', 'user')
-        .where('comment.id = :commentId', { commentId })
-        .select(['comment.id', 'comment.content', 'comment.createdAt', 'comment.updatedAt', 'comment.parentId', 'user.nickname', 'user.image_url', 'user.id'])
-        .getOne();
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  async updateComment(commentId: number, updateCommentDto: UpdateCommentDto): Promise<Comment | undefined> {
-    try {
-      const comment = await this.findOne({ where: { id: commentId }, relations: ['user'] });
-
-      if (!comment) {
-        throw new HttpException('댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
-      }
-
-      comment.content = updateCommentDto.content || comment.content;
-      await this.save(comment);
-
-      return comment;
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  async createReply(commentId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<Comment> {
-    const reply = new Comment();
-    reply.content = createCommentDto.content;
-    reply.postId = createCommentDto.postId;
-    reply.parentId = commentId;
-
-    const user = new User();
-    user.id = userId;
-    reply.user = user;
-
-    reply.community = { postId: createCommentDto.postId } as Community;
-
-    try {
-      await manager.transaction(async (transactionalEntityManager: EntityManager) => {
-        await transactionalEntityManager.save(Comment, reply);
-      });
-      return reply;
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  async updateReply(replyId: number, updateCommentDto: UpdateCommentDto): Promise<Comment | undefined> {
-    try {
-      const reply = await this.findOne({ where: { id: replyId }, relations: ['user'] });
-
-      if (!reply) {
-        throw new HttpException('대댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
-      }
-
-      reply.content = updateCommentDto.content || reply.content;
-      await this.save(reply);
-
-      return reply;
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  async deleteReply(replyId: number): Promise<void> {
-    try {
-      const reply = await this.findOne({ where: { id: replyId } });
-
-      if (!reply) {
-        throw new HttpException('대댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
-      }
-
-      await this.remove(reply);
-    } catch (error) {
-      this.handleError(error);
-    }
-  }
-
-  async deleteComment(commentId: number): Promise<void> {
+  // 댓글 수정
+  async updateComment(commentId: number, updateCommentDto: UpdateCommentDto): Promise<void> {
     try {
       const comment = await this.findOne({ where: { id: commentId } });
 
@@ -163,6 +64,39 @@ export class CommentRepository extends Repository<Comment> {
         throw new HttpException('댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
       }
 
+      comment.content = updateCommentDto.content || comment.content;
+      await this.save(comment);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // 대댓글 작성
+  async createReply(commentId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<void> {
+    await this.createComment(createCommentDto.postId, createCommentDto, userId, manager);
+  }
+
+  // 대댓글 수정
+  async updateReply(replyId: number, updateCommentDto: UpdateCommentDto): Promise<void> {
+    await this.updateComment(replyId, updateCommentDto);
+  }
+
+  // 댓글 삭제 (대댓글 포함 삭제)
+  async deleteComment(commentId: number): Promise<void> {
+    try {
+      const comment = await this.findOne({ where: { id: commentId } });
+
+      if (!comment) {
+        throw new HttpException('댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      }
+      if (comment.parentId === null) {
+        // 상위 댓글인 경우에만 대댓글 삭제
+        const replies = await this.findRepliesByParentId(commentId);
+        if (replies.length > 0) {
+          const replyIds = replies.map((reply) => reply.id);
+          await this.deleteReplies(replyIds); // 대댓글 일괄 삭제
+        }
+      }
       await this.remove(comment);
 
       await this.createQueryBuilder()
@@ -175,18 +109,77 @@ export class CommentRepository extends Repository<Comment> {
     }
   }
 
-  async findRepliesByCommentId(commentId: number, limit: number, offset: number): Promise<Comment[]> {
+  // 대댓글 일괄 삭제
+  async deleteReplies(replyIds: number[]): Promise<void> {
     try {
-      return await this.createQueryBuilder('comment')
-        .leftJoinAndSelect('comment.user', 'user')
-        .where('comment.parentId = :commentId', { commentId })
-        .orderBy('comment.createdAt', 'DESC')
-        .skip(offset)
-        .take(limit)
-        .select(['comment.id', 'comment.content', 'comment.createdAt', 'comment.updatedAt', 'comment.parentId', 'user.nickname', 'user.image_url', 'user.id'])
-        .getMany();
+      await this.createQueryBuilder().delete().from(Comment).whereInIds(replyIds).execute();
     } catch (error) {
       this.handleError(error);
     }
+  }
+
+  // 대댓글 조회 (parentId로 조회)
+  async findRepliesByParentId(commentId: number): Promise<Comment[]> {
+    return await this.createQueryBuilder('comment').where('comment.parentId = :commentId', { commentId }).getMany();
+  }
+
+  // 부모 댓글 조회 (페이징 지원)
+  async getParentComments(postId: number, paginationQuery: PaginationQueryDto): Promise<{ comments: CommentResponseDto[]; total: number }> {
+    const { limit, offset } = this.buildCommentPaginationQuery(paginationQuery);
+
+    try {
+      // 부모 댓글만 조회하고, 대댓글 수를 포함한 쿼리
+      const [comments, total] = await this.createQueryBuilder('comment')
+        .where('comment.postId = :postId', { postId })
+        .andWhere('comment.parentId IS NULL')
+        .leftJoinAndSelect('comment.user', 'user')
+        .addSelect('(SELECT COUNT(*) FROM comment AS child WHERE child.parentId = comment.id) AS replyCount')
+        .orderBy('comment.createdAt', 'ASC')
+        .skip(offset)
+        .take(limit)
+        .getManyAndCount();
+
+      const commentDtos = comments.map((comment) => new CommentResponseDto(comment));
+
+      return { comments: commentDtos, total };
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // 대댓글 조회 (페이징 지원)
+  async getReplies(parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<{ replies: CommentResponseDto[]; total: number }> {
+    const { limit, offset } = this.buildCommentPaginationQuery(paginationQuery);
+
+    try {
+      const [replies, total] = await this.createQueryBuilder('comment')
+        .where('comment.parentId = :parentCommentId', { parentCommentId })
+        .leftJoinAndSelect('comment.user', 'user')
+        .orderBy('comment.createdAt', 'ASC') // 정렬을 오래된 순으로 고정
+        .skip(offset)
+        .take(limit)
+        .getManyAndCount();
+
+      const replyDtos = replies.map((reply) => new CommentResponseDto(reply));
+
+      return { replies: replyDtos, total };
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // 댓글 페이징 쿼리 빌드 함수
+  private buildCommentPaginationQuery(paginationQuery: PaginationQueryDto) {
+    const limit = paginationQuery.limit || 10;
+    const offset = paginationQuery.offset || 0;
+
+    return { limit, offset }; // 정렬 필드는 고정되어 있으므로 반환하지 않음
+  }
+
+  private handleError(error: unknown): void {
+    if (error instanceof QueryFailedError) {
+      throw new HttpException('쿼리 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    throw new HttpException('서버 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

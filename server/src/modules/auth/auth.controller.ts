@@ -65,7 +65,7 @@ export class AuthController {
 
     res.cookie('accessToken', tokens.accessToken, getAccessCookieOptions());
     res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
-    res.redirect(this.configService.get<string>('HOME_PAGE')); 
+    res.redirect(this.configService.get<string>('HOME_PAGE'));
   }
 
   @ApiOperation({ summary: '카카오 로그인' })
@@ -102,13 +102,13 @@ export class AuthController {
   @Post('access-token')
   async accessToken(@Req() req: UserRequest, @Res() res: Response): Promise<void> {
     const refreshToken = req.cookies['refreshToken'];
-  
+
     if (!refreshToken) {
       throw new BadRequestException('리프레시 토큰이 제공되지 않았습니다.');
     }
-  
+
     const newAccessToken = await this.authService.regenerateAccessToken(refreshToken);
-  
+
     res.cookie('accessToken', newAccessToken, getAccessCookieOptions());
     res.status(200).json({ message: '엑세스 토큰이 재발급되었습니다.' });
   }

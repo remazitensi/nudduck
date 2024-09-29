@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { inviteChat, checkChat } from '../apis/chatRoom-api';
+=======
+import React, { useState } from 'react';
+import { checkChat, inviteChat } from '../apis/chatRoom-api';
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
 import ChatCheck from '../components/chat/ChatCheck';
 import ViewChat from '../components/chat/ViewChat';
-import { ChatRoomData, CreateRoomData } from '../types/chat-type'
+import { ChatRoomData, CreateRoomData } from '../types/chat-type';
 // import { useLocation } from 'react-router-dom'
 import socket from '../pages/socket'
 
@@ -20,6 +25,7 @@ interface ChattingProps {
   }
 }
 
+<<<<<<< HEAD
 const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { // loggedInUserId, recipientId, loggedInUserNickname, recipientNickname,
   const [selectedChat, setSelectedChat] = useState<ChatRoomData | null>(null); // 선택된 채팅방 데이터를 저장하는 상태
   const [chatHistory, setChatHistory] = useState<Array<{ name: string; msg: string; time: string }>>([]); // 채팅 메시지들 저장
@@ -69,6 +75,36 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { 
     }
   };
   
+=======
+const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId, loggedInUserNickname, recipientNickname }) => {
+  // const location = useLocation();
+  // const{ roomId } = location.state || {}; // roomId를 이전 페이지에서 받아옴
+
+  // const loggedInUserId = 1;
+  // const loggedInUserNickname = "UserA";
+  // const [message, setMessage] = useState('');
+
+  // type 1:1 채팅방 생성 시 요청 데이터
+  const [createData, setCreateData] = useState<CreateRoomData>({
+    participants: [], // 참가자들을 받는 배열
+  });
+
+  //   // 더미데이터로 설정한 참가자 정보
+  // const loggedInUserId = 1; // // 가상의 사용자 ID
+  // const recipientId = 2;     // 가상의 상대방 ID
+  // const loggedInUserNickname = ''; // 가상의 사용자 닉네임
+  // const recipientNickname = 'UserB';  // 가상의 상대방 닉네임
+
+  // type 채팅방 데이터 구조
+  const [ChatData, setChatData] = useState<ChatRoomData>({
+    roomId: '', // 채팅방 ID
+    participants: [], // 참가자 ID 목록
+    // messages: [] // messages 필드 추가
+  });
+
+  // const [selectedChat, setSelectedChat] = useState<null | {roomId: number, message: Array<{ name: string; msg: string; time: string }> }>(null);
+  const [chatHistory, setChatHistory] = useState<Array<{ name: string; msg: string; time: string }>>([]);
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
 
   // // 채팅 시작 및 대화방 만들기 여기가 아닌거 같다 chatCheck에 넣어둠
   // const startChat = async (loggedInUserId: number, recipientId: number) => {
@@ -76,6 +112,7 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { 
   //     console.log("inviteChat 호출 시작:")
   //     const response = await inviteChat(loggedInUserId, recipientId);
 
+<<<<<<< HEAD
   //     console.log("inviteChat 응답:", response); // api 응답 확인
 
   //     // 대화방 생성 api 호출
@@ -83,6 +120,22 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { 
         
   //       const newRoom = response.roomData;
   //       console.log("새로운 방의 roomId:', newRoom.roomId")
+=======
+  // 채팅 시작 및 대화방 만들기
+  const startChat = async (loggedInUserId: number, recipientId: number) => {
+    try {
+      console.log('inviteChat 호출 시작:');
+      const response = await inviteChat(loggedInUserId, recipientId, loggedInUserNickname, recipientNickname);
+
+      console.log('inviteChat 응답:', response); // api 응답 확인
+
+      // 대화방 생성 api 호출
+      if (response && response.roomData) {
+        // 대화방 정보가 제대로 반환되었는지 확인
+
+        const newRoom = response.roomData;
+        console.log("새로운 방의 roomId:', newRoom.roomId");
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
 
   //       // 방 생성 후 바로 채팅방 선택
   //       setChatData({
@@ -94,6 +147,7 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { 
   //       // roomId가 설정된 후에 로그 출력
   //       console.log("방 생성 후 roomId 확인:", newRoom.roomId);
 
+<<<<<<< HEAD
   //       setChatHistory(newRoom.messages || []); // 새로 생성된 대화방의 채팅 이력 설정
   //       // 새로 생성된 대화방의 채팅 이력 설정
   //     } else {
@@ -103,6 +157,10 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { 
   //     console.error('Failed to startChat:', error);
   //   }
   // };
+=======
+        // roomId가 설정된 후에 로그 출력
+        console.log('방 생성 후 roomId 확인:', newRoom.roomId);
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
 
 
   return (
@@ -114,6 +172,7 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { 
 
       <div className='mt-[90px] flex w-[1300px] justify-center'>
         <div className='flex gap-[30px]'>
+<<<<<<< HEAD
           {/* 채팅 선택 시 함수 호출  onChatSelect={handleChatSelect} */ }
           <ChatCheck rooms={[1, 2]} onChatSelect={handleChatSelect} onChatHistoryUpdate={setChatHistory} recipientId={recipientId}
             loggedInUserId={loggedInUserId} />
@@ -138,9 +197,14 @@ const Chatting: React.FC<ChattingProps> = ({ loggedInUserId, recipientId}) => { 
               </div>   
             ) : null
           )}
+=======
+          {/* 채팅 선택 시 함수 호출  onChatSelect={handleChatSelect} */}
+          <ChatCheck rooms={[]} onChatSelect={handleChatSelect} />
+          {/* 선택된 채팅과 이력 전달 */}
+          {ChatData.roomId ? <ViewChat chatData={ChatData} chatHistory={chatHistory} loggedInUserId={loggedInUserId} loggedInUserNickname={loggedInUserNickname} /> : <div>채팅방을 선택해주세요!</div>}
+>>>>>>> 5443cf4ba41fd36aec8d6d72c0304215374d8bda
         </div>
       </div>
-
     </div>
   );
 };

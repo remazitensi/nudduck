@@ -51,4 +51,12 @@ export class LifeGraphListResponseDto {
 
   @ApiProperty({ example: 10, description: '총 인생 그래프 수' })
   totalCount: number;
+
+  @ApiProperty({ example: 1, description: '현재 즐겨찾기된 인생 그래프 ID', nullable: true })
+  favoriteGraphId: number | null;
+}
+
+export class FavoriteLifeGraphResponseDto {
+  @ApiProperty({ example: true, description: '즐겨찾기 상태 (true: 즐겨찾기 등록, false: 즐겨찾기 해제)' })
+  isFavorited: boolean;
 }

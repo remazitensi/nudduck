@@ -7,12 +7,12 @@
  * Date          Author      Status      Description
  * 2024.09.20    김재영      Created     커뮤니티 게시글 DTO 생성
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
- * 2024.09.24    이승철      Modified    게시글 내용 수정
+ * 2024.09.26    이승철      Modified    게시글 내용 수정
  */
 
-import { ApiProperty } from '@nestjs/swagger';
-import { Category } from '@_modules/community/enums/category.enum';
 import { Community } from '@_modules/community/entities/community.entity';
+import { Category } from '@_modules/community/enums/category.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CommunityResponseDto {
   @ApiProperty({
@@ -69,7 +69,7 @@ export class CommunityResponseDto {
     this.createdAt = community.createdAt;
     this.category = community.category;
     this.userId = community.user?.id || null;
-    this.nickname = community.user.nickname; // 작성자 닉네임
-    this.imageUrl = community.user.imageUrl; // 작성자 프로필 사진 URL
+    this.nickname = community.user?.nickname || null; // 작성자 닉네임
+    this.imageUrl = community.user?.imageUrl || null; // 작성자 프로필 사진 URL
   }
 }

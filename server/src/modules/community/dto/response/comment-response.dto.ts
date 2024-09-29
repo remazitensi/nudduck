@@ -10,8 +10,8 @@
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
  */
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Comment } from '@_modules/community/entities/comment.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CommentResponseDto {
   @ApiPropertyOptional({
@@ -82,8 +82,8 @@ export class CommentResponseDto {
     this.updatedAt = comment.updatedAt; // 수정 일시
     this.replyCount = replyCount; // 대댓글 수
     this.parentId = comment.parentId; // 부모 댓글 ID
-    this.userId = comment.user?.id || null; // 작성자 ID
-    this.nickname = comment.user?.nickname || ''; // 작성자 닉네임
-    this.imageUrl = comment.user?.imageUrl || ''; // 작성자 프로필 사진 URL
+    this.userId = comment.user?.id || null;
+    this.nickname = comment.user?.nickname || null; // 작성자 닉네임
+    this.imageUrl = comment.user?.imageUrl || null; // 작성자 프로필 사진 URL
   }
 }

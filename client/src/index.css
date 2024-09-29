@@ -8,7 +8,7 @@
  * 2024.09.05    김민지     Created     
  * 2024.09.06    김민지     Modified     tailwind CSS 추가
  */
-
+@import url('https://fonts.googleapis.com/css2?family=Rammetto+One&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
