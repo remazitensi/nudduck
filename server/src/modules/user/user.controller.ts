@@ -16,13 +16,14 @@
 
 import { Jwt } from '@_modules/auth/guards/jwt';
 import { MyProfileDto } from '@_modules/user/dto/my-profile.dto';
-import { UpdateProfileDto } from '@_modules/user/dto/update-profile.dto';
+import { UpdateMyProfileDto } from '@_modules/user/dto/update-my-profile.dto';
 import { UserService } from '@_modules/user/user.service';
 import { Body, Controller, Delete, Get, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRequest } from 'common/interfaces/user-request.interface';
 import { Response } from 'express';
-import { MyPaginationQueryDto } from './dto/my-pagination-query.dto';
+import { MyPaginationQueryDto } from '@_modules/user/dto/my-pagination-query.dto';
+import { MyInfoDto } from '@_modules/user/dto/my-info.dto';
 
 @ApiTags('User Management')
 @Controller('my')
@@ -41,13 +42,21 @@ export class UserController {
     return this.userService.getMyProfileWithPosts(req.user.id, myPaginationQueryDto);
   }
 
+  @ApiOperation({ summary: '로그인한 유저 정보 조회' })
+  @ApiResponse({ status: 200, description: '유저 정보 조회 성공' })
+  @ApiResponse({ status: 404, description: '유저를 찾을 수 없습니다.' })
+  @Get('info')
+  async getUserInfo(@Req() req: UserRequest): Promise<MyInfoDto> {
+    return this.userService.getMyInfoById(req.user.id);
+  }
+
   @ApiOperation({ summary: '회원정보 수정' })
-  @ApiBody({ description: '회원 정보 수정에 필요한 데이터', type: UpdateProfileDto })
+  @ApiBody({ description: '회원 정보 수정에 필요한 데이터', type: UpdateMyProfileDto })
   @ApiResponse({ status: 200, description: '회원정보가 수정되었습니다.' })
   @ApiResponse({ status: 404, description: '유저를 찾을 수 없습니다.' })
   @Put('profile')
-  async updateProfile(@Req() req: UserRequest, @Body() updateProfileDto: UpdateProfileDto): Promise<{ message: string }> {
-    await this.userService.updateProfile(req.user.id, updateProfileDto);
+  async updateProfile(@Req() req: UserRequest, @Body() updateMyProfileDto: UpdateMyProfileDto): Promise<{ message: string }> {
+    await this.userService.updateMyProfile(req.user.id, updateMyProfileDto);
     return { message: '회원정보가 수정되었습니다.' };
   }
 

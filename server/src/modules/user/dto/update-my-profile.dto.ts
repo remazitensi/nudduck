@@ -1,5 +1,5 @@
 /**
- * File Name    : update-profile.dto.ts
+ * File Name    : update-my-profile.dto.ts
  * Description  : 유저 프로필 업데이트 dto
  * Author       : 이승철
  *
@@ -7,12 +7,13 @@
  * Date          Author      Status      Description
  * 2024.09.10    이승철      Created
  * 2024.09.28    이승철      Modified    해시태그 글자수 제한 변경
+ * 2024.09.30    이승철      Modified    이름 변경
  */
 
 import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMaxSize, IsArray, IsOptional, IsString, Length } from 'class-validator';
 
-export class UpdateProfileDto {
+export class UpdateMyProfileDto {
   @ApiProperty({
     example: 'newNickName',
     description: '변경할 닉네임',

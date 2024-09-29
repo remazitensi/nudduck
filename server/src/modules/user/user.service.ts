@@ -21,14 +21,15 @@
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
 import { MyProfileDto } from '@_modules/user/dto/my-profile.dto';
-import { UpdateProfileDto } from '@_modules/user/dto/update-profile.dto';
+import { UpdateMyProfileDto } from '@_modules/user/dto/update-my-profile.dto';
 import { UserHashtag } from '@_modules/user/entity/hashtag.entity';
 import { User } from '@_modules/user/entity/user.entity';
 import { UserRepository } from '@_modules/user/user.repository';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { MyPaginationQueryDto } from '@_modules/user/dto/my-pagination-query.dto';
-import { CommunitySummaryDto } from './dto/community-summary.dto';
+import { MyCommunitySummaryDto } from '@_modules/user/dto/my-community-summary.dto';
+import { MyInfoDto } from './dto/my-info.dto';
 
 @Injectable()
 export class UserService {
@@ -65,7 +66,7 @@ export class UserService {
     const favoriteLifeGraph = favoriteLifeGraphResult.status === 'fulfilled' ? favoriteLifeGraphResult.value : null;
   
     const hashtags = user.hashtags.map((hashtag) => hashtag.name);
-    const postSummaries = posts.map((post) => new CommunitySummaryDto(post));
+    const postSummaries = posts.map((post) => new MyCommunitySummaryDto(post));
   
     const profile: MyProfileDto = {
       nickname: user.nickname,
@@ -82,7 +83,24 @@ export class UserService {
     return profile;
   }
 
-  async updateProfile(userId: number, updateProfileDto: UpdateProfileDto): Promise<void> {
+  // 사용자 정보를 조회하는 메서드
+  async getMyInfoById(userId: number): Promise<Promise<MyInfoDto>> {
+    const user = await this.userRepository.findUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('유저를 찾을 수 없습니다.');
+    }
+
+    return {
+      id: user.id,
+      nickname: user.nickname,
+      email: user.email,
+      imageUrl: user.imageUrl,
+      name: user.name,
+    };
+  }
+
+  async updateMyProfile(userId: number, updateMyProfileDto: UpdateMyProfileDto): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.startTransaction();
 
@@ -93,18 +111,18 @@ export class UserService {
       }
 
       // 닉네임 유효성 검사 및 업데이트 (닉네임이 undefined가 아니고 기존과 다른 경우에만)
-      if (updateProfileDto.nickname && user.nickname !== updateProfileDto.nickname) {
-        await this.updateNickname(queryRunner, user, updateProfileDto.nickname);
+      if (updateMyProfileDto.nickname && user.nickname !== updateMyProfileDto.nickname) {
+        await this.updateNickname(queryRunner, user, updateMyProfileDto.nickname);
       }
 
       // 프로필 이미지 수정/삭제 (imageUrl이 undefined가 아니고 기존과 다른 경우에만)
-      if (updateProfileDto.imageUrl && user.imageUrl !== updateProfileDto.imageUrl) {
-        await this.updateProfileImage(user, updateProfileDto.imageUrl);
+      if (updateMyProfileDto.imageUrl && user.imageUrl !== updateMyProfileDto.imageUrl) {
+        await this.updateProfileImage(user, updateMyProfileDto.imageUrl);
       }
 
       // 해시태그 수정 (해시태그가 undefined가 아니고 기존과 다른 경우에만)
-      if (updateProfileDto.hashtags && updateProfileDto.hashtags.length > 0) {
-        await this.updateHashtags(queryRunner, userId, updateProfileDto.hashtags);
+      if (updateMyProfileDto.hashtags && updateMyProfileDto.hashtags.length > 0) {
+        await this.updateHashtags(queryRunner, userId, updateMyProfileDto.hashtags);
       }
 
       // 변경 사항을 DB에 저장

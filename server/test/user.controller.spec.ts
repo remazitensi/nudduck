@@ -10,7 +10,7 @@
  */
 
 import { ProfileDto } from '@_modules/user/dto/my-profile.dto';
-import { UpdateProfileDto } from '@_modules/user/dto/update-profile.dto';
+import { UpdateProfileDto } from '@_modules/user/dto/update-my-profile.dto';
 import { UserController } from '@_modules/user/user.controller';
 import { UserService } from '@_modules/user/user.service';
 import { Test, TestingModule } from '@nestjs/testing';

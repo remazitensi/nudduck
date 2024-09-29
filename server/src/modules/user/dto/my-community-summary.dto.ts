@@ -1,5 +1,5 @@
 /**
- * File Name    : community-summary.dto.ts
+ * File Name    : my-community-summary.dto.ts
  * Description  : 나의 게시글 dto
  * Author       : 이승철
  *
@@ -7,12 +7,13 @@
  * Date          Author      Status      Description
  * 2024.09.23    이승철      Created
  * 2024.09.24    이승철      Modified    날짜 타입 변경
+ * 2024.09.30    이승철      Modified    이름 변경
  */
 
 import { Community } from "@_modules/community/entities/community.entity";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CommunitySummaryDto {
+export class MyCommunitySummaryDto {
   @ApiProperty({
     description: '게시글 ID',
     example: 1,
