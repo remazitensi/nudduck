@@ -3,7 +3,7 @@
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import React, { KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { activateSimulation, askSimulation, fetchIdSession, fetchSimulationHistory } from '../apis/AICoach-api';
+import { activateSimulation, askSimulation, deleteSession, fetchIdSession, fetchSimulationHistory } from '../apis/AICoach-api'; 
 import './AICoach.css';
 
 interface ChatSession {
@@ -73,6 +73,22 @@ const AICoach: React.FC = () => {
   
     fetchChatSessions();
   }, []);
+
+  // 세션 삭제 함수 추가
+  const handleDeleteSession = async (sessionId: number) => {
+    try {
+      await deleteSession(sessionId);
+      // 삭제 후 세션 목록을 필터링하여 삭제된 세션을 제외하고 목록 업데이트
+      setSessions(sessions.filter((session) => session.id !== sessionId));
+      // 현재 세션이 삭제된 세션이면 채팅 기록 초기화
+      if (currentSessionId === sessionId) {
+        setChatHistory([]);
+        setCurrentSessionId(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete session:', error);
+    }
+  };  
 
   // 세션 클릭 시 해당 세션의 메시지 불러오기
   const loadMessages = async (sessionId: number) => {
@@ -209,16 +225,24 @@ const AICoach: React.FC = () => {
             <div className='h-[calc(100%_-_100px)] p-[15px]'>
               <div className='h-full w-full'>
                 <ul className='flex h-[850px] flex-col gap-[10px] overflow-y-auto p-[10px]'>
-                  {sessions.map((session) => (
+                {sessions.map((session) => (
                     <li
                       key={session.id}
-                      onClick={() => loadMessages(session.id)} // 클릭 시 해당 세션의 메시지 불러오기
                       className='flex cursor-pointer flex-col gap-[10px] rounded-[20px] border border-[#DAD7B9] bg-white pl-[30px] pt-[10px] text-[20px] hover:border-black'
                     >
-                      <div className='flex items-center gap-[5px]'>
-                        <div className='mt-[5px] text-[20px] font-bold'>{session.topic}</div>
+                      <div className='flex justify-between items-center'>
+                        <div className='flex items-center gap-[5px]' onClick={() => loadMessages(session.id)}>
+                          <div className='mt-[5px] text-[20px] font-bold'>{session.topic}</div>
+                        </div>
+                        {/* 삭제 버튼 추가 */}
+                        <button
+                          onClick={() => handleDeleteSession(session.id)}
+                          className='ml-[20px] mr-[20px] rounded-full text-black-500 hover:text-red-700'
+                        >
+                          X
+                        </button>
                       </div>
-                      <div className=''>{formatDateTime(session.createdAt)}</div>
+                      <div>{formatDateTime(session.createdAt)}</div>
                     </li>
                   ))}
                 </ul>

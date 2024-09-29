@@ -116,3 +116,23 @@ export async function askSimulation(query: string, sessionId: number) {
     throw error;
   }
 }
+
+ // 특정 세션 삭제 API
+ export async function deleteSession(sessionId: number) {
+  const url = `${api.simulation}/${sessionId}`;
+
+  try {
+    const response = await baseApi.delete(url);
+    if (response.status === 200) {
+      console.log('Session deleted successfully:', sessionId);
+    }
+    return response.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      console.error('Failed to delete session:', error.response?.data?.message || error.message);
+    } else {
+      console.error('An unknown error occurred');
+    }
+    throw error;
+  }
+} 
