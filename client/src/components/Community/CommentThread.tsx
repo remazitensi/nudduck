@@ -10,7 +10,7 @@
 
 import { useState } from 'react';
 import { getReply } from '../../apis/community/community-comments-api';
-import { CommentsDto } from '../../types/commets-type';
+import { CommentsDto } from '../../types/comments-type';
 import { Comment } from './Comment';
 import { Reply } from './Reply';
 

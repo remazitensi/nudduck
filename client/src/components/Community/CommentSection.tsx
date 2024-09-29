@@ -8,7 +8,7 @@
  * 2024.09.28    김민지      Created
  */
 
-import { CommentsDto } from '../../types/commets-type';
+import { CommentsDto } from '../../types/comments-type';
 import { CommentThread } from './CommentThread';
 
 export const CommentSection: React.FC<{ comments: CommentsDto[] }> = ({ comments }) => {
