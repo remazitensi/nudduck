@@ -17,6 +17,7 @@
  * 2024.09.24    이승철      Modified    인생그래프 조회 인자 순서변경
  * 2024.09.27    이승철      Modified    프로필 조회 병렬처리
  * 2024.09.29    이승철      Modified    조회 에러처리 및 수정 read도 transaction에 포함
+ * 2024.09.30    이승철      Modified    로그인 한 유저 정보 조회 api 추가
  */
 
 import { FileUploadService } from '@_modules/file-upload/file-upload.service';
@@ -83,8 +84,7 @@ export class UserService {
     return profile;
   }
 
-  // 사용자 정보를 조회하는 메서드
-  async getMyInfoById(userId: number): Promise<Promise<MyInfoDto>> {
+  async getMyInfoById(userId: number): Promise<MyInfoDto> {
     const user = await this.userRepository.findUserById(userId);
 
     if (!user) {
