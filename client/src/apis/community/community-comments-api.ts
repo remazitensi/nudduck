@@ -8,7 +8,7 @@
  * 2024.09.20    김민지      Created     댓글 CRUD api 작성, 파일 이동
  */
 
-import { CommentsResDto, CreateCommentDto } from '../../types/commets-type';
+import { CommentsResDto, CreateCommentDto } from '../../types/comments-type';
 import { api, baseApi } from '../base-api';
 
 // ------------- 댓글 api --------------------

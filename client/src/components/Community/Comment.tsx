@@ -9,11 +9,11 @@
  */
 
 import { changeDateWithFormat } from '../../apis/change-date-format';
-import { CommentsDto } from '../../types/commets-type';
+import { CommentsDto } from '../../types/comments-type';
 
 export const Comment: React.FC<{ comment: CommentsDto }> = ({ comment }) => {
   const createdAt = changeDateWithFormat(comment.createdAt);
-  // console.log(comment.createdAt, '--->', createdAt);
+  // console.log(comment.createdAt, '--->', createdAt); // 날짜 변경 확인
 
   return (
     <div>
