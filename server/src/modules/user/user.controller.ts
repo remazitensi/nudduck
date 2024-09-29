@@ -12,6 +12,7 @@
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
  * 2024.09.23    이승철      Modified    MyProfileDto로 변경
  * 2024.09.24    이승철      Modified    프로필 조회 나의 게시글 포함
+ * 2024.09.30    이승철      Modified    로그인 한 유저 정보 조회 api 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
