@@ -12,7 +12,7 @@ export type CommentsDto = {
   createdAt: string;
   updatedAt: string;
   replyCount: number;
-  parentId: number;
+  parentId?: number;
   userId: number;
   nickname: string;
   imageUrl: string;

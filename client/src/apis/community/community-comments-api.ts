@@ -11,10 +11,12 @@
 import { CommentsResDto, CreateCommentDto } from '../../types/commets-type';
 import { api, baseApi } from '../base-api';
 
+// ------------- 댓글 api --------------------
+
 // 댓글 목록 조회 (페이지네이션 포함)
 export const getComments = async (postId: number, limit = 10, offset = 0): Promise<CommentsResDto> => {
   try {
-    const response = await baseApi.get<CommentsResDto>(`${api.community}/article/${postId}/comments/root`, {
+    const response = await baseApi.get<CommentsResDto>(`${api.community}/articles/${postId}/comments/top-n`, {
       params: { limit, offset },
     });
     return response.data;
@@ -27,10 +29,11 @@ export const getComments = async (postId: number, limit = 10, offset = 0): Promi
 // 댓글 생성
 export const createComment = async (postId: number, data: CreateCommentDto) => {
   try {
-    const response = await baseApi.post<Comment>(`${api.community}/article/${postId}/comments`, data);
+    const response = await baseApi.post<Comment>(`${api.community}/articles/${postId}/comments`, data);
     return response.data;
-  } catch (error) {
-    console.log(error.message);
+  } catch (error: any) {
+    console.log('error', error.message);
+    throw error;
   }
 };
 
@@ -43,6 +46,19 @@ export const updateComment = async (postId: number, commentId: number, data: Upd
 // 댓글 삭제
 export const deleteComment = async (postId: number, commentId: number): Promise<void> => {
   await baseApi.delete(`/${postId}/comments/${commentId}`);
+};
+
+// ------------- 대댓글 api --------------------
+
+// 대댓글 조회
+export const getReply = async (postId: number, parentId: number) => {
+  try {
+    const response = await baseApi.get(`${api.community}/articles/${postId}/comments/${parentId}/replies`);
+    return response.data;
+  } catch (error: any) {
+    console.log('error', error.message);
+    return alert(error.message);
+  }
 };
 
 // 대댓글 생성
