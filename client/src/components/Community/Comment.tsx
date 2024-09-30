@@ -27,7 +27,7 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-[10px] p-[10px]'>
           <div className='h-[50px] w-[50px] rounded-full'>
-            <img className='object-cover' src={comment.imageUrl} alt='profile-img' />
+            <img className='rounded-full object-cover' src={comment.imageUrl} alt='profile-img' />
           </div>
           <div className='flex items-center text-[20px] font-semibold'>{comment.nickname}</div>
           <div className='flex items-center text-[12px] text-[#AEAC9A]'>{createdAt}</div>
@@ -37,8 +37,8 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
         </div>
         {isWriter && (
           <div className='flex items-center gap-[10px] px-[10px]'>
-            <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]'>수정</div>
-            <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]' onClick={handleDeleteComment}>
+            {/* <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]'>수정</div> */}
+            <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]' onClick={() => handleDeleteComment}>
               삭제
             </div>
           </div>

@@ -8,7 +8,7 @@
  * 2024.09.28    김민지      Created
  */
 import { useRef, useState } from 'react';
-import { createReply, getReply } from '../../apis/community/community-comments-api';
+import { createReply, deleteReply, getReply } from '../../apis/community/community-comments-api';
 import { CommentsDto } from '../../types/comments-type';
 import { Comment } from './Comment';
 import { Reply } from './Reply';
@@ -26,6 +26,7 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
   const fetchReplyComment = async () => {
     try {
       const data = await getReply(comment.postId, comment.commentId);
+      setReplies(data.replies); // 받은 데이터를 설정
       return data;
     } catch (error) {
       console.error('대댓글 불러오기 실패:', error);
@@ -36,12 +37,27 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
   // 댓글 보기/닫기 토글
   const toggleReplyVisibility = async () => {
     if (!isReplyVisible) {
-      const replyData = await fetchReplyComment();
-      if (replyData.total !== 0) {
-        setReplies(replyData.replies); // 받은 데이터를 설정
-      }
+      await fetchReplyComment(); // 대댓글 가져오기
     }
     setIsReplyVisible(!isReplyVisible);
+  };
+
+  // 대댓글 삭제 후 대댓글 리스트를 업데이트하는 함수
+  const updateReplies = async () => {
+    const updatedReplies = await fetchReplyComment();
+    if (updatedReplies.total !== 0) {
+      setReplies(updatedReplies.replies); // 업데이트된 대댓글 설정
+    } else {
+      setReplies([]); // 대댓글이 없으면 빈 배열로 설정
+    }
+  };
+
+  // 대댓글 삭제 핸들러
+  const handleDeleteReply = async (postId: number, commentId: number) => {
+    const response = await deleteReply(postId, commentId);
+    if (response.status === 200) {
+      await updateReplies(); // 삭제 후 대댓글 리스트 업데이트
+    }
   };
 
   // 대댓글 입력창 토글
@@ -80,7 +96,6 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
     <div>
       <div className='mt-[10px] w-[1200px] border-b-2 border-[8D8B67]'></div>
       <Comment comment={comment} isWriter={isWriter} onDelete={() => setDeleted(true)} onReply={handleToggleCommentInput} />
-
       {/* 대댓글 input 영역 토글 */}
       {showCommentInput && (
         <div className='relative pl-[70px]'>
@@ -92,7 +107,6 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
           </button>
         </div>
       )}
-
       <div className='ml-[70px] flex items-center gap-[10px] p-[10px]'>
         {/* 대댓글이 1개 이상일 때만 노출 */}
         {comment.replyCount > 0 && !isReplyVisible && (
@@ -108,9 +122,8 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
           </div>
         )}
       </div>
-
       {/* 대댓글 리스트 렌더링 */}
-      {isReplyVisible && <Reply replies={replies} />}
+      {isReplyVisible && <Reply replies={replies} userId={userId} onDelete={handleDeleteReply} />}{' '}
     </div>
   );
 };

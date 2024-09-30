@@ -18,6 +18,11 @@ export type CommentsDto = {
   imageUrl: string;
 };
 
+export type RepliesResDto = {
+  replies: CommentsDto[];
+  total: number;
+};
+
 export type CommentsResDto = {
   replies: CommentsDto[];
   total: number;

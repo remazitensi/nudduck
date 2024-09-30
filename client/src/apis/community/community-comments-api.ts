@@ -92,10 +92,10 @@ export const updateReply = async (postId: number, commentId: number, data: Updat
 export const deleteReply = async (postId: number, commentId: number): Promise<void> => {
   try {
     const response = await baseApi.delete(`${api.community}/articles/${postId}/comments/${commentId}/replies`, {});
-    if (response.status === 204) {
+    if (response.status === 200) {
       alert('댓글이 삭제되었습니다 💣');
+      return response;
     }
-    return response;
   } catch (error: any) {
     console.log('error', error.message);
     return alert(error.message);
