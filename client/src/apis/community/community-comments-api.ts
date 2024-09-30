@@ -66,7 +66,8 @@ export const getReply = async (postId: number, parentId: number): Promise<Commen
     return response.data;
   } catch (error: any) {
     console.log('error', error.message);
-    return alert(error.message);
+    alert(error.message);
+    throw error;
   }
 };
 
