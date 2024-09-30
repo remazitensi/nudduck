@@ -36,7 +36,7 @@ const Graph:React.FC = () => {
     }
 
     return (
-        <div className='graph-titles flex w-[1920px] flex-col items-center'>
+        <div className='graph-titles flex w-full flex-col items-center'>
             <div className='flex flex-col items-center mt-[70px]'>
                 <div className='text-[28px] font-bold text-[#909700]'>취업준비생 &nbsp;<span className="text-black">의 인생그래프</span></div>
                 <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>

@@ -96,7 +96,7 @@ const LifeGraphList: React.FC = () => {
     );
   } else {
     return (
-      <div className='graphOk-titles flex w-[1920px] flex-col items-center'>
+      <div className='graphOk-titles flex w-full flex-col items-center'>
         <div className='mt-[70px] flex flex-col items-center'>
           <div className='text-[28px] font-bold text-[#909700]'>인생그래프</div>
           <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
