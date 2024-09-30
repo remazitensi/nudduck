@@ -86,10 +86,10 @@ export async function createPost(post: PostBodyData) {
   }
 }
 
-// TODO 게시글 수정 put 요청
+//  게시글 수정 put 요청
 export async function editPost({ post }: { post: PostDetailData }) {
   try {
-    const response = await baseApi.put(`${api.community}/${post.postId}`, {});
+    const response = await baseApi.put(`${api.community}/articles/${post.postId}`, {});
 
     if (response.status === 201) {
       // 수정한 게시글 페이지로 이동
@@ -106,22 +106,16 @@ export async function editPost({ post }: { post: PostDetailData }) {
   }
 }
 
-// TODO 게시글 삭제 delete 요청
-export async function deletePost({ post }: { post: PostDetailData }) {
+//  게시글 삭제 delete 요청
+export async function deletePost(id: number) {
   try {
-    const response = await baseApi.delete(`${api.community}/${post.postId}`, {});
-
-    if (response.status === 201) {
-      window.location.href = `/community`;
+    const response = await baseApi.delete(`${api.community}/articles/${id}`, {});
+    if (response.status === 200) {
+      alert('댓글이 삭제되었습니다 💣');
     }
-  } catch (error: unknown) {
-    if (isAxiosError(error)) {
-      const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to fetch posts:', errorMessage);
-    } else {
-      console.error('알 수 없는 에러가 발생했습니다.');
-    }
-    throw error;
+  } catch (error: any) {
+    console.log('error', error.message);
+    return alert(error.message);
   }
 }
 
