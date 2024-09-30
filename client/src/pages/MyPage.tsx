@@ -116,7 +116,7 @@ const MyPage: React.FC = () => {
         isLoading={isLoading} // 로딩 상태 전달
       />
 
-      <div onClick={handleQuitOpenModal} className='mt-[40px] flex w-[1200px] cursor-pointer justify-end gap-[5px]'>
+      <div onClick={handleQuitOpenModal} className='mt-[40px] flex w-[1200px] cursor-pointer justify-end gap-[5px] mb-[50px]'>
         <img src='/quit.svg' alt='quit' />
         <div className='flex items-center text-[15px] text-[#8D8B67]'>탈퇴하기</div>
         {quitOpen && <QuitModal onClose={handleQuitCloseModal} />}

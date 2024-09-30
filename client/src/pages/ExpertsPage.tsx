@@ -49,7 +49,7 @@ const ExpertsPage = () => {
   };
 
   return (
-    <div className='item-center mt-[130px] flex justify-center'>
+    <div className='item-center mt-[70px] mb-[50px] flex justify-center'>
       <div className='flex w-[1300px] flex-col items-center justify-center'>
         <div className='mb-[10px] text-3xl font-bold'>전문가 상담</div>
         <div className='mb-[20px] h-[3px] w-[200px] bg-[#7D7D48]' />
