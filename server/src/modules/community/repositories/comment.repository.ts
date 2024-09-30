@@ -132,6 +132,7 @@ export class CommentRepository extends Repository<Comment> {
         .where('comment.postId = :postId', { postId })
         .andWhere('comment.parentId IS NULL')
         .leftJoinAndSelect('comment.user', 'user')
+        .addSelect('user.deletedAt')
         .addSelect('(SELECT COUNT(*) FROM comment AS child WHERE child.parentId = comment.id) AS replyCount')
         .orderBy('comment.createdAt', 'ASC')
         .skip(offset)
@@ -155,7 +156,8 @@ export class CommentRepository extends Repository<Comment> {
         .where('comment.postId = :postId', { postId })
         .andWhere('comment.parentId = :parentCommentId', { parentCommentId })
         .leftJoinAndSelect('comment.user', 'user')
-        .orderBy('comment.createdAt', 'ASC') // 오래된 순으로 정렬
+        .addSelect('user.deletedAt')
+        .orderBy('comment.createdAt', 'ASC')
         .skip(offset)
         .take(limit)
         .getManyAndCount();
