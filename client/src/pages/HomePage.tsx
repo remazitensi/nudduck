@@ -224,7 +224,7 @@ const HomePage = () => {
             {/* 첫 번째 카드 */}
             <div className='relative h-[260px] w-[240px] rounded-lg border border-gray-300 bg-[#fbfaec] p-4 shadow transition-all duration-300 hover:border-[#AEAC9A] hover:shadow-lg'>
               <div className='absolute left-[15px] top-[76px] text-sm font-semibold leading-[25px] text-[#aeac9a]'>프로필 채우고 나에게 딱 맞는</div>
-              <div className='absolute left-[15px] top-[100px] text-lg font-bold leading-[25px] text-black'>AI 가상 면접과 실전 면접 시나리오를 확인해 보세요!</div>
+              <div className='absolute left-[15px] top-[100px] text-lg font-bold leading-[25px] text-black'>AI와의 가상 면접을 체험해 보세요!</div>
               <button
                 className='absolute bottom-[12px] left-1/2 h-[35px] w-[200px] -translate-x-1/2 transform rounded bg-[#313119] text-center text-xs font-bold leading-[25px] text-[#aeac9a]'
                 onClick={() => navigate('/my-page')} // 버튼 클릭 시 /my-page로 이동
