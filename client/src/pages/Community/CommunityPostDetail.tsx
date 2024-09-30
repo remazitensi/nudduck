@@ -12,13 +12,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api, baseApi } from '../../apis/base-api';
+import { getComments } from '../../apis/community/community-comments-api';
 import { getPostDetail } from '../../apis/community/community-post-api';
-import { getComments } from '../../apis/community/community-reply-api';
 import AnotherUserModal from '../../components/Community/AnotherUserModal';
 import { CategoryBtn } from '../../components/Community/CategoryBtn';
 import { CommentSection } from '../../components/Community/CommentSection';
 import { CreateComment } from '../../components/Community/CreateComment';
-import { CommentsDto, CommentsResDto } from '../../types/commets-type';
+import { CommentsDto, CommentsResDto } from '../../types/comments-type';
 import { Post } from '../../types/community-type';
 
 const CommunityPostDetail: React.FC = () => {
@@ -75,13 +75,13 @@ const CommunityPostDetail: React.FC = () => {
     }
   }, [postData.postId]);
 
-  // 페이지 최초 랜더링 시 게시글 상세와 댓글 불러오기
+  // 페이지 최초 랜더링 시 게시글 상세와 댓글 불러오기, 조회수 증가
   useEffect(() => {
     fetchPostDataWithComment();
 
     const timer = setTimeout(async () => {
       try {
-        await baseApi.post(`${api.community}/article/${id}/views`, {});
+        await baseApi.post(`${api.community}/articles/${id}/views`, {});
         console.log('조회수 증가 요청 성공');
       } catch (err) {
         console.error('조회수 증가 요청 실패:', err);
