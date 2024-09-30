@@ -12,7 +12,7 @@
  */
 
 import { AxiosError } from 'axios';
-import { PostBodyData, PostDetailData, PostListParams } from '../../types/community-type';
+import { PostBodyData, PostListParams } from '../../types/community-type';
 import { api, baseApi } from '../base-api';
 // const navigate = useNavigate();
 
@@ -69,7 +69,6 @@ export async function getPostDetail(id: number) {
 export async function createPost(post: PostBodyData) {
   try {
     const response = await baseApi.post(api.community, post);
-
     if (response.status === 201) {
       // 게시글이 성공적으로 생성된 경우
       return response.data;
@@ -87,22 +86,23 @@ export async function createPost(post: PostBodyData) {
 }
 
 //  게시글 수정 put 요청
-export async function editPost({ post }: { post: PostDetailData }) {
+export async function editPost(post: PostBodyData, id: number) {
   try {
-    const response = await baseApi.put(`${api.community}/articles/${post.postId}`, {});
+    const response = await baseApi.put(`${api.community}/articles/${id}`, post);
 
     if (response.status === 201) {
-      // 수정한 게시글 페이지로 이동
-      window.location.href = `/community/${post.postId}`;
+      // 게시글이 성공적으로 생성된 경우
+      return response.data;
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to fetch posts:', errorMessage);
+      console.error('Failed to create post:', errorMessage);
+      throw new Error(errorMessage); // 에러 메시지를 상위로 던짐
     } else {
       console.error('알 수 없는 에러가 발생했습니다.');
+      throw new Error('알 수 없는 에러가 발생했습니다.');
     }
-    throw error;
   }
 }
 

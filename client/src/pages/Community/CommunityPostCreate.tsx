@@ -46,6 +46,7 @@ const CommunityPostCreate: React.FC = () => {
 
     if (!typing) return alert('제목을 입력해주세요!');
     if (!content) return alert('내용을 입력해주세요!');
+    if (content.length < 10) return alert('내용을 10자 이상 입력해주세요!');
     if (!category) return alert('카테고리를 선택해주세요!');
 
     // 카테고리 값 변환
@@ -80,7 +81,7 @@ const CommunityPostCreate: React.FC = () => {
       navigate(`/community`);
     } catch (error: any) {
       // 에러 발생 시 처리
-      alert(error.message || '게시글 저장 중 에러가 발생했습니다.');
+      alert(error.message.message[0] || '게시글 저장 중 에러가 발생했습니다.');
     }
   };
 
