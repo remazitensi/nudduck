@@ -127,18 +127,24 @@ export class CommentRepository extends Repository<Comment> {
     const { limit, offset } = this.buildCommentPaginationQuery(paginationQuery);
 
     try {
-      // 부모 댓글만 조회하고, 대댓글 수를 포함한 쿼리
+      // 부모 댓글만 조회
       const [comments, total] = await this.createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.user', 'user')
         .where('comment.postId = :postId', { postId })
         .andWhere('comment.parentId IS NULL')
-        .leftJoinAndSelect('comment.user', 'user')
-        .addSelect('(SELECT COUNT(*) FROM comment AS child WHERE child.parentId = comment.id) AS replyCount')
         .orderBy('comment.createdAt', 'ASC')
         .skip(offset)
         .take(limit)
         .getManyAndCount();
 
-      const commentDtos = comments.map((comment) => new CommentResponseDto(comment));
+      // 각 댓글에 대해 대댓글 수를 계산
+      const commentDtos = await Promise.all(
+        comments.map(async (comment) => {
+          const replyCount = await this.createQueryBuilder('child').where('child.parentId = :parentId', { parentId: comment.id }).andWhere('child.postId = :postId', { postId }).getCount();
+
+          return new CommentResponseDto(comment, replyCount);
+        }),
+      );
 
       return { comments: commentDtos, total };
     } catch (error) {
