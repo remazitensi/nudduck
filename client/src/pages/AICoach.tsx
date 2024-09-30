@@ -245,10 +245,10 @@ const AICoach: React.FC = () => {
   // }, [chatHistory]);
 
   return (
-    <div className='chatRoom flex flex-col items-center'>
+    <div className='chatRoom flex flex-col items-center bg-[#fcfcf8]'>
       <div className='mt-[70px] flex flex-col items-center'>
         <div className='text-[28px] font-bold text-black'>AI 코치</div>
-        <div className='mt-[10px] w-[100px] border-b-2 border-[#8D8B67]'></div>
+        <div className='mt-[10px] w-[100px] border-b-2 border-[#DAD789]'></div>
       </div>
 
       <div className='mt-[40px] flex text-[25px]'>
@@ -260,9 +260,9 @@ const AICoach: React.FC = () => {
 
       <div className='mt-[30px] mb-[50px] flex w-[1130px] justify-center'>
         <div className='flex gap-[30px]'>
-          <div className='Left-list h-[850px] w-[300px] rounded-[30px] border border-[#8D8B67] bg-[#FBFAEC]'>
+          <div className='Left-list h-[850px] w-[300px] rounded-[20px] border border-[#8D8B67]  bg-yellow-50'>
             <div className='flex h-[80px] w-[300px] flex-col items-center justify-center rounded-t-[30px] border border-b-[#626146]'>
-              <p className='text-[25px]'>1:1 채팅 목록</p>
+              <p className='text-[25px]'>최근 채팅 목록</p>
             </div>
             <div className='h-[calc(100%_-_100px)] p-[15px]'>
               <div className='h-full w-full'>
@@ -271,7 +271,7 @@ const AICoach: React.FC = () => {
                     <li
                       key={session.id}
                       onClick={() => loadMessages(session.id)}
-                      className='flex cursor-pointer flex-col gap-[10px] rounded-[20px] border border-[#DAD7B9] bg-white pl-[30px] pt-[10px] text-[20px] hover:border-black'
+                      className='flex cursor-pointer flex-col gap-[10px] rounded-[10px] border border-[#626146] pl-[30px] pt-[10px] pb-[10px] text-[20px] text-[#626146] bg-white hover:border-black'
                     >
                       <div className='flex justify-between items-center'>
                         <div className='flex items-center gap-[5px]'>
@@ -294,16 +294,22 @@ const AICoach: React.FC = () => {
             </div>
           </div>
 
-          <div className='ID-container h-[850px] w-[800px] rounded-[30px] border border-[#8D8B67]'>
-            <div className='flex h-[80px] w-full items-center justify-between rounded-t-[30px] border bg-[#FBFAEC] pl-[30px] pr-[20px]'>
+          <div className='ID-container h-[850px] w-[900px] rounded-[20px] border border-[#8D8B67]'>
+            <div className='flex h-[80px] w-full items-center justify-between rounded-t-[20px] border-b border-black bg-[#FBFAEC] pl-[30px] pr-[20px]'>
               <div className='flex text-[25px] font-bold'>
                 <div className='mr-[5px]'>AI 코치</div>
               </div>
-              <button onClick={() => newChat(true)} className='h-[50px] w-[140px] rounded-xl bg-[#C7C4A7] text-[30px] text-center text-[#626146] hover:bg-[#626146] hover:text-white'>
+              <button onClick={() => newChat(true)} className='h-[50px] w-[120px] rounded-lg bg-[#C7C4A7] text-[25px] text-center text-[#626146] hover:bg-[#626146] hover:text-white'>
                 새 채팅
               </button>
             </div>
-            <div ref={chatContainerRef} className='Display-container flex h-[690px] w-full border-b-[1px] border-[#59573D] bg-white overflow-y-auto'>
+            <div ref={chatContainerRef} className='Display-container flex h-[690px] w-full border-b-[1px] border-[#59573D] bg-white overflow-y-auto'
+            style={{
+              backgroundImage: 'url(ai-bg.jpg), linear-gradient(to bottom, rgba(251, 250, 236, 0.2), rgba(255, 255, 255, 0.2))',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}>
               <ul className='Chatting-list flex h-full w-full flex-col gap-[10px] p-[20px]'>
                 {chatHistory.map((item, index) => (
                   <li
@@ -331,7 +337,7 @@ const AICoach: React.FC = () => {
             </div>
 
             {/* 메시지 입력창 */}
-            <div className='Input-container relative flex h-[80px] w-[800px] items-center justify-center gap-[20px] rounded-b-[30px] border-b'>
+            <div className='Input-container relative flex h-[80px] w-[900px] items-center justify-center gap-[20px] rounded-b-[20px] border-b'>
               <div className='relative flex w-[100px] items-center justify-center'>
                 <img onClick={() => setShowEmojiPicker(!showEmojiPicker)} className='flex h-[45px] w-[45px] cursor-pointer items-center justify-center object-cover' src='../smile.png' alt='이모티콘' />
                 {showEmojiPicker && (

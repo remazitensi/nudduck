@@ -100,7 +100,7 @@ const MyPage: React.FC = () => {
   };
 
   return (
-    <div className='myPage-titles flex w-full flex-col items-center gap-[10px]'>
+    <div className='myPage-titles flex w-full flex-col items-center gap-[10px] bg-[#fcfcf8]'>
       <MyProfile
         open={open}
         handleOpenModal={handleOpenModal}

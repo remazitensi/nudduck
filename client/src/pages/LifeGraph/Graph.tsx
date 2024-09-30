@@ -39,7 +39,7 @@ const Graph:React.FC = () => {
         <div className='graph-titles flex w-full flex-col items-center'>
             <div className='flex flex-col items-center mt-[70px]'>
                 <div className='text-[28px] font-bold text-[#909700]'>취업준비생 &nbsp;<span className="text-black">의 인생그래프</span></div>
-                <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
+                <div className='mt-[10px] w-[330px] border-b-4 border-[#909700]'></div>
             </div>
 
             <div className="flex justify-center mt-[150px] w-[1200px]">

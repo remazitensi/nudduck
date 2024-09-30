@@ -130,8 +130,8 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
           </div>
         </div>
         <div className='pl-[60px]'>
-          <div className='mt-[70px] text-[25px] font-bold'>인생 그래프 수정</div>
-          <div className='mt-[50px] flex flex-col gap-[5px]'>
+          <div className='mt-[50px] text-[25px] font-bold'>인생 그래프 수정</div>
+          <div className='mt-[30px] flex flex-col gap-[5px]'>
             <div>제목</div>
             <input
               value={graphTitle}
@@ -209,7 +209,7 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
             ))}
           </div>
 
-          <div className='mt-[90px] flex h-[50px] w-full justify-center'>
+          <div className='mt-[70px] flex h-[50px] w-full justify-center'>
             <button onClick={handleSave} className='flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
               저장하기
             </button>

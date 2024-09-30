@@ -32,11 +32,11 @@ const ExpertCard = ({ expert, setOpen }: ExpertCardProps) => {
           height: '400px', // 고정된 높이 설정
         }}
       >
-        <div className='m-[20px] flex w-[220px] flex-col items-center rounded-lg bg-[#FAFAFA]'>
+        <div className='m-[20px] flex w-[220px] flex-col items-center rounded-lg bg-[#FAFAFA] shadow-2xl'>
           <img
             src={expert.profileImage}
             alt={`${expert.name} 프로필`}
-            className='profile-image mt-[25px] h-[150px] w-[150px] rounded-lg'
+            className='profile-image mt-[25px] h-[150px] w-[150px] rounded-lg object-cover'
             style={{
               boxShadow: '0 8px 10px rgba(0, 0, 0, 0.15)',
               borderRadius: '23px',
@@ -48,7 +48,7 @@ const ExpertCard = ({ expert, setOpen }: ExpertCardProps) => {
             {formatHashtags(expert.hashtags)} {/* 해시태그 표시 */}
           </p>
         </div>
-        <div className='expert-details flex w-[460px] flex-col rounded-lg bg-[#FBFAEC] p-6'>
+        <div className='expert-details flex w-[460px] flex-col rounded-lg bg-[#FBFAEC] p-6 shadow-2xl'>
           {/* 해시태그 */}
           <p className='mb-[8px] text-sm font-bold text-[#7D7D48]'>
             {formatHashtags(expert.hashtags)} {/* 해시태그 표시 */}

@@ -109,7 +109,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className='w-full bg-white shadow-md'>
+    <header className='w-full shadow-xl z-50'>
       <div className='container mx-auto flex items-center justify-between px-8 py-4'>
         {/* 로고 및 사이트명 */}
         <Link to='/HomePage' className='flex items-center'>
@@ -131,10 +131,10 @@ const Header: React.FC = () => {
           <nav className='ml-[80px] flex flex-1 justify-start space-x-8'>
             {' '}
             {/* ml-4로 왼쪽에 약간의 여백 추가 */}
-            <Link to='/AICoach' className='hover:text-[#909700]'>
+            <Link to='/AI-Coach' className='hover:text-[#909700]'>
               AI 코치
             </Link>
-            <Link to='/ExpertsPage' className='hover:text-[#909700]'>
+            <Link to='/Experts' className='hover:text-[#909700]'>
               전문가 상담
             </Link>
             <Link to='/community' className='hover:text-[#909700]'>
