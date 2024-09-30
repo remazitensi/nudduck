@@ -10,7 +10,7 @@
  * 2024.09.21    김민지      MOdified    조회수 증가 요청
  */
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { api, baseApi } from '../../apis/base-api';
 import { getComments } from '../../apis/community/community-comments-api';
 import { getPostDetail } from '../../apis/community/community-post-api';

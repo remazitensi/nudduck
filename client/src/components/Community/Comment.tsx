@@ -16,9 +16,12 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
   const createdAt = changeDateWithFormat(comment.createdAt);
 
   const handleDeleteComment = async () => {
-    const response = await deleteComment(comment.postId, comment.commentId);
-    if (response.status === 204) {
-      onDelete(); // 상위 컴포넌트에 삭제를 알림
+    let flag = confirm('삭제 하시겠습니까?'); //확인 취소 버튼
+    if (flag == true) {
+      try {
+        const response = await deleteComment(comment.postId, comment.commentId);
+        onDelete(); // 상위 컴포넌트에 삭제를 알림
+      } catch (err) {}
     }
   };
 
@@ -27,7 +30,7 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-[10px] p-[10px]'>
           <div className='h-[50px] w-[50px] rounded-full'>
-            <img className='rounded-full object-cover' src={comment.imageUrl} alt='profile-img' />
+            <img className='h-full w-full rounded-full object-cover' src={comment.imageUrl} alt='profile-img' />
           </div>
           <div className='flex items-center text-[20px] font-semibold'>{comment.nickname}</div>
           <div className='flex items-center text-[12px] text-[#AEAC9A]'>{createdAt}</div>
@@ -38,7 +41,7 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
         {isWriter && (
           <div className='flex items-center gap-[10px] px-[10px]'>
             {/* <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]'>수정</div> */}
-            <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]' onClick={() => handleDeleteComment}>
+            <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]' onClick={() => handleDeleteComment()}>
               삭제
             </div>
           </div>

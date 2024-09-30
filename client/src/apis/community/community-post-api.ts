@@ -111,7 +111,7 @@ export async function deletePost(id: number) {
   try {
     const response = await baseApi.delete(`${api.community}/articles/${id}`, {});
     if (response.status === 200) {
-      alert('댓글이 삭제되었습니다 💣');
+      alert('게시글이 삭제되었습니다 💣');
     }
   } catch (error: any) {
     console.log('error', error.message);
