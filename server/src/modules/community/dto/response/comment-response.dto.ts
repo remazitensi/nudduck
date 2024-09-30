@@ -8,6 +8,7 @@
  * 2024.09.21    김재영      Created     댓글 응답 DTO 초기 생성
  * 2024.09.22    김재영      Modified    생성자 추가 및 데이터 매핑 로직 추가
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
+ * 2024.09.30    김재영      Modified   사용자 탈퇴일 필드 추가
  */
 
 import { Comment } from '@_modules/community/entities/comment.entity';
@@ -74,6 +75,13 @@ export class CommentResponseDto {
   })
   imageUrl?: string;
 
+  @ApiPropertyOptional({
+    description: '작성자 탈퇴일',
+    example: '2024-09-30T10:00:00.000Z',
+    nullable: true,
+  })
+  deletedAt?: Date;
+
   constructor(comment: Comment, replyCount?: number) {
     this.postId = comment.postId; // 커뮤니티 ID
     this.commentId = comment.id; // 댓글 ID
@@ -85,5 +93,6 @@ export class CommentResponseDto {
     this.userId = comment.user?.id || null;
     this.nickname = comment.user?.nickname || null; // 작성자 닉네임
     this.imageUrl = comment.user?.imageUrl || null; // 작성자 프로필 사진 URL
+    this.deletedAt = comment.user?.deletedAt || null; // 작성자 탈퇴일
   }
 }

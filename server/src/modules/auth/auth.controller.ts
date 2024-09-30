@@ -19,6 +19,7 @@
  * 2024.09.21    이승철      Modified    swagger 데코레이터 재정렬
  * 2024.09.23    이승철      Modified    리다이렉트 설정
  * 2024.09.24    이승철      Modified    서버에서 refreshToken 추출
+ * 2024.09.29    이승철      Modified    토큰 이름 변경
  */
 
 import { AuthService } from '@_modules/auth/auth.service';
@@ -63,8 +64,8 @@ export class AuthController {
 
     const tokens = await this.authService.getSocialLogin(userDto);
 
-    res.cookie('accessToken', tokens.accessToken, getAccessCookieOptions());
-    res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
+    res.cookie('_a', tokens.accessToken, getAccessCookieOptions());
+    res.cookie('__r', tokens.refreshToken, getRefreshCookieOptions());
     res.redirect(this.configService.get<string>('HOME_PAGE')); 
   }
 
@@ -91,8 +92,8 @@ export class AuthController {
 
     const tokens = await this.authService.getSocialLogin(userDto);
 
-    res.cookie('accessToken', tokens.accessToken, getAccessCookieOptions());
-    res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
+    res.cookie('_a', tokens.accessToken, getAccessCookieOptions());
+    res.cookie('__r', tokens.refreshToken, getRefreshCookieOptions());
     res.redirect(this.configService.get<string>('HOME_PAGE'));
   }
 
@@ -101,7 +102,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: '리프레시 토큰이 제공되지 않았습니다.' })
   @Post('access-token')
   async accessToken(@Req() req: UserRequest, @Res() res: Response): Promise<void> {
-    const refreshToken = req.cookies['refreshToken'];
+    const refreshToken = req.cookies['__r'];
   
     if (!refreshToken) {
       throw new BadRequestException('리프레시 토큰이 제공되지 않았습니다.');
@@ -109,7 +110,7 @@ export class AuthController {
   
     const newAccessToken = await this.authService.regenerateAccessToken(refreshToken);
   
-    res.cookie('accessToken', newAccessToken, getAccessCookieOptions());
+    res.cookie('_a', newAccessToken, getAccessCookieOptions());
     res.status(200).json({ message: '엑세스 토큰이 재발급되었습니다.' });
   }
 }

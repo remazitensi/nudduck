@@ -8,6 +8,7 @@
  * 2024.09.20    김재영      Created     커뮤니티 게시글 DTO 생성
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
  * 2024.09.26    이승철      Modified    게시글 내용 수정
+ * 2024.09.30    김재영      Modified   사용자 탈퇴일 필드 추가
  */
 
 import { Community } from '@_modules/community/entities/community.entity';
@@ -61,6 +62,13 @@ export class CommunityResponseDto {
   @ApiProperty({ description: '작성자 ID', example: 1 })
   readonly userId: number;
 
+  @ApiProperty({
+    description: '사용자 탈퇴일',
+    example: '2024-09-30T10:00:00.000Z',
+    nullable: true,
+  })
+  deletedAt?: Date; // 사용자 탈퇴일
+
   constructor(community: Community) {
     this.postId = community.postId;
     this.title = community.title;
@@ -71,5 +79,6 @@ export class CommunityResponseDto {
     this.userId = community.user?.id || null;
     this.nickname = community.user?.nickname || null; // 작성자 닉네임
     this.imageUrl = community.user?.imageUrl || null; // 작성자 프로필 사진 URL
+    this.deletedAt = community.user?.deletedAt || null; // 사용자 탈퇴일
   }
 }

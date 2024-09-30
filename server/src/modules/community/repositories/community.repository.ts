@@ -43,7 +43,7 @@ export class CommunityRepository extends Repository<Community> {
     try {
       const [posts, total] = await this.createQueryBuilder('community')
         .leftJoinAndSelect('community.user', 'user')
-        .select(['community.postId', 'community.title', 'community.viewCount', 'community.createdAt', 'community.category', 'user.id', 'user.nickname', 'user.imageUrl'])
+        .select(['community.postId', 'community.title', 'community.viewCount', 'community.createdAt', 'community.category', 'user.id', 'user.nickname', 'user.imageUrl', 'user.deletedAt'])
         .orderBy(`community.${sortField}`, sortOrder as 'ASC' | 'DESC')
         .take(take)
         .skip(skip)
@@ -65,7 +65,7 @@ export class CommunityRepository extends Repository<Community> {
       const [posts, total] = await this.createQueryBuilder('community')
         .leftJoinAndSelect('community.user', 'user')
         .where('community.category = :category', { category })
-        .select(['community.postId', 'community.title', 'community.viewCount', 'community.createdAt', 'community.category', 'user.id', 'user.nickname', 'user.imageUrl'])
+        .select(['community.postId', 'community.title', 'community.viewCount', 'community.createdAt', 'community.category', 'user.id', 'user.nickname', 'user.imageUrl', 'user.deletedAt'])
         .orderBy(`community.${sortField}`, sortOrder as 'ASC' | 'DESC') // sortOrder를 타입으로 변환
         .take(take)
         .skip(skip)
@@ -81,7 +81,7 @@ export class CommunityRepository extends Repository<Community> {
   async createPost(postData: CreateCommunityDto, userId: number): Promise<Community> {
     const newPost = this.create({
       ...postData,
-      user: { id: userId }, // userId를 사용하여 작성자 설정
+      user: { id: userId },
     });
 
     try {

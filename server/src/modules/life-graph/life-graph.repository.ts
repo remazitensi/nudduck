@@ -8,6 +8,7 @@
  * 2024.09.17    이승철      Created
  * 2024.09.18    이승철      Modified    트랜잭션에서 직접 db처리로 인해 update 로직 삭제
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
+ * 2024.09.29    이승철      Modified    return 타입 추가
  */
 
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
@@ -30,7 +31,7 @@ export class LifeGraphRepository {
     return this.lifeGraphRepository.save(newLifeGraph);
   }
 
-  async findLifeGraphs(userId: number, page: number, limit: number) {
+  async findLifeGraphs(userId: number, page: number, limit: number): Promise<LifeGraph[]> {
     return this.lifeGraphRepository.find({
       where: { user: { id: userId } },
       skip: (page - 1) * limit,
@@ -40,7 +41,7 @@ export class LifeGraphRepository {
     });
   }
 
-  async countLifeGraphs(userId: number) {
+  async countLifeGraphs(userId: number): Promise<number> {
     return this.lifeGraphRepository.count({ where: { user: { id: userId } } });
   }
 
