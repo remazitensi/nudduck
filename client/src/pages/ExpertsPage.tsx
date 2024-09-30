@@ -30,14 +30,18 @@ const ExpertsPage = () => {
   };
 
   const totalPages = Math.ceil(totalCount / limit);
+  const [startPage, setStartPage] = useState(1);
+  const endPage = Math.min(startPage + 4, totalPages); // 5개씩 페이지 표시
 
   const handlePageChange = (newPage: number) => {
-    if (newPage <= 0) {
-      setPage(1);
-    } else if (newPage > totalPages) {
-      setPage(totalPages);
-    } else {
-      setPage(newPage);
+    if (newPage > totalPages || newPage < 1) return;
+    setPage(newPage);
+
+    // 페이지 그룹 변경: 5 단위로 페이지 그룹을 조정
+    if (newPage > endPage) {
+      setStartPage(startPage + 5);
+    } else if (newPage < startPage) {
+      setStartPage(startPage - 5);
     }
   };
 
@@ -49,15 +53,15 @@ const ExpertsPage = () => {
   };
 
   return (
-    <div className='item-center ] mb-[50px] flex justify-center bg-[#fcfcf8]'>
-      <div className='flex mt-[70px] w-[1300px] flex-col items-center justify-center'>
+    <div className='item-center mb-[50px] flex justify-center bg-[#fcfcf8]'>
+      <div className='mt-[70px] flex w-[1300px] flex-col items-center justify-center'>
         <div className='mb-[10px] text-3xl font-bold'>전문가 상담</div>
         <div className='mb-[20px] h-[3px] w-[200px] bg-[#7D7D48]' />
         <div className='flex w-[1200px] flex-wrap justify-center'>
           {experts?.map((expert: any) => (
             <div
               key={expert.id}
-              className='m-[30px] flex h-[350px] w-[240px] flex-col items-center justify-center rounded-lg bg-[#FAFAFA] shadow-lg hover:hover:shadow-md'
+              className='m-[30px] flex h-[350px] w-[240px] flex-col items-center justify-center rounded-lg bg-[#FAFAFA] shadow-lg hover:shadow-md'
               onClick={() => handleCardClick(expert)}
             >
               <img
@@ -95,9 +99,9 @@ const ExpertsPage = () => {
           <button onClick={() => handlePageChange(page - 1)} disabled={page === 1} className={`rounded px-3 py-1 ${page === 1 ? 'cursor-not-allowed text-gray-400' : 'text-black'}`}>
             이전
           </button>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button key={index + 1} onClick={() => handlePageChange(index + 1)} disabled={index + 1 === page} className={index + 1 === page ? 'font-bold' : ''}>
-              {index + 1}
+          {Array.from({ length: endPage - startPage + 1 }, (_, index) => (
+            <button key={startPage + index} onClick={() => handlePageChange(startPage + index)} disabled={startPage + index === page} className={startPage + index === page ? 'font-bold' : ''}>
+              {startPage + index}
             </button>
           ))}
           <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages} className={`rounded px-3 py-1 ${page === totalPages ? 'cursor-not-allowed text-gray-400' : 'text-black'}`}>

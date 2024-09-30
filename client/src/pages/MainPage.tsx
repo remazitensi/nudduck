@@ -74,18 +74,7 @@ const MainPage = () => {
           />
         </div>
       </div>
-      {/* CTA 섹션 */}
-      {/* 네비바가 자동으로 따라오기 위해 fixed bottom-0 left-0 z-50 등 사용하여 고정함(스크롤 시 고정가능)*/}
-      {/* <div className='cta-container fixed bottom-0 left-0 z-50 mt-12 w-full pb-5 text-center'>
-        <div className='flex-container flex items-center justify-center gap-x-[800px]'>
-          <p className='text-lg font-semibold'>
-            AI 코치 <strong>누떡</strong>과 함께 면접 준비를 시작해 보세요!
-          </p>
-          <a href='#' className='cta-button ml-2 inline-block rounded bg-[#909700] px-5 py-2 text-base text-white'>
-            면접 준비 바로가기
-          </a>
-        </div>
-      </div> */}
+
       {/* 텍스트 설명 */}
       <h2 className='font-regular my-8 mt-36 text-center text-2xl transition-transform duration-300 hover:scale-105'>나의 인생을 그래프로 요약하고,</h2>
       {/* 이미지로 대체되는 그래프 섹션 */}
@@ -106,10 +95,12 @@ const MainPage = () => {
       <section className='chatbot-section flex items-center justify-center py-12'>
         <div className='chatbot-placeholder relative inline-block w-full text-center'>
           <img src='ai-simulation.png' alt='ai-simulation' className='chatbot-image h-auto w-full' />
-          {/* 비율을 이용해 텍스트를 정확히 중앙에 위치 */}
-          <p className='chatbot-text absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform text-2xl font-medium text-gray-800 transition-transform duration-300 hover:scale-105'>
-            <strong>누떡</strong>에서는 희망 직군의 가상 면접을 지원합니다
-          </p>
+          {/* 텍스트를 flex를 이용해 정확히 중앙에 위치 */}
+          <div className='absolute inset-0 flex items-center justify-center'>
+            <p className='text-2xl font-medium text-gray-800 transition-transform duration-300 hover:scale-105'>
+              <strong>누떡</strong>에서는 희망 직군의 가상 면접을 지원합니다
+            </p>
+          </div>
         </div>
       </section>
       {/* AI 실전 면접 시나리오 섹션 */}
@@ -117,7 +108,7 @@ const MainPage = () => {
         <div className='scenario-placeholder w-full text-center'>
           <img src='scenario.png' alt='scenario' className='scenario-image h-auto w-full' />
           <p className='mt-[100px] text-2xl font-bold transition-transform duration-300 hover:scale-105'>
-            AI실전 면접 시나리오<span className='font-normal'>를 통해 가상 면접에 대한 분석과 피드백을 받고</span>
+            AI Coach<span className='font-normal'>와의 채팅을 통해 가상 면접에 대한 분석을 진행하고</span>
           </p>
         </div>
       </section>
