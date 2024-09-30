@@ -39,8 +39,7 @@ const Header: React.FC = () => {
   // 사용자 정보 요청 함수
   const fetchUserData = async () => {
     try {
-      const response = await axios.get('/api/my', {
-        baseURL: 'http://localhost:3000', // baseURL을 명시적으로 설정
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/my/info`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // 엑세스 토큰 포함
         },
@@ -68,13 +67,13 @@ const Header: React.FC = () => {
     }
   };
 
+  // 로그아웃 상태 변경 핸들러
   const handleLogoutClick = async () => {
     try {
       await axios.post(
-        '/api/my/logout', // 로그아웃 엔드포인트
+        `${import.meta.env.VITE_API_URL}/my/logout`, // 로그아웃 엔드포인트
         {},
         {
-          baseURL: 'http://localhost:3000', // baseURL 확인 (필요 시 설정)
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
@@ -109,13 +108,13 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className='w-full shadow-xl z-50'>
+    <header className='z-50 w-full shadow-xl'>
       <div className='container mx-auto flex items-center justify-between px-8 py-4'>
         {/* 로고 및 사이트명 */}
         <Link to='/HomePage' className='flex items-center'>
           <img src='/logo_image.png' className='mr-4 h-[66px] w-[66px]' alt='Nudduck Logo' />
           <span
-            className='font-rammetto relative text-3xl font-normal leading-10 text-[#fbfaec]'
+            className='relative font-rammetto text-3xl font-normal leading-10 text-[#fbfaec]'
             style={{
               WebkitTextStroke: '2px #000', // 외곽선을 더욱 깔끔하게 설정
               color: '#fbfaec', // 텍스트 색상
