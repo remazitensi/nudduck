@@ -19,7 +19,7 @@ export type CommentsDto = {
 };
 
 export type CommentsResDto = {
-  comments: CommentsDto[];
+  replies: CommentsDto[];
   total: number;
 };
 

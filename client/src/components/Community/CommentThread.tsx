@@ -38,7 +38,7 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
     if (!isReplyVisible) {
       const replyData = await fetchReplyComment();
       if (replyData.total !== 0) {
-        setReplies(replyData.comments); // 받은 데이터를 설정
+        setReplies(replyData.replies); // 받은 데이터를 설정
       }
     }
     setIsReplyVisible(!isReplyVisible);
@@ -67,7 +67,7 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
       await createReply(comment.postId, data);
       if (contentRef.current) contentRef.current.value = ''; // 대댓글 입력 후 textarea 초기화
       const updatedReplies = await fetchReplyComment(); // 대댓글 등록 후 최신 대댓글 리스트를 가져옴
-      setReplies(updatedReplies.comments);
+      await setReplies(updatedReplies.replies);
     } catch (error) {
       console.error('댓글 생성 실패:', error);
     }
@@ -94,7 +94,8 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
       )}
 
       <div className='ml-[70px] flex items-center gap-[10px] p-[10px]'>
-        {!isReplyVisible && (
+        {/* 대댓글이 1개 이상일 때만 노출 */}
+        {comment.replyCount > 0 && !isReplyVisible && (
           <div className='flex items-center gap-[10px]' onClick={toggleReplyVisibility}>
             <img src='/down_arrow.png' alt='댓글 열기' />
             <p>댓글 열기 ({comment.replyCount})</p>
