@@ -129,7 +129,7 @@ const CommunityPostDetail: React.FC = () => {
 
       <div className='mt-[50px] h-[500px] w-[1200px]'>
         <div className='relative h-[500px] w-[1200px] rounded-[20px] border'>
-          <div className='whitespace-pre-line p-[50px] text-[16px] leading-loose'>{postData.content}</div>
+          <div className='whitespace-pre-line p-[50px] text-[18px] leading-loose'>{postData.content}</div>
         </div>
       </div>
 
