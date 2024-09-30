@@ -13,19 +13,18 @@
  */
 
 import { AuthModule } from '@_modules/auth/auth.module';
-import { ChatModule } from '@_modules/chat/chat.module';
 import { CommunityModule } from '@_modules/community/community.module';
 import { ExpertModule } from '@_modules/expert/expert.module';
 import { FileUploadModule } from '@_modules/file-upload/file-upload.module';
 import { LifeGraphModule } from '@_modules/life-graph/life-graph.module';
 import { ProfileModule } from '@_modules/profile/profile.module';
-import { ScheduleModule } from '@_modules/quote/schedule.module';
 import { SimulationModule } from '@_modules/simulation/simulation.module';
 import { UserModule } from '@_modules/user/user.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule as NestScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from 'schedulers/quote/schedule.module';
 
 @Module({
   imports: [
@@ -58,7 +57,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     SimulationModule,
     ExpertModule,
     CommunityModule,
-    ChatModule,
     ScheduleModule,
     NestScheduleModule.forRoot(),
   ],
