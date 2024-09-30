@@ -6,11 +6,12 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.14    이승철      Created
+ * 2024.09.30    이승철      Modified    페이지네이션 쿼리에 limit 추가
  */
 
+import { Expert } from '@_modules/expert/entity/expert.entity';
 import { ExpertController } from '@_modules/expert/expert.controller';
 import { ExpertService } from '@_modules/expert/expert.service';
-import { Expert } from '@_modules/expert/entity/expert.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('ExpertController', () => {
@@ -41,8 +42,9 @@ describe('ExpertController', () => {
 
       mockExpertService.getExperts.mockResolvedValue(result);
 
-      expect(await controller.getExperts({ page: 1 })).toBe(result);
-      expect(expertService.getExperts).toHaveBeenCalledWith(1, 10);
+      const paginationQuery = { page: 1, limit: 10 };
+      expect(await controller.getExperts(paginationQuery)).toBe(result);
+      expect(expertService.getExperts).toHaveBeenCalledWith(paginationQuery);
     });
   });
 
