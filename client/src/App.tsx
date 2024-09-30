@@ -17,6 +17,8 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
+import PersonalInfoPolicy from './layout/PersonalInfoPolicy';
+import TermOfUse from './layout/TermOfUse';
 
 import HomePage from './pages/HomePage';
 import MainPage from './pages/MainPage';
@@ -84,6 +86,10 @@ const App: React.FC = () => {
 
           {/* 전문가 상담 페이지 */}
           <Route path='experts' element={<ExpertsPage />} />
+
+          {/* 푸터 관련 라우트 */}
+          <Route path='/personal-info-policy' element={<PersonalInfoPolicy />} />
+          <Route path='/term-of-use' element={<TermOfUse />} />
 
           {/* 고객센터 페이지 */}
           {/* <Route path='support' element={<CustomerSupportPage />} /> */}
