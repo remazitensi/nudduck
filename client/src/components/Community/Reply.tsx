@@ -11,8 +11,11 @@
 
 import { CommentsDto } from '../../types/comments-type';
 
-export const Reply = (replies: CommentsDto[]) => {
+export const Reply = (props: { replies: CommentsDto[] }) => {
+  const { replies } = props;
+
   console.log(replies);
+
   return (
     <div className='Reply mt-[20px] flex flex-col'>
       {replies.map((reply, index) => (
