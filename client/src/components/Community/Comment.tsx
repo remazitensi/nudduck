@@ -8,10 +8,11 @@
  * 2024.09.28    김민지      Created
  */
 
-import { changeDateWithFormat } from '../../apis/change-date-format';
 import { CommentsDto } from '../../types/comments-type';
+import { changeDateWithFormat } from '../../utils/change-date-with-format';
 
 export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean }> = ({ comment, isWriter }) => {
+  console.log('comment.createdAt:', comment.createdAt); // 확인용
   const createdAt = changeDateWithFormat(comment.createdAt);
 
   return (
