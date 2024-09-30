@@ -10,11 +10,8 @@
 
 export const changeDateWithFormat = (utcDate: string) => {
   const date = new Date(utcDate);
-  console.log('before:', date);
-
   // 9시간을 더해 한국 시간으로 변환
   date.setHours(date.getHours() + 9);
-  console.log('after:', date);
 
   // getUTCFullYear, getUTCMonth가 아니라 getFullYear, getMonth를 사용하여 로컬 시간 기준으로 계산
   const year = date.getFullYear();
