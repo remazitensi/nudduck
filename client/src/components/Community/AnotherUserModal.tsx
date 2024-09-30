@@ -13,6 +13,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { getUserProfile } from '../../apis/community/community-post-api'; // getUserProfile API 함수 import
+import { CreateDetailGraph } from '../Graph/CreateDetailGraph';
 
 interface AnotherUserModalProps {
   onClose: () => void;
@@ -66,10 +67,9 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
                 <div className='text-[20px] font-bold text-[#8D8B67]'>{userData.hashtags?.join(' ') || ''}</div>
               </div>
             </div>
-            <div className='flex h-[40px] w-[180px] justify-center rounded-[10px] border border-[#8D8B67] hover:border-[#A1DFFF] hover:bg-[#EEF9FF] hover:font-bold'>
-              {/* todo : 1:1 채팅으로 이동 */}
+            {/* <div className='flex h-[40px] w-[180px] justify-center rounded-[10px] border border-[#8D8B67] hover:border-[#A1DFFF] hover:bg-[#EEF9FF] hover:font-bold'>
               <button className='text-18px]'>1:1 대화 신청하기</button>
-            </div>
+            </div> */}
           </div>
           <div className='mt-[25px] flex flex-col gap-[15px] pl-[15px]'>
             <div className='flex gap-[70px]'>
@@ -83,7 +83,7 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
           </div>
           <div className='mt-[25px] flex h-[330px] w-[600px] items-center justify-center bg-[#eeeeee]'>
             {/* todo : 병합 후 인생그래프 삽입 */}
-            {userData.favoriteLifeGraph ? <div>{userData.favoriteLifeGraph.title}</div> : <div>좋아하는 인생 그래프가 없습니다.</div>}
+            {userData.favoriteLifeGraph ? <CreateDetailGraph events={userData.favoriteLifeGraph.events}></CreateDetailGraph> : <div>좋아하는 인생 그래프가 없습니다.</div>}
           </div>
 
           {userData.favoriteLifeGraph && (
