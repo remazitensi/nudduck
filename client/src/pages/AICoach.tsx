@@ -4,6 +4,7 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import React, { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { activateSimulation, askSimulation, deleteSession, fetchIdSession, fetchSimulationHistory } from '../apis/AICoach-api'; 
+import { changeDateWithFormat } from '../utils/change-date-with-format';
 import './AICoach.css';
 
 interface ChatSession {
@@ -29,6 +30,37 @@ const AICoach: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]); // 세션 리스트 저장 상태
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null); // 현재 활성화된 세션 ID
   const [chatHistory, setChatHistory] = useState<Message[]>([]); // 채팅 기록 상태
+  const [isPageLoading, setIsPageLoading] = useState(true); // 페이지가 로드된 상태 확인을 위한 상태 변수
+  const chatContainerRef = useRef<HTMLDivElement>(null); // 채팅 컨테이너 참조
+
+
+   // 페이지가 로드될 때 스크롤을 최상단으로 이동
+   useEffect(() => {
+    window.scrollTo(0, 0); // 페이지 로드 시 스크롤을 최상단으로 이동
+ 
+  }, []);
+
+  // chatHistory가 업데이트될 때마다 채팅방 스크롤을 하단으로 이동
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight; // 채팅방 스크롤을 최하단으로 이동
+    }
+  }, [chatHistory]); // chatHistory가 변경될 때마다 실행
+
+  // 세션 클릭 시 해당 세션의 메시지 불러오기
+  const loadMessages = async (sessionId: number) => {
+    try {
+      const response = await fetchIdSession(sessionId);
+      setChatHistory(response.messages);
+      setCurrentSessionId(sessionId); // 현재 세션 ID 업데이트
+
+      // 세션 클릭 시 채팅방 스크롤을 최하단으로 이동
+      // endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+    }
+  };
+
 
   // AI 코칭 탭 클릭 시 기존 세션 목록 불러오기
   // useEffect(() => {
@@ -91,15 +123,15 @@ const AICoach: React.FC = () => {
   };  
 
   // 세션 클릭 시 해당 세션의 메시지 불러오기
-  const loadMessages = async (sessionId: number) => {
-    try {
-      const response = await fetchIdSession(sessionId);
-      setChatHistory(response.messages);
-      setCurrentSessionId(sessionId); // 현재 세션 ID 업데이트
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    }
-  };
+  // const loadMessages = async (sessionId: number) => {
+  //   try {
+  //     const response = await fetchIdSession(sessionId);
+  //     setChatHistory(response.messages);
+  //     setCurrentSessionId(sessionId); // 현재 세션 ID 업데이트
+  //   } catch (error) {
+  //     console.error('Failed to load messages:', error);
+  //   }
+  // };
 
   // 새로운 세션 시작 or 세션 이어받기
   const newChat = async (isNew: boolean) => {
@@ -160,7 +192,7 @@ const AICoach: React.FC = () => {
         const updatedHistory = prev.map((msg) => (msg.id === typingMessage.id ? aiMessage : msg)); // AI typing... 에서 AI답으로 변경
         return updatedHistory; // 타이핑 메시지를 AI 응답으로 변경
       });
-      endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+      // endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
       console.error('메시지를 전송하는데 실패하였습니다.', error);
     }
@@ -179,10 +211,10 @@ const AICoach: React.FC = () => {
     }
   };
 
-  // 채팅 목록이 업데이트될 때 자동 스크롤
-  useEffect(() => {
-    endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatHistory]);
+  // // 채팅 목록이 업데이트될 때 자동 스크롤 범인 이 부분이 화면 스크롤과 채팅방 스크롤이 같이 하단으로 가게 한 범인
+  // useEffect(() => {
+  //   endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // }, [chatHistory]);
 
   // 전송 버튼 클릭 시 메시지 전송
   const handleSend = () => {
@@ -202,6 +234,16 @@ const AICoach: React.FC = () => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
+ 
+
+  // 2. chatHistory가 업데이트될 때만 채팅 목록을 최하단으로 스크롤
+  // useEffect(() => {
+  //   if (chatHistory.length > 0) {
+  //     // 메시지 추가 시에만 최하단으로 스크롤
+  //     endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // }, [chatHistory]);
+
   return (
     <div className='chatRoom flex flex-col items-center'>
       <div className='mt-[70px] flex flex-col items-center'>
@@ -216,15 +258,15 @@ const AICoach: React.FC = () => {
         
       </div>
 
-      <div className='mt-[30px] mb-[50px] flex w-[1300px] justify-center'>
+      <div className='mt-[30px] mb-[50px] flex w-[1130px] justify-center'>
         <div className='flex gap-[30px]'>
-          <div className='Left-list h-[1000px] w-[300px] rounded-[30px] border border-[#8D8B67] bg-[#FBFAEC]'>
-            <div className='flex h-[100px] w-[300px] flex-col items-center justify-center rounded-t-[30px] border border-b-[#626146]'>
+          <div className='Left-list h-[850px] w-[300px] rounded-[30px] border border-[#8D8B67] bg-[#FBFAEC]'>
+            <div className='flex h-[80px] w-[300px] flex-col items-center justify-center rounded-t-[30px] border border-b-[#626146]'>
               <p className='text-[25px]'>1:1 채팅 목록</p>
             </div>
             <div className='h-[calc(100%_-_100px)] p-[15px]'>
               <div className='h-full w-full'>
-                <ul className='flex h-[850px] flex-col gap-[10px] overflow-y-auto p-[10px]'>
+                <ul className='flex h-[700px] flex-col gap-[10px] overflow-y-auto p-[10px]'>
                 {sessions.map((session) => (
                     <li
                       key={session.id}
@@ -242,7 +284,7 @@ const AICoach: React.FC = () => {
                           X
                         </button>
                       </div>
-                      <div>{formatDateTime(session.createdAt)}</div>
+                      <div>{changeDateWithFormat(session.createdAt)}</div>
                     </li>
                   ))}
                 </ul>
@@ -250,27 +292,27 @@ const AICoach: React.FC = () => {
             </div>
           </div>
 
-          <div className='ID-container h-[1000px] w-[970px] rounded-[30px] border border-[#8D8B67]'>
-            <div className='flex h-[100px] w-full items-center justify-between rounded-t-[30px] border bg-[#FBFAEC] pl-[30px] pr-[20px]'>
+          <div className='ID-container h-[850px] w-[800px] rounded-[30px] border border-[#8D8B67]'>
+            <div className='flex h-[80px] w-full items-center justify-between rounded-t-[30px] border bg-[#FBFAEC] pl-[30px] pr-[20px]'>
               <div className='flex text-[25px] font-bold'>
                 <div className='mr-[5px]'>AI 코치</div>
               </div>
-              <button onClick={() => newChat(true)} className='h-[60px] w-[140px] rounded-xl bg-[#C7C4A7] text-[33px] text-[#626146] hover:bg-[#626146] hover:text-white'>
+              <button onClick={() => newChat(true)} className='h-[50px] w-[140px] rounded-xl bg-[#C7C4A7] text-[30px] text-center text-[#626146] hover:bg-[#626146] hover:text-white'>
                 새 채팅
               </button>
             </div>
-            <div className='Display-container flex h-[800px] w-full border-b-[1px] border-[#59573D] bg-white'>
-              <ul className='Chatting-list flex h-full w-full flex-col gap-[10px] overflow-y-auto p-[20px]'>
+            <div ref={chatContainerRef} className='Display-container flex h-[690px] w-full border-b-[1px] border-[#59573D] bg-white overflow-y-auto'>
+              <ul className='Chatting-list flex h-full w-full flex-col gap-[10px] p-[20px]'>
                 {chatHistory.map((item, index) => (
                   <li
                     key={index}
                     ref={(el) => (messageRefs.current[index] = el)} // 각 메시지를 참조하기 위해 ref 저장
                     className={`flex items-start gap-[10px] ${item.sender === 'user' ? 'flex-row-reverse' : ''}`}
                   >
-                    {item.sender === 'ai' && <img src='../AI_image.png' className='AI-image-class' />}
+                    {item.sender === 'ai' && <img src='../AI_image.png' className='AI-image-class w-[80px] h-[80px]' />}
                     <div className='flex max-w-[80%] flex-col justify-end gap-[5px]'>
                       <div className={`flex ${item.sender === 'user' ? 'justify-end' : ''}`}>
-                        <div className='text-[20px] font-bold'>{item.sender === 'user' ? '나' : '설기'}</div> {/* 유저와 AI 구분 */}
+                        <div className='text-[18px] font-bold'>{item.sender === 'user' ? '나' : '설기'}</div> {/* 유저와 AI 구분 */}
                       </div>
                       <div className='flex items-start gap-[5px]'>
                         <span className={`max-w-[300px] break-words rounded-[10px] p-3 text-[20px] shadow-xl ${item.sender === 'user' ? 'bg-[#FFEABA]' : 'bg-[#FBFAEC]'}`}>
@@ -287,7 +329,7 @@ const AICoach: React.FC = () => {
             </div>
 
             {/* 메시지 입력창 */}
-            <div className='Input-container relative flex h-[100px] w-[970px] items-center justify-center gap-[20px] rounded-b-[30px] border-b'>
+            <div className='Input-container relative flex h-[80px] w-[800px] items-center justify-center gap-[20px] rounded-b-[30px] border-b'>
               <div className='relative flex w-[100px] items-center justify-center'>
                 <img onClick={() => setShowEmojiPicker(!showEmojiPicker)} className='flex h-[45px] w-[45px] cursor-pointer items-center justify-center object-cover' src='../smile.png' alt='이모티콘' />
                 {showEmojiPicker && (
@@ -296,7 +338,7 @@ const AICoach: React.FC = () => {
                   </div>
                 )}
               </div>
-              <div className='flex h-[80px] w-[650px] items-center justify-center'>
+              <div className='flex h-[60px] w-[650px] items-center justify-center'>
                 <input
                   className='h-full w-full text-[20px] text-[#59573D] outline-none'
                   placeholder='Type message...'
@@ -305,7 +347,7 @@ const AICoach: React.FC = () => {
                   onKeyPress={handleKeyPress}
                 />
               </div>
-              <div onClick={handleSend} className='flex h-[60px] w-[130px] cursor-pointer items-center justify-center rounded-[10px] bg-[#FBFAEC] hover:bg-[#8D8B67]'>
+              <div onClick={handleSend} className='flex h-[60px] w-[130px] cursor-pointer items-center justify-center rounded-[10px] mr-[30px] bg-[#FBFAEC] hover:bg-[#8D8B67]'>
                 <button className='text-[28px] text-[#626146]'>전송</button>
               </div>
             </div>
