@@ -51,7 +51,7 @@ export async function getPostList({ page, sort, category }: PostListParams) {
 // 카테고리 무관 게시글 상세 내역 get 요청
 export async function getPostDetail(id: number) {
   try {
-    const response = await baseApi.get(`${api.community}/article/${id}`, {});
+    const response = await baseApi.get(`${api.community}/articles/${id}`, {});
     console.log(response);
     return response.data;
   } catch (error: unknown) {

@@ -12,7 +12,7 @@ export type CommentsDto = {
   createdAt: string;
   updatedAt: string;
   replyCount: number;
-  parentId: number;
+  parentId?: number;
   userId: number;
   nickname: string;
   imageUrl: string;
@@ -21,4 +21,12 @@ export type CommentsDto = {
 export type CommentsResDto = {
   comments: CommentsDto[];
   total: number;
+};
+
+export type UserInfo = {
+  id: number;
+  nickname: string;
+  email: string;
+  imageUrl: string;
+  name: string;
 };
