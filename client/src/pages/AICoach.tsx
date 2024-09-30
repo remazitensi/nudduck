@@ -270,10 +270,12 @@ const AICoach: React.FC = () => {
                 {sessions.map((session) => (
                     <li
                       key={session.id}
+                      onClick={() => loadMessages(session.id)}
                       className='flex cursor-pointer flex-col gap-[10px] rounded-[20px] border border-[#DAD7B9] bg-white pl-[30px] pt-[10px] text-[20px] hover:border-black'
                     >
                       <div className='flex justify-between items-center'>
-                        <div className='flex items-center gap-[5px]' onClick={() => loadMessages(session.id)}>
+                        <div className='flex items-center gap-[5px]'>
+                        {/* onClick={() => loadMessages(session.id)} */}
                           <div className='mt-[5px] text-[20px] font-bold'>{session.topic}</div>
                         </div>
                         {/* 삭제 버튼 추가 */}
