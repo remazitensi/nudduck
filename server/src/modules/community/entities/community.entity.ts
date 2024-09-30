@@ -31,7 +31,7 @@ export class Community {
 
   // Lazy Loading 적용
   @OneToMany(() => Comment, (comment) => comment.community, { lazy: true, cascade: true })
-  comments?: Promise<Comment[]>; // Lazy loading 적용
+  comments?: Promise<Comment[]>;
 
   @ManyToOne(() => User, (user) => user.communities, { eager: false, onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'userId' })
