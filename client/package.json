@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@types/react-router-dom": "^5.3.3",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",

@@ -33,6 +33,8 @@ import LifeGraphList from './pages/LifeGraph/LifeGraphList';
 import ExpertsPage from './pages/ExpertsPage';
 import MyPage from './pages/MyPage';
 
+import AICoach from './pages/AICoach';
+
 // import CustomerSupportPage from './pages/CustomerSupportPage';
 // import NotFound from './pages/NotFound';
 // import Unauthorized from './pages/Unauthorized';
@@ -62,10 +64,10 @@ const App: React.FC = () => {
           </Route>
 
           {/* 1대1 채팅방 */}
-          {/* <Route path='chat' element={<ChatRoom />} /> */}
+          {/* <Route path='chat' element={<ChatRoom />} />
 
           {/* AI 코치 */}
-          {/* <Route path='ai-coach/:id?' element={<AICoach />} /> */}
+          <Route path='ai-coach/:id?' element={<AICoach />} />
 
           {/* 인생 그래프 관련 라우트 */}
           <Route path='life-graph'>
