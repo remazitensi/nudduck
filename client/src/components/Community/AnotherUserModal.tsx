@@ -45,13 +45,14 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
 
   if (loading) {
     // todo : 적절한 로딩박스 만들기
-    return <div className='relative z-10'>Loading...</div>; // 로딩 중일 때 표시할 내용
+    // return <div className='relative z-10'>Loading...</div>; // 로딩 중일 때 표시할 내용
+    return;
   }
 
   return (
     <div className='relative z-10'>
       <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
-        <div className='flex h-[700px] w-[700px] flex-col rounded-[20px] bg-white pl-[50px] pr-[50px] shadow-lg' onClick={(e) => e.stopPropagation()}>
+        <div className='flex w-[700px] flex-col rounded-[20px] bg-white p-[50px] pt-[0px] shadow-lg' onClick={(e) => e.stopPropagation()}>
           <div className='flex justify-end'>
             <div onClick={onClose} className='flex cursor-pointer p-[15px] text-[28px]'>
               x
