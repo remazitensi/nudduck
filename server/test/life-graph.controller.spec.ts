@@ -7,14 +7,15 @@
  * Date          Author      Status      Description
  * 2024.09.18    이승철      Created
  * 2024.09.18    이승철      인생그래프 즐겨찾기 이름 변경
+ * 2024.09.30    이승철      Modified    페이지네이션 쿼리에 limit 추가
  */
 
-import { Test, TestingModule } from '@nestjs/testing';
+import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
+import { LifeGraphPaginationQueryDto } from '@_modules/life-graph/dto/life-graph-pagination-query.dto';
+import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
 import { LifeGraphController } from '@_modules/life-graph/life-graph.controller';
 import { LifeGraphService } from '@_modules/life-graph/life-graph.service';
-import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
-import { UpdateLifeGraphDto } from '@_modules/life-graph/dto/update-life-graph.dto';
-import { LifeGraphPageDto } from '@_modules/life-graph/dto/life-graph-pagination-query.dto';
+import { Test, TestingModule } from '@nestjs/testing';
 import { UserRequest } from 'common/interfaces/user-request.interface';
 
 describe('LifeGraphController', () => {
@@ -56,14 +57,14 @@ describe('LifeGraphController', () => {
   describe('getAllLifeGraphs', () => {
     it('should return all life graphs', async () => {
       const req = { user: { id: 1 } } as UserRequest;
-      const pageDto: LifeGraphPageDto = { page: 1 };
+      const pageDto: LifeGraphPaginationQueryDto = { page: 1, limit: 6 };
       const expectedResponse = { data: [], totalCount: 0 };
 
       (mockLifeGraphService.getAllLifeGraph as jest.Mock).mockResolvedValue(expectedResponse);
 
       const result = await controller.getAllLifeGraphs(req, pageDto);
       expect(result).toEqual(expectedResponse);
-      expect(mockLifeGraphService.getAllLifeGraph).toHaveBeenCalledWith(1, 1, 6);
+      expect(mockLifeGraphService.getAllLifeGraph).toHaveBeenCalledWith(1, pageDto);
     });
   });
 

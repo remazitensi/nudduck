@@ -43,7 +43,7 @@ describe('SimulationController', () => {
   describe('getUserHistory', () => {
     it('should return user chat session history', async () => {
       const mockHistory = [{ id: 1, userId: 123, topic: '면접', createdAt: new Date() }];
-      service.getUserSessions = jest.fn().mockResolvedValue(mockHistory);
+      (service.getUserSessions as jest.Mock).mockResolvedValue(mockHistory);
 
       const req = { user: { id: 123 } };
       const result: AIChatHistoryDto = await controller.getUserHistory(req);
@@ -56,7 +56,7 @@ describe('SimulationController', () => {
   describe('getSessionHistory', () => {
     it('should return session chat messages', async () => {
       const mockMessages = [{ id: 1, sessionId: 1, message: '랜덤 질문', sender: 'ai', createdAt: new Date() }];
-      service.getSessionHistory = jest.fn().mockResolvedValue(mockMessages);
+      (service.getSessionHistory as jest.Mock).mockResolvedValue(mockMessages);
 
       const result: AIChatMessageDto = await controller.getSessionHistory(1);
 
@@ -68,7 +68,7 @@ describe('SimulationController', () => {
   describe('startChat', () => {
     it('should start a new chat session or return existing session', async () => {
       const mockSession = { id: 1, userId: 123, topic: null, createdAt: new Date() };
-      service.handleSession = jest.fn().mockResolvedValue(mockSession);
+      (service.handleSession as jest.Mock).mockResolvedValue(mockSession);
 
       const req = { user: { id: 123 } };
       const result = await controller.startChat({ isNewChat: true }, req);
@@ -81,7 +81,7 @@ describe('SimulationController', () => {
   describe('askAI', () => {
     it('should return AI response and save user and AI messages', async () => {
       const mockResponse = { Answer: 'My strength is persistence.' };
-      service.getAIResponse = jest.fn().mockResolvedValue(mockResponse);
+      (service.getAIResponse as jest.Mock).mockResolvedValue(mockResponse);
 
       const askAIDto = { query: 'What is your strength?', sessionId: 1 };
       const result = await controller.askAI(askAIDto);

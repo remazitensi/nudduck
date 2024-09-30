@@ -12,13 +12,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api, baseApi } from '../../apis/base-api';
+import { getComments } from '../../apis/community/community-comments-api';
 import { getPostDetail } from '../../apis/community/community-post-api';
 import AnotherUserModal from '../../components/Community/AnotherUserModal';
 import { CategoryBtn } from '../../components/Community/CategoryBtn';
+import { CommentSection } from '../../components/Community/CommentSection';
+import { CreateComment } from '../../components/Community/CreateComment';
+import { CommentsDto, CommentsResDto } from '../../types/comments-type';
 import { Post } from '../../types/community-type';
 
 const CommunityPostDetail: React.FC = () => {
-  const { id } = useParams(); // URL 파라미터에서 id 가져오기, 구조분해할당
+  const { id } = useParams();
   const [postData, setPostData] = useState<Post>({
     postId: 0,
     title: '',
@@ -28,37 +32,10 @@ const CommunityPostDetail: React.FC = () => {
     imageUrl: '',
     userId: 0,
     nickname: '',
-  }); // postData에 타입 지정
+  });
+  const [comments, setComments] = useState<CommentsDto[]>([]); // 댓글 목록 state 추가
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-
-  // path의 postId를 사용해서 get
-  useEffect(() => {
-    const fetchPostData = async () => {
-      try {
-        if (id) {
-          const data = await getPostDetail(Number(id)); // 작성한 API 요청 함수 호출
-          setPostData(data); // 가져온 데이터를 state에 저장
-        }
-      } catch (err) {
-        console.error('Error fetching post data:', err);
-      }
-    };
-
-    fetchPostData(); // API 요청 함수 호출
-
-    // 5초 후 조회수 증가 요청
-    const timer = setTimeout(async () => {
-      try {
-        await baseApi.post(`${api.community}/article/${id}/views`, {}); // 조회수 증가 POST 요청
-        console.log('조회수 증가 요청 성공');
-      } catch (err) {
-        console.error('조회수 증가 요청 실패:', err);
-      }
-    }, 5000); // 5초 후 실행
-
-    // 컴포넌트 언마운트 시 타이머 정리
-    return () => clearTimeout(timer);
-  }, [id]);
+  const [totalPage, setTotalPage] = useState<number>(0);
 
   const handleOpenModal = () => {
     setOpenUserModal(true);
@@ -67,6 +44,52 @@ const CommunityPostDetail: React.FC = () => {
   const handleCloseModal = () => {
     setOpenUserModal(false);
   };
+
+  const fetchPostDataWithComment = async () => {
+    try {
+      if (id) {
+        const data = await getPostDetail(Number(id));
+        setPostData(data);
+      }
+    } catch (err) {
+      console.error('Error fetching post data:', err);
+    }
+  };
+
+  // 댓글 조회 함수
+  const fetchComments = async () => {
+    try {
+      const data: CommentsResDto = await getComments(Number(postData.postId));
+      setComments(data.comments);
+      setTotalPage(data.total);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+    await console.log(comments);
+  };
+
+  // postData.postId가 업데이트될 때 댓글 가져오기
+  useEffect(() => {
+    if (postData.postId !== 0) {
+      fetchComments();
+    }
+  }, [postData.postId]);
+
+  // 페이지 최초 랜더링 시 게시글 상세와 댓글 불러오기, 조회수 증가
+  useEffect(() => {
+    fetchPostDataWithComment();
+
+    const timer = setTimeout(async () => {
+      try {
+        await baseApi.post(`${api.community}/articles/${id}/views`, {});
+        console.log('조회수 증가 요청 성공');
+      } catch (err) {
+        console.error('조회수 증가 요청 실패:', err);
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [id]);
 
   return (
     <div className='community-titles flex flex-col items-center'>
@@ -93,65 +116,29 @@ const CommunityPostDetail: React.FC = () => {
               <span className='ml-[5px] text-[#A1DFFF]'>{postData.viewCount}</span>
             </div>
           </div>
-          {/* img와 nickname을 감싸는 div에 onClick */}
           <div className='mb-[5px] flex items-center justify-end gap-[5px]' onClick={handleOpenModal}>
             <div className='h-[50px] w-[50px] rounded-full'>
               <img className='rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
-            </div>{' '}
+            </div>
             <div>{postData.nickname}</div>
           </div>
-          {/* --------------------- */}
         </div>
       </div>
-      {/* 다른 유저 모달 */}
+
       <div className='mt-[50px] h-[500px] w-[1200px]'>
         <div className='relative h-[500px] w-[1200px] rounded-[20px] border'>
-          <div className='p-[50px] text-[16px] leading-loose'>{postData.content}</div>
-          {/* 좋아요 삭제 */}
-          {/* <div className='m-0-auto absolute bottom-[30px] left-1/2 flex -translate-x-1/2 transform gap-[5px]'>
-            <img className='cursor-pointer hover:opacity-100 hover:drop-shadow-[0_0_0_4px_#909700] hover:invert hover:sepia hover:filter' src='/thumb.png' alt='thumbImg' />
-            <div>
-              좋아요<span>100</span>
-            </div>
-          </div> */}
+          <div className='whitespace-pre-line p-[50px] text-[16px] leading-loose'>{postData.content}</div>
         </div>
       </div>
 
       <div className='w-[1200px]'>
         <div className='mt-[77px] text-[24px] font-bold'>댓글</div>
-        <div className='relative'>
-          <div className='mt-[19px] h-[150px] w-[1200px] rounded-[10px] bg-[#F3F3F2] p-[20px] text-[24px] outline-none'>
-            <textarea className='h-full w-full bg-[#F3F3F2] text-[24px] outline-none' placeholder='댓글을 입력해 주세요'></textarea>
-          </div>
-          <button className='absolute right-[20px] top-[90px] h-[40px] w-[95px] rounded-[5px] bg-[#909700] font-bold text-white'>댓글달기</button>
-        </div>
+        {/* 댓글쓰기 컴포넌트 */}
+        <CreateComment postId={postData.postId} onCommentCreated={fetchComments} />
 
-        <div className='Comment mt-[58px] flex w-[1200px] flex-col'>
-          {/* 이 안에 댓글 생성 */}
-          <div>
-            <div className='flex gap-[10px] pl-[20px] pt-[20px]'>
-              <div className='h-[50px] w-[50px] rounded-full'>
-                <img className='object-cover' src='/cat_image.png' alt='catImg' />
-              </div>
-              <div className='flex items-center text-[20px] font-semibold'>스터디구하는자</div>
-              <div className='flex items-center text-[12px] text-[#AEAC9A]'>24-09-08 22:22</div>
-            </div>
-            <div className='pl-[20px] pt-[7px] text-[16px]'>안녕하세요 글 정말 많이 썼네요 무슨 내용인지 모르겠어요</div>
-            <div className='mt-[35px] w-[1200px] border-b-2 border-[8D8B67]'></div>
-          </div>
-          {/* --------------------- */}
-        </div>
-
-        <div className='Reply mt-[20px] flex w-[1200px] flex-col'>
-          <div className='flex items-center gap-[10px] pl-[20px] pt-[20px]'>
-            {/* 대댓글 화살표 */}
-            <img className='h-[32px] w-[32px]' src='/comment-arrow.png' alt='replyImg' />
-            <img className='' src='/cat_image.png' alt='catImg' />
-            <div className='flex items-center text-[20px] font-semibold'>스터디구하는자</div>
-            <div className='flex items-center text-[12px] text-[#AEAC9A]'>24-09-08 22:22</div>
-          </div>
-          <div className='pl-[60px] pt-[7px] text-[16px]'>안녕하세요 대댓글 입니다</div>
-          <div className='mt-[35px] w-[1200px] border-b-2 border-[8D8B67]'></div>
+        <div className='Comment my-[58px] flex w-[1200px] flex-col'>
+          {/* 댓글 목록을 보여줍니다 */}
+          <CommentSection comments={comments}></CommentSection>
         </div>
       </div>
     </div>
