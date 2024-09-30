@@ -170,10 +170,10 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className='bg-white-100 min-h-screen'>
+    <div className='bg-white-100 min-h-screen bg-[#fcfcf8]'>
       <main className='mx-auto max-w-6xl p-4'>
         {/* Today's Quote Section */}
-        <section className='my-6 flex justify-center'>
+        <section className='my-6 flex justify-center shadow-xl'>
           <div
             className='relative h-[150px] w-[1100px]'
             onClick={toggleQuoteAndSentence}
@@ -225,7 +225,7 @@ const HomePage = () => {
 
         {/* AI Coach Section */}
         {!isLoggedIn && (
-          <section className='my-6 flex items-center justify-between rounded bg-white p-6'>
+          <section className='my-6 flex items-center justify-between rounded bg-white p-6 shadow-xl'>
             <img src='ai-image1.png' alt='AI Coach' className='h-[600px] w-[700px]' />
             <div className='ml-4 flex flex-col'>
               <div className='relative rounded-[10px] bg-[#A1DFFF] p-[20px] shadow-xl'>
@@ -251,11 +251,11 @@ const HomePage = () => {
         <section className='my-6 mb-12'>
           <h2 className='text-2xl font-bold leading-[30px]'>로그인하고 내 조건에 맞는 서비스 이용하기</h2>
           {/* grid-cols-3 을 4로 변경 */}
-          <div className='mt-4 grid grid-cols-1 justify-center gap-4 md:grid-cols-4'>
+          <div className='mt-4 grid grid-cols-1 justify-center gap-4 md:grid-cols-4 pl-[20px]'>
             {' '}
             {/* gap-4로 간격을 반으로 줄였습니다 */}
             {/* 첫 번째 카드 */}
-            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-[#fbfaec] p-4'>
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-[#fbfaec] p-4 shadow-xl'>
               {/* 크기를 줄였습니다 */}
               <div className='absolute left-[15px] top-[76px] text-sm font-semibold leading-[25px] text-[#aeac9a]'>프로필 채우고 나에게 딱 맞는</div>
               <div className='absolute left-[15px] top-[100px] text-lg font-bold leading-[25px] text-black'>AI 가상 면접과 실전 면접 시나리오를 확인해 보세요!</div>
@@ -267,7 +267,7 @@ const HomePage = () => {
               </button>
             </div>
             {/* 두 번째 카드 */}
-            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4'>
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4 shadow-xl'>
               {' '}
               {/* 크기를 줄였습니다 */}
               <img src='ai-image2.png' alt='Expert Consulting' className='absolute left-[68px] h-[150px] w-[150px]' />
@@ -279,7 +279,7 @@ const HomePage = () => {
               <p className='absolute left-[15px] top-[190px] w-[210px] text-sm font-normal leading-[20px] text-black'>각 분야 전문가의 프로필을 확인하고 1:1 맞춤 상담을 받아 보세요</p>
             </div>
             {/* 세 번째 카드 */}
-            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4'>
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4 shadow-xl'>
               {' '}
               {/* 크기를 줄였습니다 */}
               <img src='ai-image3.png' alt='Community' className='absolute left-[40px] h-[160px] w-[180px]' />
@@ -291,7 +291,7 @@ const HomePage = () => {
               <p className='absolute left-[15px] top-[190px] w-[210px] text-sm font-normal leading-[20px] text-black'>게시판과 채팅방을 통해 누떡 유저들과의 커뮤니티를 형성하세요</p>
             </div>
             {/* 네 번째 카드 */}
-            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4'>
+            <div className='relative h-[260px] w-[240px] rounded-[5px] border border-[#313119] bg-white p-4 shadow-xl'>
               {' '}
               {/* 크기를 줄였습니다 */}
               <img src='ai-image4.png' alt='Life Graph' className='absolute left-[50px] top-[20px] h-[140px] w-[130px]' />
@@ -306,7 +306,7 @@ const HomePage = () => {
         </section>
 
         {/* Latest Posts Section */}
-        <section className='my-6 mb-12 bg-white'>
+        <section className='my-6 mb-12 bg-white shadow-xl'>
           {' '}
           <h2 className='text-2xl font-bold leading-[30px]'>지금 뜨는 게시글</h2>
           <div className='mt-4 space-y-4'>

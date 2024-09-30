@@ -178,18 +178,18 @@ const MainPage = () => {
         </div>
       </section>
 
-      <div className='cta-container mt-12 pb-5 text-center'>
-        <div className='flex-container flex items-center justify-center gap-x-[800px]'>
+      <div className='cta-container sticky bottom-0 z-50 mt-12 pb-5 text-center'>
+        <div className='flex-container sticky flex items-center justify-center gap-x-[600px]'>
           <p className='text-lg font-semibold'>
             AI 코치 <strong>누떡</strong>과 함께 면접 준비를 시작해 보세요!
           </p>
           <a
             href='#'
             className='cta-button mb-2 ml-2 inline-block rounded bg-[#909700] px-5 py-2 text-base text-white'
-            onClick={(e) => {
-              e.preventDefault(); // 기본 동작 방지
-              window.scrollTo({ top: 0, behavior: 'smooth' }); // 최상단으로 스크롤
-            }}
+            // onClick={(e) => {
+            //   // e.preventDefault(); // 기본 동작 방지
+            //   window.scrollTo({ top: 0, behavior: 'smooth' }); // 최상단으로 스크롤
+            // }}
           >
             면접 준비 바로가기
           </a>

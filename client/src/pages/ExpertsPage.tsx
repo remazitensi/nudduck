@@ -5,7 +5,7 @@ import ExpertCard from './ExpertCard';
 const ExpertsPage = () => {
   const [experts, setExperts] = useState<any[] | null>([]);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(8);
   const [totalCount, setTotalCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [selectedExpert, setSelectedExpert] = useState<any | null>(null);
@@ -49,21 +49,21 @@ const ExpertsPage = () => {
   };
 
   return (
-    <div className='item-center mt-[70px] mb-[50px] flex justify-center'>
-      <div className='flex w-[1300px] flex-col items-center justify-center'>
+    <div className='item-center ] mb-[50px] flex justify-center bg-[#fcfcf8]'>
+      <div className='flex mt-[70px] w-[1300px] flex-col items-center justify-center'>
         <div className='mb-[10px] text-3xl font-bold'>전문가 상담</div>
         <div className='mb-[20px] h-[3px] w-[200px] bg-[#7D7D48]' />
         <div className='flex w-[1200px] flex-wrap justify-center'>
           {experts?.map((expert: any) => (
             <div
               key={expert.id}
-              className='m-[10px] flex h-[350px] w-[220px] flex-col items-center justify-center rounded-lg bg-[#FAFAFA] hover:hover:shadow-md'
+              className='m-[30px] flex h-[350px] w-[240px] flex-col items-center justify-center rounded-lg bg-[#FAFAFA] shadow-lg hover:hover:shadow-md'
               onClick={() => handleCardClick(expert)}
             >
               <img
                 src={expert.profileImage}
                 alt={`${expert.name} 프로필`}
-                className='mt-[25px] h-[150px] w-[150px] rounded-lg'
+                className='mt-[25px] h-[150px] w-[150px] rounded-lg object-cover'
                 style={{
                   boxShadow: '0 8px 10px rgba(0, 0, 0, 0.15)',
                   borderRadius: '23px',

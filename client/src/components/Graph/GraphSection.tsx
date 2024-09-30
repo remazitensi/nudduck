@@ -34,7 +34,7 @@ const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeSta
   };
 
   return (
-    <div className='flex w-[380px] flex-col'>
+    <div className='flex w-[380px] flex-col shadow-xl rounded-[30px]'>
       <div className='mb-[5px] flex justify-end gap-[10px]'>
         <img src='/edit-btn.png' className='cursor-pointer' onClick={() => setModalOpen(true)} />
         {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} />}
@@ -47,7 +47,7 @@ const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeSta
           }}
         />
       </div>
-      <div className='flex w-[380px] bg-[#F8F8F8] hover:shadow-md' onClick={navigateToDetail}>
+      <div className='flex w-[380px] bg-[#F8F8F8] hover:shadow-md  rounded-[30px]' onClick={navigateToDetail}>
         <div className='mt-[30px]'>
           <div className='h-[220px] w-[380px]'>
             <CreateListGraph events={events}></CreateListGraph>

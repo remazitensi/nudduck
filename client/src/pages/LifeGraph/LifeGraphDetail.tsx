@@ -28,8 +28,8 @@ export const LifeGraphDetail: React.FC = () => {
   return (
     <div className='graphOk-titles flex w-full flex-col items-center mb-[50px]'>
       <div className='mt-[70px] flex flex-col items-center'>
-        <div className='text-[28px] font-bold text-[#909700]'>인생그래프</div>
-        <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
+        <div className='text-[28px] font-bold'>인생그래프</div>
+        <div className='mt-[10px] w-[330px] border-b-4 border-[#8D8B67]'></div>
       </div>
 
       <div className='mt-[65px] flex w-[1200px] justify-center'>
@@ -64,7 +64,7 @@ export const LifeGraphDetail: React.FC = () => {
                 <span className='w-[200px] flex-none text-center'>{event.age}세</span>
                 <span className='w-[200px] flex-none text-center'>{event.title}</span>
                 <span className='w-[200px] flex-none text-center'>{event.score > 0 ? `+${event.score}` : event.score}</span>
-                <span className='w-[500px] flex-none text-center'>{event.description}</span>
+                <span className='w-[500px] flex-none text-center pl-[100px]'>{event.description}</span>
               </div>
             ))}
           </div>

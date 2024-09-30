@@ -41,8 +41,8 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className='footer-container flex flex-col gap-5 border-t border-gray-300 bg-white pl-10 pt-6'>
-      <div className='footer-links flex list-none text-sm text-gray-600'>
+    <footer className='footer-container flex flex-col gap-5 border-t border-gray-300 pl-10 pt-6 bg-gray-900'>
+      <div className='footer-links flex list-none text-sm text-gray-600 text-white'>
         <a href='#' className='mr-6'>
           고객센터
         </a>
@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
         <a href='#'>운영 정책</a>
       </div>
 
-      <div className='flex w-[1000px] flex-wrap gap-x-7'>
+      <div className='flex w-[1000px] flex-wrap gap-x-7 text-gray-500'>
         <p>
           <span className='key mr-2 font-bold'>대표</span>
           <span className='value'>김재영</span>
