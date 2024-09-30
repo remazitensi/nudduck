@@ -54,9 +54,12 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
 
   // 대댓글 삭제 핸들러
   const handleDeleteReply = async (postId: number, commentId: number) => {
-    const response = await deleteReply(postId, commentId);
-    if (response.status === 200) {
-      await updateReplies(); // 삭제 후 대댓글 리스트 업데이트
+    let flag = confirm('삭제 하시겠습니까?'); //확인 취소 버튼
+    if (flag == true) {
+      const response = await deleteReply(postId, commentId);
+      if (response.status === 200) {
+        await updateReplies(); // 삭제 후 대댓글 리스트 업데이트
+      }
     }
   };
 

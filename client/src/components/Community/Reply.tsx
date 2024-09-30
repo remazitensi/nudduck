@@ -31,7 +31,7 @@ export const Reply = (props: { replies: CommentsDto[]; userId: number; onDelete:
             {/* 대댓글 화살표 */}
             <img className='h-[32px] w-[32px]' src='/comment-arrow.png' alt='replyImg' />
             <div className='h-[50px] w-[50px] rounded-full'>
-              <img className='rounded-full object-cover' src={reply.imageUrl} alt='profile-img' />
+              <img className='h-full w-full rounded-full object-cover' src={reply.imageUrl} alt='profile-img' />
             </div>
 
             <div className='flex items-center text-[20px] font-semibold'>{reply.nickname}</div>
