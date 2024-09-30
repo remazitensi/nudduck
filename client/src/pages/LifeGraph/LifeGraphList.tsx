@@ -64,7 +64,7 @@ const LifeGraphList: React.FC = () => {
   if (noData) {
     return (
       <div className='graph-titles flex w-full flex-col items-center'>
-        <div className='mt-[140px] flex flex-col items-center'>
+        <div className='mt-[70px] flex flex-col items-center'>
           <div className='text-[28px] font-bold text-[#909700]'>인생그래프</div>
           <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
         </div>
@@ -97,7 +97,7 @@ const LifeGraphList: React.FC = () => {
   } else {
     return (
       <div className='graphOk-titles flex w-[1920px] flex-col items-center'>
-        <div className='mt-[140px] flex flex-col items-center'>
+        <div className='mt-[70px] flex flex-col items-center'>
           <div className='text-[28px] font-bold text-[#909700]'>인생그래프</div>
           <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
         </div>
@@ -135,7 +135,7 @@ const LifeGraphList: React.FC = () => {
         </div>
 
         {/* 페이지네이션 */}
-        <div className='pagination-controls mb-[30px] mt-4 flex flex-col items-center'>
+        <div className='pagination-controls mb-[50px] mt-4 flex flex-col items-center'>
           <div className='flex space-x-2'>
             <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
               이전
