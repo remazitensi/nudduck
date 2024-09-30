@@ -36,7 +36,7 @@ export const CreateComment = ({ postId, onCommentCreated }: { postId: number; on
   return (
     <div className='relative'>
       <div className='mt-[19px] h-[150px] w-[1200px] rounded-[10px] bg-[#F3F3F2] p-[20px] text-[24px] outline-none'>
-        <textarea ref={contentRef} className='h-full w-full bg-[#F3F3F2] text-[24px] outline-none' placeholder='댓글을 입력해 주세요'></textarea>
+        <textarea ref={contentRef} className='h-full w-full bg-[#F3F3F2] text-[18px] outline-none' placeholder='댓글을 입력해 주세요'></textarea>
       </div>
       <button
         onClick={handleSubmit} // 버튼 클릭 시 API 호출
