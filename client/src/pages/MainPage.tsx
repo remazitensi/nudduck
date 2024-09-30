@@ -141,7 +141,6 @@ const MainPage = () => {
             <ul className='mx-4 list-none p-0 text-left text-[20px]'>
               <li className='mb-3 text-gray-700'>1. 온라인으로 언제 어디서나</li>
               <li className='mb-3 text-gray-700'>2. AI를 통한 실전과 유사한 면접 프로세스</li>
-              <li className='mb-3 text-gray-700'>3. 가상 면접 종료 후 즉각적 피드백</li>
             </ul>
           </div>
 
