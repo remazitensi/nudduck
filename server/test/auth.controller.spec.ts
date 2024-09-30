@@ -6,16 +6,18 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.16    이승철      Created
- * 2024.09.17    이승철      OAuthUser 디렉토리 변경
+ * 2024.09.17    이승철      Modified   디렉토리 변경
+ * 2024.09.30    이승철      Modified   spyOn 제거 및 토큰 이름 변경
  */
 
-import { AuthService } from '@_modules/auth/auth.service';
 import { AuthController } from '@_modules/auth/auth.controller';
-import { RefreshTokenDto } from '@_modules/auth/dto/refresh-token.dto';
+import { AuthService } from '@_modules/auth/auth.service';
+import { getAccessCookieOptions, getRefreshCookieOptions } from '@_modules/auth/utils/cookie-helper';
+import { BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OAuthUser } from 'common/interfaces/oauth-user.interface';
-import { BadRequestException } from '@nestjs/common';
-import { getAccessCookieOptions, getRefreshCookieOptions } from '@_modules/auth/utils/cookie-helper';
+import { UserRequest } from 'common/interfaces/user-request.interface';
 import { Response } from 'express';
 
 describe('AuthController', () => {
@@ -34,6 +36,12 @@ describe('AuthController', () => {
             regenerateAccessToken: jest.fn(),
           },
         },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn().mockReturnValue('http://example.com'),
+          },
+        },
       ],
     }).compile();
 
@@ -44,7 +52,8 @@ describe('AuthController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
       send: jest.fn().mockReturnThis(),
-    } as unknown as Response; // Mock Express Response
+      redirect: jest.fn(),
+    } as unknown as Response;
   });
 
   describe('googleCallback', () => {
@@ -57,36 +66,47 @@ describe('AuthController', () => {
       };
       const tokens = { accessToken: 'access_token', refreshToken: 'refresh_token' };
 
-      jest.spyOn(authService, 'getSocialLogin').mockResolvedValue(tokens);
+      authService.getSocialLogin = jest.fn().mockResolvedValue(tokens);
 
       const req = { user: userDto } as { user: OAuthUser };
       await controller.googleCallback(req, res);
 
       expect(authService.getSocialLogin).toHaveBeenCalledWith(userDto);
-      expect(res.cookie).toHaveBeenCalledWith('accessToken', tokens.accessToken, getAccessCookieOptions());
-      expect(res.cookie).toHaveBeenCalledWith('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(res.send).toHaveBeenCalledWith('Login successful');
+      expect(res.cookie).toHaveBeenCalledWith('_a', tokens.accessToken, getAccessCookieOptions());
+      expect(res.cookie).toHaveBeenCalledWith('__r', tokens.refreshToken, getRefreshCookieOptions());
+      expect(res.redirect).toHaveBeenCalledWith('http://example.com');
     });
   });
 
   describe('accessToken', () => {
     it('should throw BadRequestException if refreshToken is not provided', async () => {
-      const refreshTokenDto: RefreshTokenDto = { refreshToken: '' };
+      const req: UserRequest = {
+        cookies: { __r: '' },
+        user: undefined,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+      } as unknown as UserRequest;
 
-      await expect(controller.accessToken(refreshTokenDto, res)).rejects.toThrow(BadRequestException);
+      await expect(controller.accessToken(req, res)).rejects.toThrow(BadRequestException);
     });
 
     it('should regenerate access token and set cookie', async () => {
-      const refreshTokenDto: RefreshTokenDto = { refreshToken: 'valid_refresh_token' };
+      const req: UserRequest = {
+        cookies: { __r: 'valid_refresh_token' },
+        user: undefined,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+      } as unknown as UserRequest;
       const newAccessToken = 'new_access_token';
 
-      jest.spyOn(authService, 'regenerateAccessToken').mockResolvedValue(newAccessToken);
+      authService.regenerateAccessToken = jest.fn().mockResolvedValue(newAccessToken);
 
-      await controller.accessToken(refreshTokenDto, res);
+      await controller.accessToken(req, res);
 
-      expect(authService.regenerateAccessToken).toHaveBeenCalledWith(refreshTokenDto.refreshToken);
-      expect(res.cookie).toHaveBeenCalledWith('accessToken', newAccessToken, getAccessCookieOptions());
+      expect(authService.regenerateAccessToken).toHaveBeenCalledWith('valid_refresh_token');
+      expect(res.cookie).toHaveBeenCalledWith('_a', newAccessToken, getAccessCookieOptions());
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: '엑세스 토큰이 재발급되었습니다.' });
     });

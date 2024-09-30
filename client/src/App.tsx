@@ -17,23 +17,23 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import Layout from './layout/Layout'; // Layout 컴포넌트 임포트
+import PersonalInfoPolicy from './layout/PersonalInfoPolicy';
+import TermOfUse from './layout/TermOfUse';
 
 import HomePage from './pages/HomePage';
 import MainPage from './pages/MainPage';
-
-import AICoach from './pages/AICoach';
-import { ChatRoom } from './pages/ChatRoom';
 
 import CommunityPostCreate from './pages/Community/CommunityPostCreate';
 import CommunityPostDetail from './pages/Community/CommunityPostDetail';
 import CommunityPostEdit from './pages/Community/CommunityPostEdit';
 import CommunityPostList from './pages/Community/CommunityPostList';
-
 import { LifeGraphDetail } from './pages/LifeGraph/LifeGraphDetail';
 import LifeGraphList from './pages/LifeGraph/LifeGraphList';
 
 import ExpertsPage from './pages/ExpertsPage';
 import MyPage from './pages/MyPage';
+
+import AICoach from './pages/AICoach';
 
 // import CustomerSupportPage from './pages/CustomerSupportPage';
 // import NotFound from './pages/NotFound';
@@ -64,7 +64,7 @@ const App: React.FC = () => {
           </Route>
 
           {/* 1대1 채팅방 */}
-          <Route path='chat' element={<ChatRoom />} />
+          {/* <Route path='chat' element={<ChatRoom />} />
 
           {/* AI 코치 */}
           <Route path='ai-coach/:id?' element={<AICoach />} />
@@ -81,6 +81,10 @@ const App: React.FC = () => {
 
           {/* 전문가 상담 페이지 */}
           <Route path='experts' element={<ExpertsPage />} />
+
+          {/* 푸터 관련 라우트 */}
+          <Route path='/personal-info-policy' element={<PersonalInfoPolicy />} />
+          <Route path='/term-of-use' element={<TermOfUse />} />
 
           {/* 고객센터 페이지 */}
           {/* <Route path='support' element={<CustomerSupportPage />} /> */}

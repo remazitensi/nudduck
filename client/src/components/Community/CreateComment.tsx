@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { createComment } from '../../apis/community/community-reply-api';
+import { createComment } from '../../apis/community/community-comments-api';
 
 export const CreateComment = ({ postId, onCommentCreated }: { postId: number; onCommentCreated: () => void }) => {
   const contentRef = useRef<HTMLTextAreaElement>(null);
