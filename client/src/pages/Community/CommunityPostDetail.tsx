@@ -18,6 +18,7 @@ import AnotherUserModal from '../../components/Community/AnotherUserModal';
 import { CategoryBtn } from '../../components/Community/CategoryBtn';
 import { CommentSection } from '../../components/Community/CommentSection';
 import { CreateComment } from '../../components/Community/CreateComment';
+import ScrollToTop from '../../components/ScrolltoTop';
 import { CommentsDto, CommentsResDto } from '../../types/comments-type';
 import { Post } from '../../types/community-type';
 
@@ -93,6 +94,7 @@ const CommunityPostDetail: React.FC = () => {
 
   return (
     <div className='community-titles flex flex-col items-center'>
+      <ScrollToTop />
       {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={postData.userId} />}
 
       <div className='mt-[140px]'>
