@@ -1,3 +1,13 @@
+/**
+ * File Name    : CreateCommnet.tsx
+ * Description  : 부모 댓글 생성 컴포넌트
+ * Author       : 김민지
+ *
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.28    김민지      Created
+ */
+
 import { useRef } from 'react';
 import { createComment } from '../../apis/community/community-comments-api';
 
