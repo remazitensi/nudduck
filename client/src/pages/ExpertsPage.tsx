@@ -55,8 +55,8 @@ const ExpertsPage = () => {
   return (
     <div className='item-center mb-[50px] flex justify-center bg-[#fcfcf8]'>
       <div className='mt-[70px] flex w-[1300px] flex-col items-center justify-center'>
-        <div className='mb-[10px] text-3xl font-bold'>전문가 상담</div>
-        <div className='mb-[20px] h-[3px] w-[200px] bg-[#7D7D48]' />
+        <div className='text-[28px] font-bold'>전문가 상담</div>
+        <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
         <div className='flex w-[1200px] flex-wrap justify-center'>
           {experts?.map((expert: any) => (
             <div
@@ -91,10 +91,8 @@ const ExpertsPage = () => {
             </div>
           ))}
         </div>
-
         {/* 모달을 ExpertCard에서 렌더링 */}
         {open && selectedExpert && <ExpertCard expert={selectedExpert} setOpen={setOpen} />}
-
         <div className='pagination-controls mt-10 flex flex-row justify-center space-x-2'>
           <button onClick={() => handlePageChange(page - 1)} disabled={page === 1} className={`rounded px-3 py-1 ${page === 1 ? 'cursor-not-allowed text-gray-400' : 'text-black'}`}>
             이전

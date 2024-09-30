@@ -1,9 +1,8 @@
-
 // export default AICoach;
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import React, { KeyboardEvent, useEffect, useRef, useState } from 'react';
-import { activateSimulation, askSimulation, deleteSession, fetchIdSession, fetchSimulationHistory } from '../apis/AICoach-api'; 
+import { activateSimulation, askSimulation, deleteSession, fetchIdSession, fetchSimulationHistory } from '../apis/AICoach-api';
 import { changeDateWithFormat } from '../utils/change-date-with-format';
 import './AICoach.css';
 
@@ -33,11 +32,9 @@ const AICoach: React.FC = () => {
   const [isPageLoading, setIsPageLoading] = useState(true); // 페이지가 로드된 상태 확인을 위한 상태 변수
   const chatContainerRef = useRef<HTMLDivElement>(null); // 채팅 컨테이너 참조
 
-
-   // 페이지가 로드될 때 스크롤을 최상단으로 이동
-   useEffect(() => {
+  // 페이지가 로드될 때 스크롤을 최상단으로 이동
+  useEffect(() => {
     window.scrollTo(0, 0); // 페이지 로드 시 스크롤을 최상단으로 이동
- 
   }, []);
 
   // chatHistory가 업데이트될 때마다 채팅방 스크롤을 하단으로 이동
@@ -60,7 +57,6 @@ const AICoach: React.FC = () => {
       console.error('Failed to load messages:', error);
     }
   };
-
 
   // AI 코칭 탭 클릭 시 기존 세션 목록 불러오기
   // useEffect(() => {
@@ -87,22 +83,22 @@ const AICoach: React.FC = () => {
     const fetchChatSessions = async () => {
       try {
         const sessionResponse = await fetchSimulationHistory();
-  
+
         if (sessionResponse && sessionResponse.history && sessionResponse.history.length > 0) {
           setSessions(sessionResponse.history); // 응답에서 세션 목록을 추출하여 상태 업데이트
-  
+
           // 새로고침 시 가장 최근 세션 불러오기
           const lastSession = sessionResponse.history[0];
           await loadMessages(lastSession.id);
           setCurrentSessionId(lastSession.id);
         } else {
-          console.warn("No history found in the session response.");
+          console.warn('No history found in the session response.');
         }
       } catch (error) {
         console.error('채팅 세션을 불러오는데 실패했습니다.', error);
       }
     };
-  
+
     fetchChatSessions();
   }, []);
 
@@ -120,7 +116,7 @@ const AICoach: React.FC = () => {
     } catch (error) {
       console.error('Failed to delete session:', error);
     }
-  };  
+  };
 
   // 세션 클릭 시 해당 세션의 메시지 불러오기
   // const loadMessages = async (sessionId: number) => {
@@ -234,8 +230,6 @@ const AICoach: React.FC = () => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
- 
-
   // 2. chatHistory가 업데이트될 때만 채팅 목록을 최하단으로 스크롤
   // useEffect(() => {
   //   if (chatHistory.length > 0) {
@@ -247,42 +241,38 @@ const AICoach: React.FC = () => {
   return (
     <div className='chatRoom flex flex-col items-center bg-[#fcfcf8]'>
       <div className='mt-[70px] flex flex-col items-center'>
-        <div className='text-[28px] font-bold text-black'>AI 코치</div>
-        <div className='mt-[10px] w-[100px] border-b-2 border-[#DAD789]'></div>
+        <div className='text-[28px] font-bold'>AI 코치</div>
+        <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
 
       <div className='mt-[40px] flex text-[25px]'>
         <div>
           '<span className='text-[30px] font-bold'>면접</span>'을 입력해보세요! &nbsp; &nbsp;
         </div>
-        
       </div>
 
-      <div className='mt-[30px] mb-[50px] flex w-[1130px] justify-center'>
+      <div className='mb-[50px] mt-[30px] flex w-[1130px] justify-center'>
         <div className='flex gap-[30px]'>
-          <div className='Left-list h-[850px] w-[300px] rounded-[20px] border border-[#8D8B67]  bg-yellow-50'>
+          <div className='Left-list h-[850px] w-[300px] rounded-[20px] border border-[#8D8B67] bg-yellow-50'>
             <div className='flex h-[80px] w-[300px] flex-col items-center justify-center rounded-t-[30px] border border-b-[#626146]'>
               <p className='text-[25px]'>최근 채팅 목록</p>
             </div>
             <div className='h-[calc(100%_-_100px)] p-[15px]'>
               <div className='h-full w-full'>
                 <ul className='flex h-[700px] flex-col gap-[10px] overflow-y-auto p-[10px]'>
-                {sessions.map((session) => (
+                  {sessions.map((session) => (
                     <li
                       key={session.id}
                       onClick={() => loadMessages(session.id)}
-                      className='flex cursor-pointer flex-col gap-[10px] rounded-[10px] border border-[#626146] pl-[30px] pt-[10px] pb-[10px] text-[20px] text-[#626146] bg-white hover:border-black'
+                      className='flex cursor-pointer flex-col gap-[10px] rounded-[10px] border border-[#626146] bg-white pb-[10px] pl-[30px] pt-[10px] text-[20px] text-[#626146] hover:border-black'
                     >
-                      <div className='flex justify-between items-center'>
+                      <div className='flex items-center justify-between'>
                         <div className='flex items-center gap-[5px]'>
-                        {/* onClick={() => loadMessages(session.id)} */}
+                          {/* onClick={() => loadMessages(session.id)} */}
                           <div className='mt-[5px] text-[20px] font-bold'>{session.topic}</div>
                         </div>
                         {/* 삭제 버튼 추가 */}
-                        <button
-                          onClick={() => handleDeleteSession(session.id)}
-                          className='ml-[20px] mr-[20px] rounded-full text-black-500 hover:text-red-700'
-                        >
+                        <button onClick={() => handleDeleteSession(session.id)} className='text-black-500 ml-[20px] mr-[20px] rounded-full hover:text-red-700'>
                           X
                         </button>
                       </div>
@@ -299,17 +289,20 @@ const AICoach: React.FC = () => {
               <div className='flex text-[25px] font-bold'>
                 <div className='mr-[5px]'>AI 코치</div>
               </div>
-              <button onClick={() => newChat(true)} className='h-[50px] w-[120px] rounded-lg bg-[#C7C4A7] text-[25px] text-center text-[#626146] hover:bg-[#626146] hover:text-white'>
+              <button onClick={() => newChat(true)} className='h-[50px] w-[120px] rounded-lg bg-[#C7C4A7] text-center text-[25px] text-[#626146] hover:bg-[#626146] hover:text-white'>
                 새 채팅
               </button>
             </div>
-            <div ref={chatContainerRef} className='Display-container flex h-[690px] w-full border-b-[1px] border-[#59573D] bg-white overflow-y-auto'
-            style={{
-              backgroundImage: 'url(ai-bg.jpg), linear-gradient(to bottom, rgba(251, 250, 236, 0.2), rgba(255, 255, 255, 0.2))',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-            }}>
+            <div
+              ref={chatContainerRef}
+              className='Display-container flex h-[690px] w-full overflow-y-auto border-b-[1px] border-[#59573D] bg-white'
+              style={{
+                backgroundImage: 'url(ai-bg.jpg), linear-gradient(to bottom, rgba(251, 250, 236, 0.2), rgba(255, 255, 255, 0.2))',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }}
+            >
               <ul className='Chatting-list flex h-full w-full flex-col gap-[10px] p-[20px]'>
                 {chatHistory.map((item, index) => (
                   <li
@@ -317,7 +310,7 @@ const AICoach: React.FC = () => {
                     ref={(el) => (messageRefs.current[index] = el)} // 각 메시지를 참조하기 위해 ref 저장
                     className={`flex items-start gap-[10px] ${item.sender === 'user' ? 'flex-row-reverse' : ''}`}
                   >
-                    {item.sender === 'ai' && <img src='../AI_image.png' className='AI-image-class w-[80px] h-[80px]' />}
+                    {item.sender === 'ai' && <img src='../AI_image.png' className='AI-image-class h-[80px] w-[80px]' />}
                     <div className='flex max-w-[80%] flex-col justify-end gap-[5px]'>
                       <div className={`flex ${item.sender === 'user' ? 'justify-end' : ''}`}>
                         <div className='text-[18px] font-bold'>{item.sender === 'user' ? '나' : '설기'}</div> {/* 유저와 AI 구분 */}
@@ -339,7 +332,12 @@ const AICoach: React.FC = () => {
             {/* 메시지 입력창 */}
             <div className='Input-container relative flex h-[80px] w-[900px] items-center justify-center gap-[20px] rounded-b-[20px] border-b'>
               <div className='relative flex w-[100px] items-center justify-center'>
-                <img onClick={() => setShowEmojiPicker(!showEmojiPicker)} className='flex h-[45px] w-[45px] cursor-pointer items-center justify-center object-cover' src='../smile.png' alt='이모티콘' />
+                <img
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className='flex h-[45px] w-[45px] cursor-pointer items-center justify-center object-cover'
+                  src='../smile.png'
+                  alt='이모티콘'
+                />
                 {showEmojiPicker && (
                   <div className='absolute left-[10px] top-[-450px]'>
                     <Picker data={data} onEmojiSelect={handleEmojiSelect} /> {/* 이모티콘 선택기 */}
@@ -355,7 +353,7 @@ const AICoach: React.FC = () => {
                   onKeyPress={handleKeyPress}
                 />
               </div>
-              <div onClick={handleSend} className='flex h-[60px] w-[130px] cursor-pointer items-center justify-center rounded-[10px] mr-[30px] bg-[#FBFAEC] hover:bg-[#8D8B67]'>
+              <div onClick={handleSend} className='mr-[30px] flex h-[60px] w-[130px] cursor-pointer items-center justify-center rounded-[10px] bg-[#FBFAEC] hover:bg-[#8D8B67]'>
                 <button className='text-[28px] text-[#626146]'>전송</button>
               </div>
             </div>

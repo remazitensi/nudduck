@@ -13,6 +13,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PostTitleData } from '../../types/community-type';
+import { changeDateWithFormat } from '../../utils/change-date-with-format';
 import AnotherUserModal from './AnotherUserModal';
 import { CategoryBtn } from './CategoryBtn';
 
@@ -67,7 +68,7 @@ export const PostSection: React.FC<PostSectionProps> = ({ data }) => {
     </div> */}
               <div className='ml-[20px] text-[#AEAC9A]'>
                 작성일
-                <span className='min-w-[100px] text-right'>{data.createdAt.substring(0, 10)}</span>
+                <span className='min-w-[100px] text-right'>{changeDateWithFormat(data.createdAt)}</span>
               </div>
             </div>
           </div>

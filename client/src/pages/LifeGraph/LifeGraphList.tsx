@@ -63,10 +63,10 @@ const LifeGraphList: React.FC = () => {
 
   if (noData) {
     return (
-      <div className='graph-titles flex w-full flex-col items-center'>
-        <div className='mt-[70px] flex flex-col items-center'>
-          <div className='text-[28px] font-bold text-[#909700]'>인생그래프</div>
-          <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
+      <div className='graph-titles flex w-full flex-col items-center bg-[#fcfcf8]'>
+        <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/life-graph')}>
+          <div className='text-[28px] font-bold'>인생 그래프</div>
+          <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
         </div>
 
         <div className='mt-[150px] flex w-[1200px] justify-center'>
@@ -98,8 +98,8 @@ const LifeGraphList: React.FC = () => {
     return (
       <div className='graphOk-titles flex w-full flex-col items-center'>
         <div className='mt-[70px] flex flex-col items-center'>
-          <div className='text-[28px] font-bold'>인생그래프</div>
-          <div className='mt-[10px] w-[330px] border-b-4 border-[#909700]'></div>
+          <div className='text-[28px] font-bold'>인생 그래프</div>
+          <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
         </div>
         <div className='mt-[30px] flex gap-[35px]'>
           <button onClick={() => setIsHowModalOpen(true)} className='h-[50px] w-[160px] rounded-[10px] bg-[#FFFCDD] text-center text-[24px] font-bold'>
@@ -117,7 +117,7 @@ const LifeGraphList: React.FC = () => {
           )}
         </div>
 
-        <div className='mt-[90px] flex w-[1200px] flex-wrap gap-[25px]'>
+        <div className='mt-[90px] flex w-[1200px] flex-wrap gap-[25px] rounded-[30px]'>
           {graphListData.map((graphData) => (
             <GraphSection
               key={graphData.id}

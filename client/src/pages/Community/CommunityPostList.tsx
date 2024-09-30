@@ -72,10 +72,10 @@ const CommunityPostList: React.FC = () => {
   };
 
   return (
-    <div className='community-titles flex flex-col items-center'>
-      <div className='mt-[140px] cursor-pointer' onClick={() => navigate('/community')}>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
+      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
-        <div className='mt-[10px] w-[100px] border-b-2 border-[#8D8B67]'></div>
+        <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
       <div className='mt-[55px]'>
         <div className='flex items-center'>
