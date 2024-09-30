@@ -6,13 +6,14 @@
  * History
  * Date          Author      Status      Description
  * 2024.09.14    이승철      Created
+ * 2024.09.30    이승철      Modified    페이지네이션 쿼리에 limit 추가
  */
 
-import { ExpertService } from '@_modules/expert/expert.service';
 import { Expert } from '@_modules/expert/entity/expert.entity';
+import { ExpertService } from '@_modules/expert/expert.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 describe('ExpertService', () => {
   let service: ExpertService;
@@ -26,10 +27,7 @@ describe('ExpertService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ExpertService,
-        { provide: getRepositoryToken(Expert), useValue: mockExpertRepository },
-      ],
+      providers: [ExpertService, { provide: getRepositoryToken(Expert), useValue: mockExpertRepository }],
     }).compile();
 
     service = module.get<ExpertService>(ExpertService);
@@ -47,7 +45,8 @@ describe('ExpertService', () => {
       mockExpertRepository.find.mockResolvedValue([expert]);
       mockExpertRepository.count.mockResolvedValue(1);
 
-      expect(await service.getExperts(1, 10)).toEqual(result);
+      const paginationQuery = { page: 1, limit: 10 };
+      expect(await service.getExperts(paginationQuery)).toEqual(result);
       expect(expertRepository.find).toHaveBeenCalledWith({
         skip: 0,
         take: 10,
