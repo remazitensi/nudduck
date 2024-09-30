@@ -28,6 +28,7 @@ import { Community } from '@_modules/community/entities/community.entity';
 import { CommentRepository } from '@_modules/community/repositories/comment.repository';
 import { CommunityRepository } from '@_modules/community/repositories/community.repository';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { CommentResponseDto } from './dto/response/comment-response.dto';
 import { Category } from './enums/category.enum';
@@ -37,9 +38,8 @@ export class CommunityService {
   constructor(
     private readonly communityRepository: CommunityRepository,
     private readonly commentRepository: CommentRepository,
+    @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
-
-  private static readonly SERVER_ERROR_MSG = '서버 오류가 발생했습니다.';
 
   // 게시글 작성
   async createPost(createCommunityDto: CreateCommunityDto, userId: number): Promise<void> {
@@ -85,8 +85,10 @@ export class CommunityService {
   }
 
   // 댓글 작성
-  async createComment(postId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<void> {
-    await this.commentRepository.createComment(postId, createCommentDto, userId, manager);
+  async createComment(postId: number, createCommentDto: CreateCommentDto, userId: number): Promise<void> {
+    await this.entityManager.transaction(async (manager) => {
+      await this.commentRepository.createComment(postId, createCommentDto, userId, manager);
+    });
   }
 
   // 댓글 수정
@@ -113,9 +115,11 @@ export class CommunityService {
   }
 
   // 대댓글 작성
-  async createReply(commentId: number, createCommentDto: CreateCommentDto, userId: number, manager: EntityManager): Promise<void> {
+  async createReply(commentId: number, createCommentDto: CreateCommentDto, userId: number): Promise<void> {
     createCommentDto.parentId = commentId;
-    await this.commentRepository.createReply(commentId, createCommentDto, userId, manager);
+    await this.entityManager.transaction(async (manager) => {
+      await this.commentRepository.createReply(commentId, createCommentDto, userId, manager);
+    });
   }
 
   // 대댓글 수정
@@ -142,8 +146,8 @@ export class CommunityService {
   }
 
   // 대댓글 조회 (페이징 지원)
-  async getReplies(parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
-    const { replies, total } = await this.commentRepository.getReplies(parentCommentId, paginationQuery);
+  async getReplies(postId: number, parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<[CommentResponseDto[], number]> {
+    const { replies, total } = await this.commentRepository.getReplies(postId, parentCommentId, paginationQuery);
 
     return [replies, total];
   }

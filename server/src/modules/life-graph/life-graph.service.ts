@@ -15,6 +15,7 @@
  * 2024.09.24    이승철      Modified    카멜케이스로 변경
  * 2024.09.24    이승철      Modified    limit를 dto에 추가
  * 2024.09.26    이승철      Modified    즐겨찾기 반환 값 및 age 검증 추가
+ * 2024.09.29    이승철      Modified    병렬처리
  */
 
 import { CreateLifeGraphDto } from '@_modules/life-graph/dto/create-life-graph.dto';
@@ -26,8 +27,8 @@ import { DataSource } from 'typeorm';
 import { LifeGraphEvent } from '@_modules/life-graph/entity/life-graph-events.entity';
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { LifeGraphEventService } from '@_modules/life-graph/life-graph-event.service';
-import { LifeGraphPaginationQueryDto } from './dto/life-graph-pagination-query.dto';
-import { LifeGraphListResponseDto, LifeGraphResponseDto } from './dto/life-graph-response.dto';
+import { LifeGraphPaginationQueryDto } from '@_modules/life-graph/dto/life-graph-pagination-query.dto';
+import { LifeGraphListResponseDto, LifeGraphResponseDto } from '@_modules/life-graph/dto/life-graph-response.dto';
 
 @Injectable()
 export class LifeGraphService {
@@ -157,23 +158,25 @@ export class LifeGraphService {
 
   // 인생 그래프 즐겨찾기 등록/해제
   async createFavoriteLifeGraph(userId: number, graphId: number): Promise<boolean> {
-    const user = await this.userRepository.findUserById(userId, ['favoriteLifeGraph']);
-    const lifeGraph = await this.lifeGraphRepository.findOneLifeGraph(userId, graphId);
+    const [user, lifeGraph] = await Promise.all([
+      this.userRepository.findUserById(userId, ['favoriteLifeGraph']),
+      this.lifeGraphRepository.findOneLifeGraph(userId, graphId),
+    ]);
   
     if (!lifeGraph) {
       throw new NotFoundException('인생 그래프를 찾을 수 없습니다.');
     }
   
     const isAlreadyFavorited = user.favoriteLifeGraph?.id === graphId;
-
+  
     if (isAlreadyFavorited) {
-      user.favoriteLifeGraph = null;  // 즐겨찾기 해제
+      user.favoriteLifeGraph = null; // 즐겨찾기 해제
     } else {
-      user.favoriteLifeGraph = lifeGraph;  // 즐겨찾기 등록
+      user.favoriteLifeGraph = lifeGraph; // 즐겨찾기 등록
     }
   
     await this.userRepository.updateUser(user);
   
-    return !isAlreadyFavorited;  // 등록되면 true, 해제되면 false
+    return !isAlreadyFavorited; // 등록되면 true, 해제되면 false
   }
 }

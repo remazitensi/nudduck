@@ -37,7 +37,6 @@ export class CommentRepository extends Repository<Comment> {
       postId,
       parentId: createCommentDto.parentId || null,
       user: { id: userId },
-      community: { postId } as Community,
     });
 
     try {
@@ -64,7 +63,7 @@ export class CommentRepository extends Repository<Comment> {
         throw new HttpException('댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
       }
 
-      comment.content = updateCommentDto.content || comment.content;
+      comment.content = updateCommentDto.content ?? comment.content;
       await this.save(comment);
     } catch (error) {
       this.handleError(error);
@@ -133,6 +132,7 @@ export class CommentRepository extends Repository<Comment> {
         .where('comment.postId = :postId', { postId })
         .andWhere('comment.parentId IS NULL')
         .leftJoinAndSelect('comment.user', 'user')
+        .addSelect('user.deletedAt')
         .addSelect('(SELECT COUNT(*) FROM comment AS child WHERE child.parentId = comment.id) AS replyCount')
         .orderBy('comment.createdAt', 'ASC')
         .skip(offset)
@@ -148,14 +148,16 @@ export class CommentRepository extends Repository<Comment> {
   }
 
   // 대댓글 조회 (페이징 지원)
-  async getReplies(parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<{ replies: CommentResponseDto[]; total: number }> {
+  async getReplies(postId: number, parentCommentId: number, paginationQuery: PaginationQueryDto): Promise<{ replies: CommentResponseDto[]; total: number }> {
     const { limit, offset } = this.buildCommentPaginationQuery(paginationQuery);
 
     try {
       const [replies, total] = await this.createQueryBuilder('comment')
-        .where('comment.parentId = :parentCommentId', { parentCommentId })
+        .where('comment.postId = :postId', { postId })
+        .andWhere('comment.parentId = :parentCommentId', { parentCommentId })
         .leftJoinAndSelect('comment.user', 'user')
-        .orderBy('comment.createdAt', 'ASC') // 정렬을 오래된 순으로 고정
+        .addSelect('user.deletedAt')
+        .orderBy('comment.createdAt', 'ASC')
         .skip(offset)
         .take(limit)
         .getManyAndCount();
@@ -170,8 +172,8 @@ export class CommentRepository extends Repository<Comment> {
 
   // 댓글 페이징 쿼리 빌드 함수
   private buildCommentPaginationQuery(paginationQuery: PaginationQueryDto) {
-    const limit = paginationQuery.limit || 10;
-    const offset = paginationQuery.offset || 0;
+    const limit = paginationQuery.limit ?? 10;
+    const offset = paginationQuery.offset ?? 0;
 
     return { limit, offset }; // 정렬 필드는 고정되어 있으므로 반환하지 않음
   }

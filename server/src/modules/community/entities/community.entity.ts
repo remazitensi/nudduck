@@ -1,38 +1,39 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Category } from '@_modules/community/enums/category.enum';
 import { Comment } from '@_modules/community/entities/comment.entity';
+import { Category } from '@_modules/community/enums/category.enum';
 import { User } from '@_modules/user/entity/user.entity';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity('community') // 테이블 이름 지정
+@Entity('community')
 export class Community {
-  @PrimaryGeneratedColumn() // 자동 생성되는 PK
+  @PrimaryGeneratedColumn()
   postId: number;
 
-  @Column() // 기본 문자열 컬럼
+  @Column()
   title: string;
 
-  @Column('text') // 긴 텍스트를 위한 컬럼
+  @Column('text')
   content: string;
 
-  @Column({ type: 'enum', enum: Category, nullable: true }) // enum을 사용한 카테고리 컬럼
+  @Column({ type: 'enum', enum: Category, nullable: true })
   category?: Category;
 
-  @CreateDateColumn({ type: 'timestamp' }) // 자동 생성되는 생성일 컬럼
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' }) // 자동 수정되는 수정일 컬럼
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @Column({ default: 0 }) // 기본값 0인 조회 수
+  @Column({ default: 0 })
   viewCount: number;
 
-  @Column({ default: 0 }) // 기본값 0인 댓글 수
+  @Column({ default: 0 })
   commentCount: number;
 
-  @OneToMany(() => Comment, (comment) => comment.community, { cascade: true }) // 일대다 관계
-  comments?: Comment[]; // 댓글이 없을 수 있으므로 nullable 설정
+  // Lazy Loading 적용
+  @OneToMany(() => Comment, (comment) => comment.community, { lazy: true, cascade: true })
+  comments?: Promise<Comment[]>;
 
-  @ManyToOne(() => User, (user) => user.communities, { eager: false, onDelete: 'CASCADE', nullable: false }) // 유저와의 관계 추가
-  @JoinColumn({ name: 'userId' }) // 외래 키 컬럼을 명시적으로 지정
+  @ManyToOne(() => User, (user) => user.communities, { eager: false, onDelete: 'CASCADE', nullable: false })
+  @JoinColumn({ name: 'userId' })
   user: User;
 }
