@@ -47,21 +47,21 @@ const MyPage: React.FC = () => {
   });
 
   const fetchProfileData = async (page: number) => {
-    setIsLoading(true); // 로딩 시작
+    setIsLoading(true);
     try {
       const userProfileData = await fetchUserProfile(page, limit);
       if (userProfileData) {
         setProfile((prevProfile) => ({
           ...prevProfile,
-          ...userProfileData, // profile 전체를 업데이트
+          ...userProfileData,
           totalCount: userProfileData.totalCount,
         }));
-        setTotalPages(Math.ceil(userProfileData.totalCount / limit)); // 전체 페이지 수 계산
+        setTotalPages(Math.ceil(userProfileData.totalCount / limit));
       }
     } catch (error) {
       console.error('프로필을 가져오는 중 에러가 발생했습니다.', error);
     }
-    setIsLoading(false); // 로딩 끝
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -113,10 +113,11 @@ const MyPage: React.FC = () => {
         limit={limit}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
-        isLoading={isLoading} // 로딩 상태 전달
+        isLoading={isLoading}
+        refetchProfile={fetchProfileData}
       />
 
-      <div onClick={handleQuitOpenModal} className='mt-[40px] flex w-[1200px] cursor-pointer justify-end gap-[5px] mb-[50px]'>
+      <div onClick={handleQuitOpenModal} className='mb-[50px] mt-[40px] flex w-[1200px] cursor-pointer justify-end gap-[5px]'>
         <img src='/quit.svg' alt='quit' />
         <div className='flex items-center text-[15px] text-[#8D8B67]'>탈퇴하기</div>
         {quitOpen && <QuitModal onClose={handleQuitCloseModal} />}
