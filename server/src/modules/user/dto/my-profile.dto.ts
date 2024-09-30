@@ -15,7 +15,7 @@
  * 2024.09.24    이승철      Modified    가입일 반환
  */
 
-import { CommunitySummaryDto } from '@_modules/user/dto/community-summary.dto';
+import { MyCommunitySummaryDto } from '@_modules/user/dto/my-community-summary.dto';
 import { LifeGraph } from '@_modules/life-graph/entity/life-graph.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -55,9 +55,9 @@ export class MyProfileDto {
 
   @ApiProperty({
     description: '유저가 작성한 게시글 목록',
-    type: [CommunitySummaryDto],
+    type: [MyCommunitySummaryDto],
   })
-  posts: CommunitySummaryDto[];
+  posts: MyCommunitySummaryDto[];
 
   @ApiProperty({ description: '전체 게시글 수', example: 100 })
   totalCount: number;

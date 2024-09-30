@@ -7,15 +7,16 @@
  * Date          Author      Status      Description
  * 2024.09.16    이승철      Created
  * 2024.09.18    이승철      Modified    mockUser 속성에 인생그래프 추가
+ * 2024.09.30    이승철      Modified    유저 엔티티에 커뮤니티와 코멘트 추가
  */
 
-import { AuthService } from '@_modules/auth/auth.service';
 import { AuthRepository } from '@_modules/auth/auth.repository';
+import { AuthService } from '@_modules/auth/auth.service';
+import { FileUploadService } from '@_modules/file-upload/file-upload.service';
+import { User } from '@_modules/user/entity/user.entity';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileUploadService } from '@_modules/file-upload/file-upload.service';
-import { ConfigService } from '@nestjs/config';
-import { User } from '@_modules/user/entity/user.entity';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -33,7 +34,6 @@ describe('AuthService', () => {
             updateUser: jest.fn(),
             updateRefreshToken: jest.fn(),
             createUser: jest.fn(),
-            findUserById: jest.fn(),
             findUserByNickname: jest.fn(),
           },
         },
@@ -71,27 +71,28 @@ describe('AuthService', () => {
       const mockUser: User = {
         id: 1,
         provider: 'google',
-        provider_id: '1234567890',
+        providerId: '1234567890',
         email: 'test@example.com',
         name: 'Test User',
         nickname: 'test1',
-        image_url: 'test-url',
-        refresh_token: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
+        imageUrl: 'test-url',
+        refreshToken: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
         hashtags: [],
-        favorite_life_graph: null,
-        life_graphs: [],
+        favoriteLifeGraph: null,
+        lifeGraphs: [],
+        comments: [],
+        communities: [],
       };
+
       const userDto = { provider: 'google', providerId: '1234567890', email: 'test@example.com', name: 'Test User' };
 
       authRepository.findUserByProvider.mockResolvedValue(mockUser);
       authRepository.updateRefreshToken.mockResolvedValue(undefined);
 
-      jwtService.sign
-        .mockReturnValueOnce('access-token')
-        .mockReturnValueOnce('refresh-token');
+      jwtService.sign.mockReturnValueOnce('access-token').mockReturnValueOnce('refresh-token');
 
       const tokens = await authService.getSocialLogin(userDto);
 
@@ -108,27 +109,27 @@ describe('AuthService', () => {
       const mockNewUser: User = {
         id: 1,
         provider: 'google',
-        provider_id: '1234567890',
+        providerId: '1234567890',
         email: 'test@example.com',
         name: 'Test User',
         nickname: 'new1',
-        image_url: 'default-image-url',
-        refresh_token: null,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
+        imageUrl: 'default-image-url',
+        refreshToken: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
         hashtags: [],
-        favorite_life_graph: null,
-        life_graphs: [], 
+        favoriteLifeGraph: null,
+        lifeGraphs: [],
+        comments: [],
+        communities: [],
       };
 
       authRepository.findUserByProvider.mockResolvedValue(null);
       authRepository.createUser.mockResolvedValue(mockNewUser);
       authRepository.updateRefreshToken.mockResolvedValue(undefined);
 
-      jwtService.sign
-        .mockReturnValueOnce('access-token')
-        .mockReturnValueOnce('refresh-token');
+      jwtService.sign.mockReturnValueOnce('access-token').mockReturnValueOnce('refresh-token');
 
       const tokens = await authService.getSocialLogin(userDto);
 
