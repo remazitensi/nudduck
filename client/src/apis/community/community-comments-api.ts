@@ -17,7 +17,7 @@ import { api, baseApi } from '../base-api';
 export const getComments = async (postId: number, limit = 10, offset = 0): Promise<CommentsResDto> => {
   try {
     const response = await baseApi.get<CommentsResDto>(`${api.community}/articles/${postId}/comments/top-n`, {
-      params: { limit, offset },
+      params: { limit, offset, sort: 'createdAt:asc' },
     });
     return response.data;
   } catch (error: any) {
@@ -45,13 +45,22 @@ export const updateComment = async (postId: number, commentId: number, data: Upd
 
 // 댓글 삭제
 export const deleteComment = async (postId: number, commentId: number): Promise<void> => {
-  await baseApi.delete(`/${postId}/comments/${commentId}`);
+  try {
+    const response = await baseApi.delete(`${api.community}/articles/${postId}/comments/${commentId}`, {});
+    console.log(response);
+    if (response.status === 200) {
+      alert('댓글이 삭제되었습니다 💣');
+    }
+  } catch (error: any) {
+    console.log('error', error.message);
+    return alert(error.message);
+  }
 };
 
 // ------------- 대댓글 api --------------------
 
 // 대댓글 조회
-export const getReply = async (postId: number, parentId: number) => {
+export const getReply = async (postId: number, parentId: number): Promise<CommentsResDto> => {
   try {
     const response = await baseApi.get(`${api.community}/articles/${postId}/comments/${parentId}/replies`);
     return response.data;
@@ -62,9 +71,14 @@ export const getReply = async (postId: number, parentId: number) => {
 };
 
 // 대댓글 생성
-export const createReply = async (postId: number, parentId: number, data: CreateCommentDto): Promise<Comment> => {
-  const response = await baseApi.post<Comment>(`/${postId}/comments/${parentId}/replies`, data);
-  return response.data;
+export const createReply = async (postId: number, data: CreateCommentDto) => {
+  try {
+    const response = await baseApi.post<Comment>(`${api.community}/articles/${postId}/comments/${data.parentId}/replies`, data);
+    return response.data;
+  } catch (error: any) {
+    console.log('error', error.message);
+    throw error;
+  }
 };
 
 // 대댓글 수정
@@ -75,5 +89,14 @@ export const updateReply = async (postId: number, commentId: number, data: Updat
 
 // 대댓글 삭제
 export const deleteReply = async (postId: number, commentId: number): Promise<void> => {
-  await baseApi.delete(`/${postId}/comments/${commentId}/replies`);
+  try {
+    const response = await baseApi.delete(`${api.community}/articles/${postId}/comments/${commentId}/replies`, {});
+    if (response.status === 204) {
+      alert('댓글이 삭제되었습니다 💣');
+    }
+    return response;
+  } catch (error: any) {
+    console.log('error', error.message);
+    return alert(error.message);
+  }
 };
