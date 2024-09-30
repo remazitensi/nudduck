@@ -1,5 +1,5 @@
 /**
- * File Name    : Header.tsx
+ * File Name    : CommunityPostDetail.tsx
  * Description  : layout - 헤더 -
  * Author       : 김우현
  *
@@ -21,6 +21,7 @@ import { CreateComment } from '../../components/Community/CreateComment';
 import ScrollToTop from '../../components/ScrolltoTop';
 import { CommentsDto, CommentsResDto } from '../../types/comments-type';
 import { Post } from '../../types/community-type';
+import { changeDateWithFormat } from '../../utils/change-date-with-format';
 
 const CommunityPostDetail: React.FC = () => {
   const { id } = useParams();
@@ -37,6 +38,7 @@ const CommunityPostDetail: React.FC = () => {
   const [comments, setComments] = useState<CommentsDto[]>([]); // 댓글 목록 state 추가
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
   const [totalPage, setTotalPage] = useState<number>(0);
+  const navigate = useNavigate();
 
   const handleOpenModal = () => {
     setOpenUserModal(true);
@@ -97,9 +99,9 @@ const CommunityPostDetail: React.FC = () => {
       <ScrollToTop />
       {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={postData.userId} />}
 
-      <div className='mt-[140px]'>
+      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
-        <div className='mt-[10px] w-[100px] border-b-2 border-[#8D8B67]'></div>
+        <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
 
       <div className='mt-[120px] flex w-[1200px] items-center justify-between text-center'>
@@ -111,7 +113,7 @@ const CommunityPostDetail: React.FC = () => {
           <div className='flex gap-[20px]'>
             <div className='flex gap-[8px] text-[#AEAC9A]'>
               <div>작성일</div>
-              <div>{postData.createdAt.substring(0, 10)}</div>
+              <div>{changeDateWithFormat(postData.createdAt)}</div>
             </div>
             <div className='text-[#AEAC9A]'>
               조회수

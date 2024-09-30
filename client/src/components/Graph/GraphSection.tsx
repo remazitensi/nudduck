@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { deleteGraph } from '../../apis/lifeGraph/graph-api';
 import GraphEditModal from '../../pages/LifeGraph/GraphEditModal';
 import { GraphData } from '../../types/graph-type';
+import { changeDateWithFormat } from '../../utils/change-date-with-format';
 import { CreateListGraph } from './CreateListGraph';
 
 const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeStarId, changeActiveStar, updateList }: GraphData) => {
@@ -34,7 +35,7 @@ const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeSta
   };
 
   return (
-    <div className='flex w-[380px] flex-col shadow-xl rounded-[30px]'>
+    <div className='flex w-[380px] flex-col rounded-[30px] shadow-xl'>
       <div className='mb-[5px] flex justify-end gap-[10px]'>
         <img src='/edit-btn.png' className='cursor-pointer' onClick={() => setModalOpen(true)} />
         {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} />}
@@ -47,7 +48,7 @@ const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeSta
           }}
         />
       </div>
-      <div className='flex w-[380px] bg-[#F8F8F8] hover:shadow-md  rounded-[30px]' onClick={navigateToDetail}>
+      <div className='flex w-[380px] rounded-[30px] bg-[#F8F8F8] hover:shadow-md' onClick={navigateToDetail}>
         <div className='mt-[30px]'>
           <div className='h-[220px] w-[380px]'>
             <CreateListGraph events={events}></CreateListGraph>
@@ -66,11 +67,11 @@ const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeSta
                 <div className='text-[#8D8B67]'>{title}</div>
                 <div className='flex justify-end gap-[20px] text-[#8D8B67]'>
                   <div>생성일</div>
-                  <div>{createdAt.slice(0, 10)}</div>
+                  <div>{changeDateWithFormat(createdAt)}</div>
                 </div>
                 <div className='flex justify-end gap-[20px]'>
                   <div>수정일</div>
-                  <div>{updatedAt.slice(0, 10)}</div>
+                  <div>{changeDateWithFormat(updatedAt)}</div>
                 </div>
               </div>
             </div>
