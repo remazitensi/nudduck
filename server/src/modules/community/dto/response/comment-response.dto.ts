@@ -88,7 +88,7 @@ export class CommentResponseDto {
     this.content = comment.content; // 댓글 내용
     this.createdAt = comment.createdAt; // 작성 일시
     this.updatedAt = comment.updatedAt; // 수정 일시
-    this.replyCount = replyCount; // 대댓글 수
+    this.replyCount = replyCount ?? 0; // 대댓글 수
     this.parentId = comment.parentId; // 부모 댓글 ID
     this.userId = comment.user?.id || null;
     this.nickname = comment.user?.nickname || null; // 작성자 닉네임
