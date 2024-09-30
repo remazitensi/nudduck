@@ -37,7 +37,7 @@ const Graph:React.FC = () => {
 
     return (
         <div className='graph-titles flex w-[1920px] flex-col items-center'>
-            <div className='flex flex-col items-center mt-[140px]'>
+            <div className='flex flex-col items-center mt-[70px]'>
                 <div className='text-[28px] font-bold text-[#909700]'>취업준비생 &nbsp;<span className="text-black">의 인생그래프</span></div>
                 <div className='mt-[10px] w-[330px] border-b-2 border-[#8D8B67]'></div>
             </div>
@@ -49,7 +49,7 @@ const Graph:React.FC = () => {
                     정보를 입력하고 손쉽게 인생그래프를 만들어 보세요!</span></div>
             </div>
             
-            <div className="flex mt-[150px] gap-[70px]">
+            <div className="flex mt-[150px] gap-[70px] mb-[50px]">
                 <button onClick={handleOpenHowModal} className="w-[160px] h-[50px] rounded-[10px] bg-[#FFFCDD] font-bold text-[24px] text-center">작성방법</button>
                 {isHowModalOpen && (
                     <GraphHowModal onClose={handleCloseHowModal}/>
