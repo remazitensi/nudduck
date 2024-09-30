@@ -103,7 +103,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
 
   return (
     <div>
-      <div className='mt-[140px] flex flex-col items-center'>
+      <div className='mt-[70px] flex flex-col items-center'>
         <div className='text-[28px] font-bold'>마이페이지</div>
         <div className='mt-[10px] w-[170px] border-b-2 border-[#8D8B67]'></div>
       </div>
