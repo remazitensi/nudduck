@@ -9,7 +9,10 @@
  * 2024.09.23    김민지      Modified    작성 게시글 레이아웃
  */
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { deletePost } from '../../apis/community/community-post-api';
 import UserEditModal from '../../pages/UserEditModal';
+import { changeDateWithFormat } from '../../utils/change-date-with-format';
 import { CreateDetailGraph } from '../Graph/CreateDetailGraph';
 
 interface Post {
@@ -32,6 +35,11 @@ interface FavoriteLifeGraph {
   events: LifeGraphEvent[];
   createdAt: string;
   updatedAt: string;
+}
+
+interface MyProfileProps {
+  // 기존 props에 refetchProfile 추가
+  refetchProfile: (page: number) => void;
 }
 
 interface Profile {
@@ -74,15 +82,18 @@ const MyProfile: React.FC<MyProfileProps> = ({
   totalPages,
   setCurrentPage,
   isLoading,
+  refetchProfile, // 상위 컴포넌트에서 전달된 콜백 함수
 }) => {
-  const currentPosts = userProfile.posts;
+  let currentPosts = userProfile.posts;
   console.log(userProfile.favoriteLifeGraph);
+  const navigate = useNavigate();
+  // const [currentPosts, setCurrentPosts] = React.useState<Post[]>(userProfile.posts);
 
   const renderPagination = () => {
     const pageNumbers = [];
     for (let i = 1; i <= totalPages; i++) {
       pageNumbers.push(
-        <button key={i} onClick={() => setCurrentPage(i)} className={`px-2 py-1 ${i === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-300'}`}>
+        <button key={i} onClick={() => setCurrentPage(i)} className={`px-2 py-1 ${i === currentPage ? 'font-semibold text-gray-500' : 'text-gray-300'}`}>
           {i}
         </button>,
       );
@@ -90,15 +101,24 @@ const MyProfile: React.FC<MyProfileProps> = ({
 
     return (
       <div className='pagination mt-4 flex justify-center gap-2'>
-        <button onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} disabled={currentPage === 1} className='bg-gray-300 px-2 py-1'>
+        <button onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} disabled={currentPage === 1} className='cursor-pointer bg-gray-100 px-2 py-1'>
           이전
         </button>
         {pageNumbers}
-        <button onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))} disabled={currentPage === totalPages} className='bg-gray-300 px-2 py-1'>
+        <button onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))} disabled={currentPage === totalPages} className='cursor-pointer bg-gray-100 px-2 py-1'>
           다음
         </button>
       </div>
     );
+  };
+
+  const deletePostReq = async (post) => {
+    try {
+      const response = await deletePost(post.postId); // deletePost 요청
+      refetchProfile(currentPage); // 삭제 후 상위 컴포넌트에서 GET 요청을 다시 보냄
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    }
   };
 
   return (
@@ -193,13 +213,24 @@ const MyProfile: React.FC<MyProfileProps> = ({
                     currentPosts.map((post: Post) => (
                       <div key={post.id} className='flex items-center'>
                         <div className='ml-[10px] flex w-[120px]'>
-                          <p>{post.createdAt.split('T')[0]}</p>
+                          <p>{changeDateWithFormat(post.createdAt)}</p>
                         </div>
-                        <div className='ml-[20px] flex w-[250px] justify-center'>
+                        <div
+                          className='ml-[20px] flex w-[250px] cursor-pointer justify-center'
+                          onClick={() => {
+                            navigate(`/community/${post.postId}`);
+                          }}
+                        >
                           <p>{post.title}</p>
                         </div>
-                        <img className='ml-auto' src='/edit-btn.png' />
-                        <img className='ml-[6px]' src='/delete-btn.png' />
+                        <img
+                          className='ml-auto cursor-pointer'
+                          src='/edit-btn.png'
+                          onClick={() => {
+                            navigate(`/community/edit/${post.postId}`);
+                          }}
+                        />
+                        <img className='ml-[6px] cursor-pointer' src='/delete-btn.png' onClick={() => deletePostReq(post)} />
                       </div>
                     ))
                   )}
