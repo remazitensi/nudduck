@@ -136,9 +136,7 @@ const AICoach: React.FC = () => {
       setCurrentSessionId(response.sessionId);
       if (isNew) setChatHistory([]);
       await loadMessages(response.sessionId);
-    } catch (error) {
-      console.log('Failed to activate simulation:', error);
-    }
+    } catch (error) {}
   };
 
   // 질문 전송 후 AI 응답 받기

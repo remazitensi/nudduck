@@ -30,7 +30,6 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
     const fetchUserProfile = async () => {
       try {
         const data = await getUserProfile(userId);
-        console.log('Fetched user data:', data); // 데이터를 확인하기 위한 로그
         setUserData(data);
         return setLoading(false);
       } catch (error) {

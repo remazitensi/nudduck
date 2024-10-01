@@ -85,7 +85,6 @@ const MyProfile: React.FC<MyProfileProps> = ({
   refetchProfile, // 상위 컴포넌트에서 전달된 콜백 함수
 }) => {
   let currentPosts = userProfile.posts;
-  console.log(userProfile.favoriteLifeGraph);
   const navigate = useNavigate();
   // const [currentPosts, setCurrentPosts] = React.useState<Post[]>(userProfile.posts);
 

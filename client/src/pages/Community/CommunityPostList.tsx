@@ -29,7 +29,6 @@ const CommunityPostList: React.FC = () => {
   // 카테고리에 따라 적절한 fetch 함수 호출
   const fetchPosts = async () => {
     const params: PostListParams = { page: pages.currentPage, sort, category: selectedCategory };
-    console.log(params);
     const data = await getPostList(params);
     setPosts(data[0]);
     setTotalPostCount(data[1]);
@@ -46,7 +45,6 @@ const CommunityPostList: React.FC = () => {
   // 페이지 로드 시 및 sort,selectedCategory 변경 시 fetchPosts 호출
   useEffect(() => {
     fetchPosts();
-    console.log('useEffect save posts :', posts);
   }, [selectedCategory, pages.currentPage, sort]);
 
   // 페이지네이션 현재 페이지 설정
@@ -134,7 +132,6 @@ const CommunityPostList: React.FC = () => {
             {/* <button
               className={`text-[${sort === 'popular' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
-                // console.log('Sort changed to popular');
                 setSort('popular');
               }}
             >

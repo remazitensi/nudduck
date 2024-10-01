@@ -21,7 +21,6 @@ export const getComments = async (postId: number, limit = 10, offset = 0): Promi
     });
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
@@ -32,7 +31,6 @@ export const createComment = async (postId: number, data: CreateCommentDto) => {
     const response = await baseApi.post<Comment>(`${api.community}/articles/${postId}/comments`, data);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
@@ -43,7 +41,6 @@ export const updateComment = async (postId: number, commentId: number, data: Upd
     const response = await baseApi.put<Comment>(`${api.community}/articles/${postId}/comments/${commentId}`, data);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
@@ -52,13 +49,10 @@ export const updateComment = async (postId: number, commentId: number, data: Upd
 export const deleteComment = async (postId: number, commentId: number): Promise<void> => {
   try {
     const response = await baseApi.delete(`${api.community}/articles/${postId}/comments/${commentId}`, {});
-    console.log(response);
     if (response.status === 200) {
       alert('댓글이 삭제되었습니다 💣');
     }
-  } catch (error: any) {
-    return console.log('error', error.message);
-  }
+  } catch (error) {}
 };
 
 // ------------- 대댓글 api --------------------
@@ -69,7 +63,6 @@ export const getReply = async (postId: number, parentId: number): Promise<Commen
     const response = await baseApi.get(`${api.community}/articles/${postId}/comments/${parentId}/replies`);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     alert(error.message);
     throw error;
   }
@@ -81,7 +74,6 @@ export const createReply = async (postId: number, data: CreateCommentDto) => {
     const response = await baseApi.post<Comment>(`${api.community}/articles/${postId}/comments/${data.parentId}/replies`, data);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
@@ -92,7 +84,6 @@ export const updateReply = async (postId: number, commentId: number, data: Updat
     const response = await baseApi.put<Comment>(`${api.community}/articles/${postId}/comments/${commentId}/replies`, data);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
@@ -105,8 +96,5 @@ export const deleteReply = async (postId: number, commentId: number): Promise<vo
       alert('댓글이 삭제되었습니다 💣');
       return response;
     }
-  } catch (error: any) {
-    console.log('error', error.message);
-    return console.log('error', error.message);
-  }
+  } catch (error: any) {}
 };

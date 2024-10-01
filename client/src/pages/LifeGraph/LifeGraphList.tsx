@@ -57,8 +57,6 @@ const LifeGraphList: React.FC = () => {
   const updateLifeGraphs = async () => {
     const res = await fetchLifeGraphs(currentPage);
     setGraphListData(res.data);
-    console.log(res);
-    console.log('graphListData에 저장된 데이터: ', graphListData);
     if (res.data.length === 0) {
       setNoData(true);
     } else if (res.data.length >= 1) {

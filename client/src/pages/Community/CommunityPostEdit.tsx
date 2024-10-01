@@ -129,7 +129,6 @@ const CommunityPostEdit: React.FC = () => {
       content: postData.content,
       category: category,
     };
-    console.log(post);
 
     try {
       await editPost(post, id);
@@ -168,8 +167,6 @@ const CommunityPostEdit: React.FC = () => {
   useEffect(() => {
     fetchPostDataWithComment();
     userInfo();
-    // console.log(postData.userId);
-    // console.log(info?.id);
     // if (postData.userId !== info?.id) {
     //   alert('접근할 수 없습니다!');
     //   navigate(`/community`);
