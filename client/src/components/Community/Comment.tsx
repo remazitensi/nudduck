@@ -123,7 +123,7 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
         </div>
       ) : (
         // 수정 모드가 아닐 때는 기존 댓글 내용 표시
-        <div className='pl-[70px] text-[20px]'>{comment.content}</div>
+        <div className='pl-[80px] text-[20px]'>{comment.content}</div>
       )}
     </div>
   );
