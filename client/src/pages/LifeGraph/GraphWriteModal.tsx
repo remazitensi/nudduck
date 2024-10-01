@@ -145,19 +145,19 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
-      <div className='flex h-[1000px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
+      <div className='flex h-[700px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
         <div className='flex justify-end'>
           <div onClick={onClose} className='flex cursor-pointer flex-wrap p-[20px] text-[24px]'>
             x
           </div>
         </div>
-        <div className='pl-[60px]'>
-          <div className='mt-[70px] text-[25px] font-bold'>
+        <div className='px-[60px]'>
+          <div className='text-[25px] font-bold'>
             인생 그래프 구성에 대한 정보를
             <br />
             적어주세요!
           </div>
-          <div className='mt-[50px] flex flex-col gap-[5px]'>
+          <div className='mt-[20px] flex flex-col gap-[5px]'>
             <div>제목</div>
             <input
               value={graphTitle}
@@ -176,7 +176,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
               placeholder='나이를 숫자만 입력해주세요'
             />
           </div>
-          <div className='mt-[25px] h-[400px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
+          <div className='mt-[25px] h-[280px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
             {inputs.map((input, index) => (
               <div key={index} className='mb-[20px]'>
                 <div className='flex gap-[10px]'>
@@ -237,8 +237,8 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
             ))}
           </div>
         </div>
-        <div className='mt-[90px] flex h-[50px] w-full justify-center pl-[20px]'>
-          <button onClick={handleSave} className='flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
+        <div className='flex h-[50px] w-full justify-center'>
+          <button onClick={handleSave} className='mt-[10px] flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
             저장하기
           </button>
         </div>

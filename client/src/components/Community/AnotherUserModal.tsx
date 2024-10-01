@@ -52,26 +52,27 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
     <div className='relative z-10'>
       <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
         <div className='flex w-[700px] flex-col rounded-[20px] bg-white p-[50px] pt-[0px] shadow-lg' onClick={(e) => e.stopPropagation()}>
-          <div className='flex justify-end'>
+          <div className='flex justify-between'>
+            <div className='mt-[40px] flex items-center justify-between'>
+              <div className='flex gap-[20px]'>
+                <div className='h-[100px] w-[100px] rounded-full'>
+                  <img className='h-full w-full rounded-full object-cover' src={userData.imageUrl ? userData.imageUrl : '/default-img.png'} alt='profile_Img' />
+                </div>
+                <div className='flex flex-col justify-center'>
+                  <div className='text-[24px] font-bold'>{userData.nickname}</div>
+                  <div className='text-[20px] font-bold text-[#8D8B67]'>{userData.hashtags?.join(' ') || ''}</div>
+                </div>
+              </div>
+              {/* <div className='flex h-[40px] w-[180px] justify-center rounded-[10px] border border-[#8D8B67] hover:border-[#A1DFFF] hover:bg-[#EEF9FF] hover:font-bold'>
+              <button className='text-18px]'>1:1 대화 신청하기</button>
+            </div> */}
+            </div>
+
             <div onClick={onClose} className='flex cursor-pointer p-[15px] text-[28px]'>
               x
             </div>
           </div>
-          <div className='flex items-center justify-between'>
-            <div className='flex gap-[20px]'>
-              <div className='h-[116px] w-[116px] rounded-full'>
-                <img className='h-full w-full rounded-full object-cover' src={userData.imageUrl ? userData.imageUrl : '/default-img.png'} alt='profile_Img' />
-              </div>
-              <div className='flex flex-col justify-center'>
-                <div className='text-[24px] font-bold'>{userData.nickname}</div>
-                <div className='text-[20px] font-bold text-[#8D8B67]'>{userData.hashtags?.join(' ') || ''}</div>
-              </div>
-            </div>
-            {/* <div className='flex h-[40px] w-[180px] justify-center rounded-[10px] border border-[#8D8B67] hover:border-[#A1DFFF] hover:bg-[#EEF9FF] hover:font-bold'>
-              <button className='text-18px]'>1:1 대화 신청하기</button>
-            </div> */}
-          </div>
-          <div className='mt-[25px] flex flex-col gap-[15px] pl-[15px]'>
+          <div className='mt-[14px] flex flex-col gap-[10px] pl-[15px]'>
             <div className='flex gap-[70px]'>
               <div>이름</div>
               <div>{userData.name}</div>
@@ -81,7 +82,7 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
               <div>{userData.email}</div>
             </div>
           </div>
-          <div className='mt-[25px] flex h-[330px] w-[600px] items-center justify-center bg-[#eeeeee]'>
+          <div className='mt-[10px] flex h-[300px] w-[600px] items-center justify-center bg-[#eeeeee]'>
             {userData.favoriteLifeGraph ? <CreateDetailGraph events={userData.favoriteLifeGraph.events}></CreateDetailGraph> : <div>좋아하는 인생 그래프가 없습니다.</div>}
           </div>
 
@@ -94,7 +95,7 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
                 <div className='flex justify-center'>
                   <div className='flex w-[550px] flex-col'>
                     {/* 헤더 부분: 고정 */}
-                    <div className='mt-[70px] flex w-full items-center justify-between border-b border-[#8D8B67] p-[10px]'>
+                    <div className='mt-[10px] flex w-full items-center justify-between border-b border-[#8D8B67] p-[10px]'>
                       <div>나이</div>
                       <div>제목</div>
                       <div className='mr-[20px]'>점수</div>

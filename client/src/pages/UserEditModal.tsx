@@ -160,15 +160,15 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
-      <div className='flex h-[750px] w-[900px] flex-col rounded-xl bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
+      <div className='flex flex-col rounded-xl bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
         <div className='flex justify-end'>
           <div onClick={onClose} className='flex cursor-pointer p-[20px] text-[24px]'>
             x
           </div>
         </div>
-        <div className='flex items-start'>
-          <div className='relative flex flex-col justify-start pl-[80px] pt-[50px]'>
-            <div className='text-center text-[34px] font-bold text-[#626146]'>프로필 편집</div>
+        <div className='flex items-start gap-[30px]'>
+          <div className='relative ml-[30px] flex flex-col justify-start'>
+            <div className='text-center text-[24px] font-bold text-[#626146]'>프로필 편집</div>
             <img src={image} alt='userImg' className='mt-[10px] h-[200px] w-[200px] rounded-[100px]' />
             <img onClick={() => fileInputRef.current?.click()} className='absolute bottom-[35px] right-[50px] h-[50px] w-[50px] cursor-pointer' src='/Camera.png' alt='cameraImg' />
             <input ref={fileInputRef} type='file' accept='image/*' className='hidden' onChange={handleClickImg} />
@@ -177,7 +177,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
             </div>
           </div>
 
-          <div className='flex w-[600px] flex-col pl-[80px] pt-[130px]'>
+          <div className='mr-[50px] flex flex-col gap-[10px]'>
             <div className='mb-[10px] flex gap-[10px]'>
               <input className='h-[40px] w-[300px] cursor-not-allowed rounded border bg-gray-100 pl-[20px] outline-none' placeholder={data.name || '이름'} readOnly />
               <div className='flex items-center text-[16px] text-[#8D8B67]'>※ 이름 수정 불가</div>
@@ -210,7 +210,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
               </div>
             </div>
 
-            <div className='mt-[60px] flex gap-[10px]'>
+            <div className='my-[20px] flex gap-[20px]'>
               <button onClick={onClose} className='h-[50px] w-[160px] rounded border bg-[#F8F8F8] text-[#8D8B67]'>
                 취소
               </button>
