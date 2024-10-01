@@ -10,7 +10,7 @@
  * 2024.10.01    김민지      Modified     커스텀 툴팁 추가
  */
 
-import { CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
+import { CategoryScale, Chart as ChartJS, ChartOptions, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip, TooltipItem } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { GraphEvent } from '../../types/graph-type';
 // import { lifeData } from '../../types/graph-type';
@@ -34,7 +34,7 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
     max: Math.max(...labels),
   };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
@@ -69,11 +69,11 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
       tooltip: {
         callbacks: {
           // 나이와 점수를 툴팁에 표시
-          title: (tooltipItems) => {
+          title: (tooltipItems: TooltipItem<'line'>[]) => {
             const item = tooltipItems[0].parsed; // 데이터 접근
             return `나이: ${item.x}`; // 나이 (x축 값) 표시
           },
-          label: (tooltipItem) => {
+          label: (tooltipItem: TooltipItem<'line'>) => {
             const item = tooltipItem.parsed; // 데이터 접근
             return `점수: ${item.y}`; // 점수 (y축 값) 표시
           },
@@ -111,18 +111,15 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         max: 6,
         ticks: {
           stepSize: 1,
-          callback: (value: number) => {
-            if (value === -6 || value === 6) {
+          callback: (value: string | number) => {
+            const numericValue = typeof value === 'number' ? value : Number(value);
+            if (numericValue === -6 || numericValue === 6) {
               return '';
             }
-            return value;
+            return numericValue;
           },
         },
       },
-    },
-    interaction: {
-      mode: 'nearest', // Allows tooltip to show for the nearest point
-      intersect: false, // Tooltip will show even if not directly on the point
     },
   };
 
@@ -130,18 +127,14 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
     labels,
     datasets: [
       {
-        type: 'line',
+        type: 'line' as const,
         data: lifeData,
         fill: 'origin',
         parsing: {
           xAxisKey: 'age',
           yAxisKey: 'score',
         },
-        interaction: {
-          mode: 'nearest',
-          intersect: true,
-        },
-        borderColor: (value) => {
+        borderColor: (value: { parsed: { y: number } }) => {
           const condition = value.parsed;
           if (condition && condition.y > 0) {
             return '#1E90FF';

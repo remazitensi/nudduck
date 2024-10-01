@@ -19,7 +19,7 @@ interface GraphWriteModalProps {
   onSaveOld: (old: number, index: number) => void;
   onSaveScore: (score: number, index: number) => void;
   onSaveEvent: (event: string, index: number) => void;
-  updateList: () => void;
+  updateList?: () => void;
 }
 
 const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }) => {
@@ -131,8 +131,11 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
     // axios POST 요청
     baseApi
       .post(api.lifeGraph, requestBody)
-      .then((response) => {
-        updateList(); // 여기서 그래프 리스트를 업데이트
+      .then(() => {
+        if (updateList) {
+          // updateList가 정의되어 있을 때만 호출
+          updateList(); // 그래프 리스트를 업데이트
+        }
         onClose(); // 모달 닫기
       })
       .catch((error) => {

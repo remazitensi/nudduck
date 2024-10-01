@@ -37,7 +37,7 @@ const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeSta
     <div className='flex w-[380px] flex-col rounded-[30px] shadow-xl'>
       <div className='mb-[5px] flex justify-end gap-[10px]'>
         <img src='/edit-btn.png' className='cursor-pointer' onClick={() => setModalOpen(true)} />
-        {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} />}
+        {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} onSave={updateList} />}
         <img
           src='/delete-btn.png'
           className='cursor-pointer'

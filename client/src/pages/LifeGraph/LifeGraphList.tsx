@@ -15,6 +15,7 @@
 import React, { useEffect, useState } from 'react';
 import { api, baseApi } from '../../apis/base-api';
 
+import { useNavigate } from 'react-router-dom';
 import { fetchLifeGraphs } from '../../apis/lifeGraph/graph-api';
 import GraphSection from '../../components/Graph/GraphSection';
 import { GraphData } from '../../types/graph-type';
@@ -32,6 +33,8 @@ const LifeGraphList: React.FC = () => {
 
   const [activeStarId, setActiveStarId] = useState<number | null>(null); // 현재 활성화된 스타 ID
 
+  const navigate = useNavigate();
+
   // 대표 그래프 변경
   const changeActiveStar = async (id: number | null) => {
     try {
@@ -45,7 +48,9 @@ const LifeGraphList: React.FC = () => {
         alert('대표 그래프가 해제되었습니다. ❌');
       }
     } catch (error) {
-      alert(error.message);
+      if (error instanceof Error) {
+        alert(error.message);
+      }
     }
   };
 
@@ -97,7 +102,9 @@ const LifeGraphList: React.FC = () => {
           >
             작성하기
           </button>
-          {isWriteModalOpen && <GraphWriteModal updateList={updateLifeGraphs} onClose={() => setIsWriteModalOpen(false)} />}
+          {isWriteModalOpen && (
+            <GraphWriteModal updateList={updateLifeGraphs} onClose={() => setIsWriteModalOpen(false)} onSaveTitle={() => {}} onSaveOld={() => {}} onSaveScore={() => {}} onSaveEvent={() => {}} />
+          )}
         </div>
       </div>
     );
@@ -120,6 +127,10 @@ const LifeGraphList: React.FC = () => {
             <GraphWriteModal
               updateList={updateLifeGraphs} // 그래프 목록 업데이트 함수 전달
               onClose={() => setIsWriteModalOpen(false)}
+              onSaveTitle={() => {}}
+              onSaveOld={() => {}}
+              onSaveScore={() => {}}
+              onSaveEvent={() => {}}
             />
           )}
         </div>
@@ -137,6 +148,8 @@ const LifeGraphList: React.FC = () => {
               activeStarId={activeStarId} // 활성화된 스타 ID 전달
               changeActiveStar={changeActiveStar} // 스타 변경 함수 전달
               updateList={updateLifeGraphs}
+              currentAge={graphData.currentAge}
+              refreshGraphList={updateLifeGraphs}
             />
           ))}
         </div>

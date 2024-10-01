@@ -113,7 +113,7 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
     // axios PUT 요청으로 수정된 데이터를 서버에 전송
     baseApi
       .patch(`${api.lifeGraph}/${graphData.id}`, updatedData) // id로 특정 그래프를 업데이트
-      .then((response) => {
+      .then(() => {
         // onSave(); // 저장 후 부모 컴포넌트에서 리스트 갱신
         window.location.reload();
         onClose(); // 모달 닫기
