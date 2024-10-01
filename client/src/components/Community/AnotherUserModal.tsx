@@ -61,7 +61,7 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
           <div className='flex items-center justify-between'>
             <div className='flex gap-[20px]'>
               <div className='h-[116px] w-[116px] rounded-full'>
-                <img className='rounded-full object-cover' src={userData.imageUrl ? userData.imageUrl : '/default-img.png'} alt='profile_Img' />
+                <img className='h-full w-full rounded-full object-cover' src={userData.imageUrl ? userData.imageUrl : '/default-img.png'} alt='profile_Img' />
               </div>
               <div className='flex flex-col justify-center'>
                 <div className='text-[24px] font-bold'>{userData.nickname}</div>
@@ -83,7 +83,6 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
             </div>
           </div>
           <div className='mt-[25px] flex h-[330px] w-[600px] items-center justify-center bg-[#eeeeee]'>
-            {/* todo : 병합 후 인생그래프 삽입 */}
             {userData.favoriteLifeGraph ? <CreateDetailGraph events={userData.favoriteLifeGraph.events}></CreateDetailGraph> : <div>좋아하는 인생 그래프가 없습니다.</div>}
           </div>
 
@@ -94,13 +93,16 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
               </div>
               {isExpanded && (
                 <div className='flex justify-center'>
-                  <div className={`flex items-center justify-center overflow-y-auto ${isExpanded ? 'h-[200px] w-[500px]' : ''}`}>
-                    <div className='flex w-[550px] flex-col'>
-                      <div className='flex w-full items-center justify-between border-b border-[#8D8B67] p-[10px]'>
-                        <div>나이</div>
-                        <div>제목</div>
-                        <div>점수</div>
-                      </div>
+                  <div className='flex w-[550px] flex-col'>
+                    {/* 헤더 부분: 고정 */}
+                    <div className='mt-[70px] flex w-full items-center justify-between border-b border-[#8D8B67] p-[10px]'>
+                      <div>나이</div>
+                      <div>제목</div>
+                      <div className='mr-[20px]'>점수</div>
+                    </div>
+
+                    {/* 이벤트 목록에만 스크롤 적용 */}
+                    <div className={`flex flex-col overflow-y-auto ${isExpanded ? 'h-[200px]' : ''}`}>
                       {userData.favoriteLifeGraph.events.map((event: any, index: number) => (
                         <div key={index} className='flex w-full items-center justify-between border-b border-[#DAD7B9] p-[15px]'>
                           <div>{event.age}</div>
