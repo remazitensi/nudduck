@@ -29,6 +29,7 @@ import { CommentRepository } from '@_modules/community/repositories/comment.repo
 import { CommunityRepository } from '@_modules/community/repositories/community.repository';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import * as cache from 'memory-cache';
 import { EntityManager } from 'typeorm';
 import { CommentResponseDto } from './dto/response/comment-response.dto';
 import { Category } from './enums/category.enum';
@@ -79,9 +80,22 @@ export class CommunityService {
     return post;
   }
 
-  // 조회 수 증가
-  async incrementViewCount(postId: number): Promise<void> {
-    await this.communityRepository.increment({ postId }, 'viewCount', 1);
+  // 조회수 증가 (IP 중복 방지 적용)
+  async incrementViewCount(postId: number, clientIp: string): Promise<void> {
+    const cacheKey = `post:${postId}:ip:${clientIp}`;
+    const cachedView = cache.get(cacheKey);
+
+    // 캐시에 조회 기록이 없을 경우에만 조회수 증가
+    if (!cachedView) {
+      try {
+        await this.communityRepository.increment({ postId }, 'viewCount', 1);
+
+        // 캐시에 IP와 게시글 ID 저장 (1시간 동안 유지)
+        cache.put(cacheKey, true, 3600000); // 1시간 = 3600000ms
+      } catch (error) {
+        console.error('조회수 증가 중 오류 발생:', error);
+      }
+    }
   }
 
   // 댓글 작성
