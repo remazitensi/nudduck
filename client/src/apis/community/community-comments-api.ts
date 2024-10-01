@@ -89,12 +89,14 @@ export const updateReply = async (postId: number, commentId: number, data: Updat
 };
 
 // 대댓글 삭제
-export const deleteReply = async (postId: number, commentId: number): Promise<void> => {
+export const deleteReply = async (postId: number, commentId: number): Promise<number> => {
   try {
     const response = await baseApi.delete(`${api.community}/articles/${postId}/comments/${commentId}/replies`, {});
     if (response.status === 200) {
       alert('댓글이 삭제되었습니다 💣');
-      return response;
     }
-  } catch (error: any) {}
+    return response.status;
+  } catch (error: any) {
+    return -1;
+  }
 };
