@@ -86,15 +86,15 @@ const CommunityPostCreate: React.FC = () => {
   };
 
   return (
-    <div className='community-titles mb-[50px] flex flex-col items-center'>
-      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8] p-[70px]'>
+      <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
       <div className='mt-[120px] flex w-[1300px]'>
         <div className='flex gap-[20px]'>
           <div className='text-[24px] font-bold'>게시글 작성</div>
-          <div className='relative m-auto h-[40px] w-[150px] border'>
+          <div className='relative m-auto h-[40px] w-[150px] border bg-white'>
             <ul
               onClick={() => {
                 setView(!view);
@@ -142,7 +142,7 @@ const CommunityPostCreate: React.FC = () => {
         {/* 유효성 검사 문구 유효성 검사 함수: onTyping */}
         {message && <p className='mt-[5px] text-red-500'>{message}</p>}
       </div>
-      <div className='mt-[40px] w-[1300px] rounded-[10px] border'>
+      <div className='mt-[40px] w-[1300px] rounded-[10px] border bg-white'>
         <textarea className='m-[30px] w-[1240px] resize-none overflow-auto' ref={editorRef} rows={10} placeholder='10자 이상 입력해주세요.'></textarea>
         <div className='flex justify-end gap-[23px] p-[20px]'>
           <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
