@@ -139,7 +139,6 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
         onClose(); // 모달 닫기
       })
       .catch((error) => {
-        console.error('Error saving data:', error);
         if (error.status === 400) {
           alert('잘못된 항목이 있는지 확인해주세요!');
         }

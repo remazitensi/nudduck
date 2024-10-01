@@ -39,10 +39,8 @@ export async function getPostList({ page, sort, category }: PostListParams) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to fetch posts:', errorMessage);
       // alert(errorMessage);
     } else {
-      console.error('알 수 없는 에러가 발생했습니다.');
     }
     throw error;
   }
@@ -56,9 +54,7 @@ export async function getPostDetail(id: number) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to fetch posts:', errorMessage);
     } else {
-      console.error('알 수 없는 에러가 발생했습니다.');
     }
     throw error;
   }
@@ -75,10 +71,8 @@ export async function createPost(post: PostBodyData) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to create post:', errorMessage);
       throw new Error(errorMessage); // 에러 메시지를 상위로 던짐
     } else {
-      console.error('알 수 없는 에러가 발생했습니다.');
       throw new Error('알 수 없는 에러가 발생했습니다.');
     }
   }
@@ -96,10 +90,8 @@ export async function editPost(post: PostBodyData, id: number) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to create post:', errorMessage);
       throw new Error(errorMessage); // 에러 메시지를 상위로 던짐
     } else {
-      console.error('알 수 없는 에러가 발생했습니다.');
       throw new Error('알 수 없는 에러가 발생했습니다.');
     }
   }
@@ -124,9 +116,7 @@ export async function getUserProfile(userId: number) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      console.error('Failed to fetch user profile:', errorMessage);
     } else {
-      console.error('알 수 없는 에러가 발생했습니다.');
     }
     throw error;
   }

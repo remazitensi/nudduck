@@ -23,7 +23,7 @@ export const fetchLifeGraphs = async (currentPage: number) => {
     });
     return response.data;
   } catch (error) {
-    console.error('인생그래프를 불러오는데 실패했습니다.', error);
+    alert('인생그래프를 불러오는데 실패했습니다.');
   }
 };
 

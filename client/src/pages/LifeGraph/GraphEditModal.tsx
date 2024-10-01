@@ -119,7 +119,6 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
         onClose(); // 모달 닫기
       })
       .catch((error) => {
-        console.error('수정 실패:', error);
         if (error.response && error.response.status === 400) {
           alert('잘못된 요청입니다. 입력값을 확인해주세요.');
         }

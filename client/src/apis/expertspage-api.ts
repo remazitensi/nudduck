@@ -33,9 +33,7 @@ export async function fetchExperts(page: number = 1, limit: number = 10) {
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
-      console.error('Failed to fetch experts:', error.response?.data.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
@@ -49,9 +47,7 @@ export async function fetchExpertDetails(id: number) {
     return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
-      console.error('Failed to fetch expert details:', error.response?.data.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }

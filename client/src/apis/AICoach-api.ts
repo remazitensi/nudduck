@@ -24,9 +24,7 @@ export async function fetchSimulationHistory() {
     return response.data; // 데이터만 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to fetch Simulation History:', error.response?.data?.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
@@ -42,9 +40,7 @@ export async function fetchIdSession(sessionId: number) {
     return response.data; // 데이터만 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to Simulation Id:', error.response?.data?.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
@@ -62,9 +58,7 @@ export async function activateSimulation(isNew: boolean): Promise<{ sessionId: n
     return response.data; // sessionId만 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to Simulation Activation:', error.response?.data?.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
@@ -81,9 +75,7 @@ export async function startSimulation(isNew: boolean) {
     return { chatHistory, chatActivation };
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to startSimulation:', error.response?.data?.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
@@ -100,9 +92,7 @@ export async function askSimulation(query: string, sessionId: number) {
     return response.data; // 응답 데이터 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to fetch Simulation ask:', error.response?.data?.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }

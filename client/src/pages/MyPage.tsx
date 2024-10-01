@@ -79,9 +79,7 @@ const MyPage: React.FC = () => {
         }));
         setTotalPages(Math.ceil(userProfileData.totalCount / limit));
       }
-    } catch (error) {
-      console.error('프로필을 가져오는 중 에러가 발생했습니다.', error);
-    }
+    } catch (error) {}
     setIsLoading(false);
   };
 

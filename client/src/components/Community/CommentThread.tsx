@@ -29,7 +29,6 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
       setReplies(data.replies); // 받은 데이터를 설정
       return data;
     } catch (error) {
-      console.error('대댓글 불러오기 실패:', error);
       return { comments: [], total: 0 }; // 기본값을 반환
     }
   };
@@ -94,7 +93,7 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
       handleToggleCommentInput();
       await setReplies(updatedReplies.replies);
     } catch (error) {
-      console.error('댓글 생성 실패:', error);
+      alert('댓글 생성에 실패했습니다 😢');
     }
   };
 
