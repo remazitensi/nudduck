@@ -13,7 +13,7 @@ import { api, baseApi } from '../../apis/base-api';
 import { CommentsDto, UserInfo } from '../../types/comments-type';
 import { CommentThread } from './CommentThread';
 
-export const CommentSection: React.FC<{ comments: CommentsDto[] }> = ({ comments }) => {
+export const CommentSection: React.FC<{ comments: CommentsDto[]; openModal: () => void }> = ({ comments }) => {
   // 초기 상태는 null로 설정하고, UserInfo 타입 지정
   const [info, setInfo] = useState<UserInfo | null>(null);
 

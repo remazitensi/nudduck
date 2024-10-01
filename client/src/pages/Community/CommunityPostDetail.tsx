@@ -95,7 +95,7 @@ const CommunityPostDetail: React.FC = () => {
   }, [id]);
 
   return (
-    <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8] p-[70px]'>
       <ScrollToTop />
       {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={postData.userId} />}
 

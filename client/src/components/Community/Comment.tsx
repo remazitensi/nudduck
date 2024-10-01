@@ -8,12 +8,23 @@
  * 2024.09.28    김민지      Created
  */
 
+import { useState } from 'react';
 import { deleteComment } from '../../apis/community/community-comments-api';
 import { CommentsDto } from '../../types/comments-type';
 import { changeDateWithFormat } from '../../utils/change-date-with-format';
+import AnotherUserModal from './AnotherUserModal';
 
 export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDelete: () => void; onReply: () => void }> = ({ comment, isWriter, onDelete, onReply }) => {
   const createdAt = changeDateWithFormat(comment.createdAt);
+  const [openUserModal, setOpenUserModal] = useState<boolean>(false);
+
+  const handleOpenModal = () => {
+    setOpenUserModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenUserModal(false);
+  };
 
   const handleDeleteComment = async () => {
     let flag = confirm('삭제 하시겠습니까?'); //확인 취소 버튼
@@ -27,12 +38,16 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
 
   return (
     <div>
+      {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={comment.userId} />}
+
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-[10px] p-[10px]'>
-          <div className='h-[50px] w-[50px] rounded-full'>
-            <img className='h-full w-full rounded-full object-cover' src={comment.imageUrl} alt='profile-img' />
+          <div className='flex items-center gap-[10px] p-[10px]' onClick={handleOpenModal}>
+            <div className='h-[50px] w-[50px] rounded-full'>
+              <img className='h-full w-full rounded-full object-cover' src={comment.imageUrl} alt='profile-img' />
+            </div>
+            <div className='flex items-center text-[20px] font-semibold'>{comment.nickname}</div>
           </div>
-          <div className='flex items-center text-[20px] font-semibold'>{comment.nickname}</div>
           <div className='flex items-center text-[12px] text-[#AEAC9A]'>{createdAt}</div>
           <div className='flex cursor-pointer items-center p-[5px] text-[16px] font-semibold text-[#AEAC9A] hover:text-[#909700]' onClick={onReply}>
             대댓글 달기
@@ -40,7 +55,7 @@ export const Comment: React.FC<{ comment: CommentsDto; isWriter: boolean; onDele
         </div>
         {isWriter && (
           <div className='flex items-center gap-[10px] px-[10px]'>
-            {/* <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]'>수정</div> */}
+            <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]'>수정</div>
             <div className='flex cursor-pointer items-center p-[5px] text-[15px] font-semibold text-[#AEAC9A] hover:text-[#909700]' onClick={() => handleDeleteComment()}>
               삭제
             </div>
