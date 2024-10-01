@@ -61,7 +61,7 @@ const CommunityPostDetail: React.FC = () => {
   const fetchComments = async () => {
     try {
       const data: CommentsResDto = await getComments(Number(postData.postId));
-      setComments(data.replies);
+      setComments(data.comments);
       setTotalPage(data.total);
     } catch (error) {}
   };
