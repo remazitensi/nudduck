@@ -46,7 +46,7 @@ baseApi.interceptors.response.use(
         return baseApi(originalRequest);
       } catch (err) {
         alert('로그인이 필요합니다 😎');
-        window.location.href = 'http://localhost:5173/';
+        window.location.href = '/';
         return Promise.reject(err);
       }
     }

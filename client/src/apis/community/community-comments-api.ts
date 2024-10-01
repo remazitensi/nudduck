@@ -52,8 +52,7 @@ export const deleteComment = async (postId: number, commentId: number): Promise<
       alert('댓글이 삭제되었습니다 💣');
     }
   } catch (error: any) {
-    console.log('error', error.message);
-    return alert(error.message);
+    return console.log('error', error.message);
   }
 };
 
@@ -98,6 +97,6 @@ export const deleteReply = async (postId: number, commentId: number): Promise<vo
     }
   } catch (error: any) {
     console.log('error', error.message);
-    return alert(error.message);
+    return console.log('error', error.message);
   }
 };
