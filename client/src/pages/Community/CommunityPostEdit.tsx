@@ -147,9 +147,7 @@ const CommunityPostEdit: React.FC = () => {
         setCategory(data.category); // 가져온 카테고리를 선택한 카테고리로 설정
         return data.userId;
       }
-    } catch (err) {
-      console.error('Error fetching post data:', err);
-    }
+    } catch (err) {}
   };
 
   // 로그인 유저(이용자) 정보 호출 API

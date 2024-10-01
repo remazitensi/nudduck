@@ -42,9 +42,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin }) => {
         onLogin(); // 상위 컴포넌트에 로그인 상태 업데이트 요청
         onClose(); // 로그인 모달 닫기
       }
-    } catch (error) {
-      console.error('로그인 상태 확인 실패:', error);
-    }
+    } catch (error) {}
   };
 
   // 페이지 로드 시 로그인 상태 확인

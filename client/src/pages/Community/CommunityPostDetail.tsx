@@ -54,20 +54,16 @@ const CommunityPostDetail: React.FC = () => {
         const data = await getPostDetail(Number(id));
         setPostData(data);
       }
-    } catch (err) {
-      console.error('Error fetching post data:', err);
-    }
+    } catch (err) {}
   };
 
   // 댓글 조회 함수
   const fetchComments = async () => {
     try {
       const data: CommentsResDto = await getComments(Number(postData.postId));
-      setComments(data.comments);
+      setComments(data.replies);
       setTotalPage(data.total);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    }
+    } catch (error) {}
   };
 
   // postData.postId가 업데이트될 때 댓글 가져오기
@@ -84,9 +80,7 @@ const CommunityPostDetail: React.FC = () => {
     const timer = setTimeout(async () => {
       try {
         await baseApi.post(`${api.community}/articles/${id}/views`, {});
-      } catch (err) {
-        console.error('조회수 증가 요청 실패:', err);
-      }
+      } catch (err) {}
     }, 5000);
 
     return () => clearTimeout(timer);

@@ -91,9 +91,7 @@ const HomePage = () => {
           setQuote(quotes[0]);
           setEnglishSentence(englishSentences[0]);
         }
-      } catch (error) {
-        console.error('명언과 영문장을 가져오는 데 실패했습니다:', error);
-      }
+      } catch (error) {}
     };
 
     const checkLoginStatus = async () => {
@@ -123,11 +121,8 @@ const HomePage = () => {
         if (response.status === 200 && Array.isArray(response.data) && Array.isArray(response.data[0])) {
           setPosts(response.data[0]); // 첫 번째 배열 요소를 게시글 목록으로 설정
         } else {
-          console.error('API 응답 데이터가 예상과 다릅니다:', response.data);
         }
-      } catch (error) {
-        console.error('인기 게시글을 가져오는 데 실패했습니다:', error);
-      }
+      } catch (error) {}
     };
 
     fetchQuotesAndSentences();
@@ -257,7 +252,6 @@ const HomePage = () => {
               posts.map((post, index) => {
                 // postId 값이 유효한지 확인
                 if (!post.postId || isNaN(post.postId)) {
-                  console.warn('Invalid postId:', post.postId);
                   return null; // 유효하지 않은 postId인 경우 렌더링하지 않음
                 }
 

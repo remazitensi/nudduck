@@ -150,7 +150,6 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ data, onClose, currentIma
         onSaveHashTag(hashTagsArray);
         onClose(); // 모달 닫기
       } catch (error) {
-        console.error('Failed to update profile:', error);
         alert('프로필 업데이트 중 오류가 발생했습니다.');
       }
     };

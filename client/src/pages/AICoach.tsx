@@ -52,9 +52,7 @@ const AICoach: React.FC = () => {
 
       // 세션 클릭 시 채팅방 스크롤을 최하단으로 이동
       // endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    }
+    } catch (error) {}
   };
 
   // AI 코칭 탭 클릭 시 기존 세션 목록 불러오기
@@ -91,11 +89,8 @@ const AICoach: React.FC = () => {
           await loadMessages(lastSession.id);
           setCurrentSessionId(lastSession.id);
         } else {
-          console.warn('No history found in the session response.');
         }
-      } catch (error) {
-        console.error('채팅 세션을 불러오는데 실패했습니다.', error);
-      }
+      } catch (error) {}
     };
 
     fetchChatSessions();
@@ -112,9 +107,7 @@ const AICoach: React.FC = () => {
         setChatHistory([]);
         setCurrentSessionId(null);
       }
-    } catch (error) {
-      console.error('Failed to delete session:', error);
-    }
+    } catch (error) {}
   };
 
   // 세션 클릭 시 해당 세션의 메시지 불러오기
@@ -186,9 +179,7 @@ const AICoach: React.FC = () => {
         return updatedHistory; // 타이핑 메시지를 AI 응답으로 변경
       });
       // endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-      console.error('메시지를 전송하는데 실패하였습니다.', error);
-    }
+    } catch (error) {}
   };
 
   // 이모티콘 선택

@@ -33,7 +33,6 @@ const AnotherUserModal: React.FC<AnotherUserModalProps> = ({ onClose, userId }) 
         setUserData(data);
         return setLoading(false);
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
         alert('유저 정보를 불러오지 못했습니다.');
         return setLoading(false);
       }

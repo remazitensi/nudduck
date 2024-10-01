@@ -77,9 +77,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
     try {
       await deletePost(post.postId); // deletePost 요청
       refetchProfile(currentPage); // 삭제 후 상위 컴포넌트에서 GET 요청을 다시 보냄
-    } catch (error) {
-      console.error('Failed to delete post:', error);
-    }
+    } catch (error) {}
   };
 
   return (

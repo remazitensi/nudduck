@@ -54,9 +54,7 @@ export async function fetchUserProfile(page: number = 1, limit: number = 10) {
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to fetch user profile:', error.response?.data.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
@@ -72,9 +70,7 @@ export async function updateUserProfile(profile: UpdateUserProfile): Promise<voi
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to update user profile:', error.response?.data.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
