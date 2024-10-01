@@ -11,48 +11,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deletePost } from '../../apis/community/community-post-api';
+import { Post, Profile } from '../../pages/MyPage';
 import UserEditModal from '../../pages/UserEditModal';
 import { changeDateWithFormat } from '../../utils/change-date-with-format';
 import { CreateDetailGraph } from '../Graph/CreateDetailGraph';
-
-interface Post {
-  id: number;
-  title: string;
-  createdAt: string;
-}
-
-interface LifeGraphEvent {
-  age: number;
-  score: number;
-  title: string;
-  description: string;
-}
-
-interface FavoriteLifeGraph {
-  id: number;
-  currentAge: number;
-  title: string;
-  events: LifeGraphEvent[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface MyProfileProps {
-  // 기존 props에 refetchProfile 추가
-  refetchProfile: (page: number) => void;
-}
-
-interface Profile {
-  id: string;
-  imageUrl: string;
-  nickname: string;
-  name: string;
-  email: string;
-  createdAt: string;
-  hashtags: string[];
-  favoriteLifeGraph: FavoriteLifeGraph | null;
-  posts: Post[];
-}
 
 interface MyProfileProps {
   open: boolean;
@@ -67,6 +29,7 @@ interface MyProfileProps {
   totalPages: number;
   setCurrentPage: (page: number) => void;
   isLoading: boolean;
+  refetchProfile: (page: number) => void;
 }
 
 const MyProfile: React.FC<MyProfileProps> = ({
@@ -78,7 +41,6 @@ const MyProfile: React.FC<MyProfileProps> = ({
   handleSaveHashTag,
   userProfile,
   currentPage,
-  limit,
   totalPages,
   setCurrentPage,
   isLoading,
@@ -111,9 +73,9 @@ const MyProfile: React.FC<MyProfileProps> = ({
     );
   };
 
-  const deletePostReq = async (post) => {
+  const deletePostReq = async (post: Post) => {
     try {
-      const response = await deletePost(post.postId); // deletePost 요청
+      await deletePost(post.postId); // deletePost 요청
       refetchProfile(currentPage); // 삭제 후 상위 컴포넌트에서 GET 요청을 다시 보냄
     } catch (error) {
       console.error('Failed to delete post:', error);
@@ -210,7 +172,7 @@ const MyProfile: React.FC<MyProfileProps> = ({
                     </div>
                   ) : (
                     currentPosts.map((post: Post) => (
-                      <div key={post.id} className='flex items-center'>
+                      <div key={post.postId} className='flex items-center'>
                         <div className='ml-[10px] flex w-[120px]'>
                           <p>{changeDateWithFormat(post.createdAt)}</p>
                         </div>

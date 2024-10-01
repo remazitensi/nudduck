@@ -29,7 +29,6 @@ const AICoach: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]); // 세션 리스트 저장 상태
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null); // 현재 활성화된 세션 ID
   const [chatHistory, setChatHistory] = useState<Message[]>([]); // 채팅 기록 상태
-  const [isPageLoading, setIsPageLoading] = useState(true); // 페이지가 로드된 상태 확인을 위한 상태 변수
   const chatContainerRef = useRef<HTMLDivElement>(null); // 채팅 컨테이너 참조
 
   // 페이지가 로드될 때 스크롤을 최상단으로 이동
@@ -198,13 +197,6 @@ const AICoach: React.FC = () => {
     setShowEmojiPicker(false);
   };
 
-  const scrollToMessage = (index: number) => {
-    const targetElement = messageRefs.current[index];
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   // // 채팅 목록이 업데이트될 때 자동 스크롤 범인 이 부분이 화면 스크롤과 채팅방 스크롤이 같이 하단으로 가게 한 범인
   // useEffect(() => {
   //   endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -221,11 +213,6 @@ const AICoach: React.FC = () => {
     if (e.key === 'Enter') {
       handleSend();
     }
-  };
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
   // 2. chatHistory가 업데이트될 때만 채팅 목록을 최하단으로 스크롤
