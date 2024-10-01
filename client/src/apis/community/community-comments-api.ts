@@ -8,7 +8,7 @@
  * 2024.09.20    김민지      Created     댓글 CRUD api 작성, 파일 이동
  */
 
-import { CommentsResDto, CreateCommentDto } from '../../types/comments-type';
+import { CommentsResDto, CreateCommentDto, UpdateCommentDto } from '../../types/comments-type';
 import { api, baseApi } from '../base-api';
 
 // ------------- 댓글 api --------------------
@@ -39,8 +39,13 @@ export const createComment = async (postId: number, data: CreateCommentDto) => {
 
 // 댓글 수정
 export const updateComment = async (postId: number, commentId: number, data: UpdateCommentDto): Promise<Comment> => {
-  const response = await baseApi.patch<Comment>(`/${postId}/comments/${commentId}`, data);
-  return response.data;
+  try {
+    const response = await baseApi.put<Comment>(`${api.community}/articles/${postId}/comments/${commentId}`, data);
+    return response.data;
+  } catch (error: any) {
+    console.log('error', error.message);
+    throw error;
+  }
 };
 
 // 댓글 삭제
