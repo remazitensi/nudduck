@@ -8,6 +8,7 @@
  * 2024.09.13    김우현      Created     레이아웃 완성
  * 2024.09.22    김민지      Modified    차트 이름 div추가
  * 2024.09.24    김민지      Modified    그래프 생성
+ * 2024.10.01    김민지      Modified    input 요소 추가 로직 변경
  */
 import React, { useState } from 'react';
 import { api, baseApi } from '../../apis/base-api';
@@ -34,8 +35,13 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
   });
 
   // + 버튼 클릭시 input 요소 추가
-  const handleAddInput = () => {
-    setInputs([...inputs, { title: '', old: '', score: 0, event: '' }]);
+  const handleAddInput = (index: number) => {
+    const updatedInputs = [
+      ...inputs.slice(0, index + 1), // 현재 인덱스까지의 요소들
+      { title: '', old: '', score: 0, event: '' }, // 새로운 빈 입력 필드
+      ...inputs.slice(index + 1), // 나머지 요소들
+    ];
+    setInputs(updatedInputs);
   };
 
   // - 버튼 클릭시 input 요소 제거
@@ -133,7 +139,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
       .catch((error) => {
         console.error('Error saving data:', error);
         if (error.status === 400) {
-          alert('빠진 항목이 없는지 확인해주세요!');
+          alert('잘못된 항목이 있는지 확인해주세요!');
         }
       });
   };
@@ -211,7 +217,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
                   </div>
                   <div className='Buttons mt-[10px] flex gap-[10px] pt-[20px]'>
                     {/* todo : 요소가 하나 남았을 때는 마이너스동작 안 되게 */}
-                    <button onClick={handleAddInput} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
+                    <button onClick={() => handleAddInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
                       +
                     </button>
                     <button onClick={() => handleRemoveInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>

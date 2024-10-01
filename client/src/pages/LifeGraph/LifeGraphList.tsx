@@ -9,6 +9,7 @@
  * 2024.09.22    김민지      Modified     컴포넌트 분리, 차트섹션 동적 추가
  * 2024.09.24    김민지      Modified     그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
  * 2024.09.25    김민지      Modified     리팩토링, 즐겨찾기 에러 수정
+ * 2024.10.01    김민지      Modified     즐겨찾기 그래프 해제 추가 및 설정 유지
  */
 
 import React, { useEffect, useState } from 'react';
@@ -31,19 +32,24 @@ const LifeGraphList: React.FC = () => {
 
   const [activeStarId, setActiveStarId] = useState<number | null>(null); // 현재 활성화된 스타 ID
 
-  const changeActiveStar = async (id: number) => {
-    if (activeStarId !== id) {
-      // 현재 활성화된 스타와 다른 별을 클릭했을 때만 API 요청을 보냄
-      setActiveStarId(id); // 클릭한 스타 ID로 활성화
-      try {
-        await baseApi.post(`${api.lifeGraph}/favorite`, { graphId: id });
+  // 대표 그래프 변경
+  const changeActiveStar = async (id: number | null) => {
+    try {
+      const response = await baseApi.post(`${api.lifeGraph}/favorite`, { graphId: id });
+      // 서버 응답에 따라 별표 상태 업데이트
+      if (response.data.isFavorited) {
+        setActiveStarId(id); // 서버에서 true를 받으면 활성화
         alert('대표 그래프가 설정되었습니다. ✔');
-      } catch (error) {
-        alert(error.message);
+      } else {
+        setActiveStarId(null); // 서버에서 false를 받으면 비활성화
+        alert('대표 그래프가 해제되었습니다. ❌');
       }
+    } catch (error) {
+      alert(error.message);
     }
   };
 
+  // 페이지 로드 시 인생 그래프 데이터와 대표 그래프 상태를 서버에서 받아옴
   useEffect(() => {
     updateLifeGraphs();
   }, [currentPage]);
@@ -58,6 +64,9 @@ const LifeGraphList: React.FC = () => {
     } else if (res.data.length >= 1) {
       setNoData(false);
       setTotalPages(Math.ceil(res.totalCount / 6));
+
+      // 서버에서 받아온 favoriteGraphId로 현재 활성화된 대표 그래프 설정
+      setActiveStarId(res.favoriteGraphId);
     }
   };
 
