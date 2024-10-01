@@ -143,14 +143,14 @@ const CommunityPostCreate: React.FC = () => {
       </div>
       <div className='mt-[40px] w-[1300px] rounded-[10px] border bg-white'>
         <textarea className='m-[30px] w-[1240px] resize-none overflow-auto' ref={editorRef} rows={10} placeholder='10자 이상 입력해주세요.'></textarea>
-        <div className='flex justify-end gap-[23px] p-[20px]'>
-          <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
-            취소
-          </button>
-          <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
-            저장
-          </button>
-        </div>
+      </div>
+      <div className='mb-[70px] flex w-[1300px] justify-end gap-[23px] p-[20px]'>
+        <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
+          취소
+        </button>
+        <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
+          저장
+        </button>
       </div>
     </div>
   );
