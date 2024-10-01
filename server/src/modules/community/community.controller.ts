@@ -217,7 +217,6 @@ export class CommunityController {
   @ApiResponse({ status: 204, description: '게시글 조회수가 성공적으로 증가했습니다.' })
   @ApiResponse({ status: 404, description: '게시글을 찾을 수 없습니다.' })
   async incrementViewCount(@Param('id') postId: number, @Req() request: ExpressRequest): Promise<void> {
-    const clientIp = request.ip;
-    await this.communityService.incrementViewCount(postId, clientIp);
+    await this.communityService.incrementViewCount(postId, request);
   }
 }

@@ -30,6 +30,7 @@ import { CommentRepository } from '@_modules/community/repositories/comment.repo
 import { CommunityRepository } from '@_modules/community/repositories/community.repository';
 import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { Request as ExpressRequest } from 'express';
 import * as cache from 'memory-cache';
 import { EntityManager } from 'typeorm';
 import { CommentResponseDto } from './dto/response/comment-response.dto';
@@ -82,7 +83,8 @@ export class CommunityService {
   }
 
   // 조회수 증가 (IP 중복 방지 적용)
-  async incrementViewCount(postId: number, clientIp: string): Promise<void> {
+  async incrementViewCount(postId: number, request: ExpressRequest): Promise<void> {
+    const clientIp = this.getClientIp(request); // 클라이언트 IP 추출
     const cacheKey = `post:${postId}:ip:${clientIp}`;
     const cachedView = cache.get(cacheKey);
 
@@ -97,6 +99,11 @@ export class CommunityService {
         throw new HttpException('조회수 증가 중 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
+  }
+
+  private getClientIp(request: ExpressRequest): string {
+    const forwarded = request.headers['x-forwarded-for'] as string;
+    return forwarded ? forwarded.split(',')[0].trim() : request.ip;
   }
 
   // 댓글 작성
