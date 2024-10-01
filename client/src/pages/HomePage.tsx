@@ -79,9 +79,7 @@ const HomePage = () => {
   };
 
   // posts 배열의 변화 감지용 useEffect
-  useEffect(() => {
-    console.log('현재 posts 상태:', posts);
-  }, [posts]);
+  useEffect(() => {}, [posts]);
 
   // 명언/영문장, 로그인 상태 및 인기 게시글 데이터 가져오기
   useEffect(() => {
@@ -120,8 +118,6 @@ const HomePage = () => {
             sort: 'viewCount:desc',
           },
         });
-
-        console.log('API 응답 데이터:', response.data);
 
         // response.data가 2차원 배열 형태인 경우 처리
         if (response.status === 200 && Array.isArray(response.data) && Array.isArray(response.data[0])) {

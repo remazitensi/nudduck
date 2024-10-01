@@ -132,7 +132,6 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
     baseApi
       .post(api.lifeGraph, requestBody)
       .then((response) => {
-        console.log('Data saved successfully:', response.data);
         updateList(); // 여기서 그래프 리스트를 업데이트
         onClose(); // 모달 닫기
       })

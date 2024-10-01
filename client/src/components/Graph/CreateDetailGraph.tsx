@@ -27,7 +27,6 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
 
   //data에서 age를 라벨 추출
   const labels: number[] = events.map((item) => item.age);
-  console.log(labels);
 
   //labels 에서 최소, 최댓값 추출 => 차트
   const age: { min: number; max: number } = {

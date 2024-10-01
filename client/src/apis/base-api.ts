@@ -37,7 +37,6 @@ baseApi.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response.status === 401 && !originalRequest._retry) {
-      console.log(error);
       originalRequest._retry = true;
       try {
         // 엑세스 토큰 재발급 요청

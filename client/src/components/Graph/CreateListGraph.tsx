@@ -36,7 +36,6 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
 
   // 색상 변경 함수
   // const handleColor = ({ context }) => {
-  //   console.log(context);
   //   const index = context.dataIndex;
   //   const value = context.dataset.data[index];
   //   return value < 0 ? 'red' : 'blue';
@@ -158,11 +157,9 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
           // const index = context.dataIndex;
           // const value = context.dataset.data[index];
           // try {
-          //   console.log(value.score);
           //   // return value.score < 0 ? 'red' : 'blue';
           //   // 현재 결과 : default black 값이 뜸
           // } catch {
-          //   console.log('-');
           // }
 
           return 'rgba(173, 216, 175, 0.5)';

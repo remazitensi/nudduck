@@ -68,7 +68,6 @@ const CommunityPostDetail: React.FC = () => {
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
-    await console.log(comments);
   };
 
   // postData.postId가 업데이트될 때 댓글 가져오기
@@ -85,7 +84,6 @@ const CommunityPostDetail: React.FC = () => {
     const timer = setTimeout(async () => {
       try {
         await baseApi.post(`${api.community}/articles/${id}/views`, {});
-        console.log('조회수 증가 요청 성공');
       } catch (err) {
         console.error('조회수 증가 요청 실패:', err);
       }

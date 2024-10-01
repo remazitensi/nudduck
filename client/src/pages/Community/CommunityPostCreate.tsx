@@ -72,7 +72,6 @@ const CommunityPostCreate: React.FC = () => {
       content: content,
       category: categoryValue,
     };
-    console.log(post);
 
     try {
       // API 호출 및 성공 시 리다이렉트

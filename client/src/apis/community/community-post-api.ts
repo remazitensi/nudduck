@@ -52,7 +52,6 @@ export async function getPostList({ page, sort, category }: PostListParams) {
 export async function getPostDetail(id: number) {
   try {
     const response = await baseApi.get(`${api.community}/articles/${id}`, {});
-    console.log(response);
     return response.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
@@ -113,18 +112,14 @@ export async function deletePost(id: number) {
     if (response.status === 200) {
       alert('게시글이 삭제되었습니다 💣');
     }
-  } catch (error: any) {
-    return console.log('error', error.message);
-  }
+  } catch (error: any) {}
 }
 
 // 다른 유저의 프로필 조회
 export async function getUserProfile(userId: number) {
   const url = `/profile/${userId}`;
-  console.log(url);
   try {
     const response = await baseApi.get(url);
-    console.log(response);
     return response.data; // 성공 시 data 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {

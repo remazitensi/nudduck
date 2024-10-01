@@ -11,7 +11,6 @@ export const LifeGraphDetail: React.FC = () => {
   const pathArray = window.location.pathname.split('/');
   const id = Number(pathArray[pathArray.length - 1]); // 마지막 요소 가져오기
   const navigate = useNavigate();
-  console.log(data);
 
   useEffect(() => {
     const fetchData = async () => {

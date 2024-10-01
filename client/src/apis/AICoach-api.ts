@@ -20,7 +20,6 @@ export async function fetchSimulationHistory() {
   try {
     const response = await baseApi.get(url);
     if (response.status === 200) {
-      console.log('Sim history:', response.data);
     }
     return response.data; // 데이터만 반환
   } catch (error: unknown) {
@@ -39,7 +38,6 @@ export async function fetchIdSession(sessionId: number) {
   try {
     const response = await baseApi.get(url);
     if (response.status === 200) {
-      console.log('Sim Id:', response.data);
     }
     return response.data; // 데이터만 반환
   } catch (error: unknown) {
@@ -60,7 +58,6 @@ export async function activateSimulation(isNew: boolean): Promise<{ sessionId: n
   try {
     const response = await baseApi.post(url, body);
     if (response.status === 200) {
-      console.log('Sim activation:', response.data);
     }
     return response.data; // sessionId만 반환
   } catch (error: unknown) {
@@ -81,9 +78,6 @@ export async function startSimulation(isNew: boolean) {
       activateSimulation(isNew), // 채팅 활성화 post 요청
     ]);
 
-    console.log('Chat history:', chatHistory);
-    console.log('Chat activation:', chatActivation);
-
     return { chatHistory, chatActivation };
   } catch (error: unknown) {
     if (isAxiosError(error)) {
@@ -98,13 +92,10 @@ export async function startSimulation(isNew: boolean) {
 // 전송버튼 클릭 ask api post요청
 export async function askSimulation(query: string, sessionId: number) {
   const url = `${api.simulation}/ask`;
-  console.log('url:', url);
   const body = { query, sessionId };
-  console.log('body:', body);
   try {
     const response = await baseApi.post(url, body);
     if (response.status === 200) {
-      console.log('Sim ask:', response.data);
     }
     return response.data; // 응답 데이터 반환
   } catch (error: unknown) {
@@ -117,22 +108,19 @@ export async function askSimulation(query: string, sessionId: number) {
   }
 }
 
- // 특정 세션 삭제 API
- export async function deleteSession(sessionId: number) {
+// 특정 세션 삭제 API
+export async function deleteSession(sessionId: number) {
   const url = `${api.simulation}/${sessionId}`;
 
   try {
     const response = await baseApi.delete(url);
     if (response.status === 200) {
-      console.log('Session deleted successfully:', sessionId);
     }
     return response.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to delete session:', error.response?.data?.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
-} 
+}

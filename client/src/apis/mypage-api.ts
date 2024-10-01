@@ -69,7 +69,6 @@ export async function updateUserProfile(profile: UpdateUserProfile): Promise<voi
   try {
     const response = await baseApi.put(url, profile); // 프로필 수정 API 호출
     if (response.status === 200) {
-      console.log('프로필이 성공적으로 수정되었습니다.');
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
@@ -88,13 +87,11 @@ export async function deleteAccount(): Promise<void> {
   try {
     const response = await baseApi.delete(url);
     if (response.status === 200) {
-      console.log('계정이 성공적으로 삭제되었습니다.');
+      alert('계정이 성공적으로 삭제되었습니다.');
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      console.error('Failed to delete user account:', error.response?.data.message || error.message);
     } else {
-      console.error('An unknown error occurred');
     }
     throw error;
   }
