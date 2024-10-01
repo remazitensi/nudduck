@@ -7,7 +7,11 @@ export const deleteGraph = async (id: number) => {
       alert('성공적으로 인생 그래프가 삭제되었습니다!');
     }
   } catch (err) {
-    alert(err.message);
+    if (err instanceof Error) {
+      alert(err.message);
+    } else {
+      alert('알 수 없는 오류가 발생했습니다.');
+    }
   }
 };
 
@@ -29,6 +33,10 @@ export const getDetailGraphData = async (id: number) => {
     const response = await baseApi.get(`${api.lifeGraph}/${id}`, {});
     return response.data;
   } catch (err) {
-    alert(err.message);
+    if (err instanceof Error) {
+      alert(err.message);
+    } else {
+      alert('알 수 없는 오류가 발생했습니다.');
+    }
   }
 };

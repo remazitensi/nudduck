@@ -7,11 +7,11 @@ const Graph: React.FC = () => {
   const [isHowModalOpen, setIsHowModalOpen] = useState(false);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
 
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [old, setOld] = useState<number>(0);
-  const [score, setScore] = useState<number>(0);
-  const [event, setEvent] = useState('');
+  const [_open, _setOpen] = useState(false); // _처리로 상태 변수 사용 x 경고 무시
+  const [_title, setTitle] = useState(''); // _처리로 상태 변수 사용 x 경고 무시
+  const [_old, setOld] = useState<number>(0); // _처리로 상태 변수 사용 x 경고 무시
+  const [_score, setScore] = useState<number>(0); // _처리로 상태 변수 사용 x 경고 무시
+  const [_event, setEvent] = useState(''); // _처리로 상태 변수 사용 x 경고 무시
 
   // 작성방법 버튼 클릭시 열기
   const handleOpenHowModal = () => {

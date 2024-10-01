@@ -10,7 +10,7 @@
  * 2024.10.01    김민지      Modified     커스텀 툴팁 추가
  */
 
-import { CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
+import { CategoryScale, Chart as ChartJS, ChartOptions, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip, TooltipItem } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { GraphEvent } from '../../types/graph-type';
 // import { lifeData } from '../../types/graph-type';
@@ -41,7 +41,7 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
   //   return value < 0 ? 'red' : 'blue';
   // };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
@@ -57,11 +57,11 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
       tooltip: {
         callbacks: {
           // 툴팁에 나이와 점수를 표시
-          title: (tooltipItems) => {
+          title: (tooltipItems: TooltipItem<'line'>[]) => {
             const item = tooltipItems[0].parsed; // 데이터 접근
             return `나이: ${item.x}`; // 나이 (x축 값) 표시
           },
-          label: (tooltipItem) => {
+          label: (tooltipItem: TooltipItem<'line'>) => {
             const item = tooltipItem.parsed; // 데이터 접근
             return `점수: ${item.y}`; // 점수 (y축 값) 표시
           },
@@ -78,10 +78,6 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
         displayColors: false, // 툴팁 옆에 색깔 박스 제거
         intersect: false, // 점 위에 마우스를 올리지 않아도 툴팁 표시
         mode: 'nearest', // 가까운 점의 툴팁을 표시
-      },
-      interaction: {
-        mode: 'nearest', // 가까운 점의 툴팁을 표시
-        intersect: false, // 점 위에 마우스를 올리지 않아도 툴팁 표시
       },
     },
     elements: {
@@ -101,9 +97,6 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
         grid: {
           display: false, // x축 그리드 선 숨기기
         },
-        axis: {
-          display: false, // x축 자체와 레이블 숨기기
-        },
       },
       y: {
         min: -6,
@@ -111,7 +104,8 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
         ticks: {
           display: false, // 축 숫자 안 보이게
           stepSize: 1,
-          callback: (value) => {
+          callback: (tickValue: string | number) => {
+            const value = typeof tickValue === 'number' ? tickValue : Number(tickValue);
             if (value === -6 || value === 6) {
               return '';
             }
@@ -121,9 +115,6 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
         grid: {
           display: false, // x축 그리드 선 숨기기
         },
-        axis: {
-          display: false, // x축 자체와 레이블 숨기기
-        },
       },
     },
   };
@@ -132,7 +123,7 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
     labels,
     datasets: [
       {
-        type: 'line',
+        type: 'line' as const,
         data: lifeData,
         fill: 'origin',
         parsing: {
@@ -143,7 +134,7 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
           mode: 'nearest',
           intersect: false,
         },
-        borderColor: (value) => {
+        borderColor: (value: { parsed: { y: number } }) => {
           const condition = value.parsed;
           if (condition && condition.y > 0) {
             return '#1E90FF';
@@ -153,7 +144,7 @@ export const CreateListGraph: React.FC<CreateListGraphProps> = ({ events }) => {
           return '#6B8E23';
         },
         borderWidth: 6,
-        backgroundColor: (context) => {
+        backgroundColor: () => {
           // const index = context.dataIndex;
           // const value = context.dataset.data[index];
           // try {
