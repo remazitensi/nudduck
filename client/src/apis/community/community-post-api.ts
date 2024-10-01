@@ -40,7 +40,7 @@ export async function getPostList({ page, sort, category }: PostListParams) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
       console.error('Failed to fetch posts:', errorMessage);
-      alert(errorMessage);
+      // alert(errorMessage);
     } else {
       console.error('알 수 없는 에러가 발생했습니다.');
     }
@@ -114,8 +114,7 @@ export async function deletePost(id: number) {
       alert('게시글이 삭제되었습니다 💣');
     }
   } catch (error: any) {
-    console.log('error', error.message);
-    return alert(error.message);
+    return console.log('error', error.message);
   }
 }
 

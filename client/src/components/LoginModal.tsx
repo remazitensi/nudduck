@@ -24,18 +24,18 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin }) => {
   // 구글 로그인 핸들러
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3000/api/auth/google'; // Google OAuth 인증 시작
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`; // Google OAuth 인증 시작
   };
 
   // 카카오 로그인 핸들러
   const handleKakaoLogin = () => {
-    window.location.href = 'http://localhost:3000/api/auth/kakao'; // Kakao OAuth 인증 시작
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/kakao`; // Kakao OAuth 인증 시작
   };
 
   // 로그인 상태 확인
   const checkLoginStatus = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/my', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/my`, {
         withCredentials: true, // 쿠키 포함 요청
       });
       if (response.status === 200) {
@@ -53,27 +53,27 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin }) => {
   }, []);
 
   return (
-    <div className="login-modal">
-      <div className="modal-overlay" onClick={onClose}></div>
-      <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>
-          <img src="/login-modal-close.png" alt="닫기" />
+    <div className='login-modal'>
+      <div className='modal-overlay' onClick={onClose}></div>
+      <div className='modal-content'>
+        <button className='modal-close' onClick={onClose}>
+          <img src='/login-modal-close.png' alt='닫기' />
         </button>
-        <h2 className="modal-title">로그인/회원가입</h2>
-        <p className="modal-description">
-          누워서 떡 먹기처럼 쉬운 면접 준비, <span className="highlight">누떡</span>이 도와줄게!
+        <h2 className='modal-title'>로그인/회원가입</h2>
+        <p className='modal-description'>
+          누워서 떡 먹기처럼 쉬운 면접 준비, <span className='highlight'>누떡</span>이 도와줄게!
           <br />
           로그인하고 AI 코치와 면접 대비하기
         </p>
-        <button className="login-button google-login" onClick={handleGoogleLogin}>
-          <img src="/google-login.png" alt="구글 로그인" />
+        <button className='login-button google-login' onClick={handleGoogleLogin}>
+          <img src='/google-login.png' alt='구글 로그인' />
           구글 로그인/회원가입
         </button>
-        <button className="login-button kakao-login" onClick={handleKakaoLogin}>
-          <img src="/kakao-login.png" alt="카카오 로그인" />
+        <button className='login-button kakao-login' onClick={handleKakaoLogin}>
+          <img src='/kakao-login.png' alt='카카오 로그인' />
           카카오 로그인/회원가입
         </button>
-        <p className="login-info">
+        <p className='login-info'>
           로그인 및 회원가입 시 해당 웹 서비스의 이용약관과
           <br />
           개인정보 수집 및 이용에 동의한 것으로 간주합니다.
