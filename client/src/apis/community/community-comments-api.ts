@@ -88,8 +88,13 @@ export const createReply = async (postId: number, data: CreateCommentDto) => {
 
 // 대댓글 수정
 export const updateReply = async (postId: number, commentId: number, data: UpdateCommentDto): Promise<Comment> => {
-  const response = await baseApi.patch<Comment>(`/${postId}/comments/${commentId}/replies`, data);
-  return response.data;
+  try {
+    const response = await baseApi.put<Comment>(`${api.community}/articles/${postId}/comments/${commentId}/replies`, data);
+    return response.data;
+  } catch (error: any) {
+    console.log('error', error.message);
+    throw error;
+  }
 };
 
 // 대댓글 삭제
