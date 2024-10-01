@@ -35,3 +35,10 @@ export type UserInfo = {
   imageUrl: string;
   name: string;
 };
+
+export type UpdateCommentDto = {
+  content: string;
+  postId: number;
+  commentId: number;
+  parentId?: number;
+};
