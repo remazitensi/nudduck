@@ -122,7 +122,7 @@ const CommunityPostDetail: React.FC = () => {
           </div>
           <div className='mb-[5px] flex items-center justify-end gap-[5px]' onClick={handleOpenModal}>
             <div className='h-[50px] w-[50px] rounded-full'>
-              <img className='rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
+              <img className='h-full w-full rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
             </div>
             <div>{postData.nickname}</div>
           </div>

@@ -73,11 +73,11 @@ export const Reply = (props: { replies: CommentsDto[]; userId: number; onDelete:
   };
 
   return (
-    <div className='Reply mt-[20px] flex flex-col'>
+    <div className='Reply flex flex-col'>
       {replies.map((reply, index) => (
         <div key={index} className='reply-item'>
           {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={reply.userId} />}
-          <div className='flex items-center gap-[10px] pl-[20px] pt-[20px]'>
+          <div className='flex items-center gap-[10px] pl-[20px]'>
             {/* 대댓글 화살표 */}
             <img className='h-[32px] w-[32px]' src='/comment-arrow.png' alt='replyImg' />
             <div className='flex items-center gap-[10px] p-[10px]'>
