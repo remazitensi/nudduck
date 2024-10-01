@@ -72,7 +72,7 @@ const CommunityPostList: React.FC = () => {
   };
 
   return (
-    <div className='community-titles flex flex-col items-center bg-[#fcfcf8] p-[70px]'>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
       <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
@@ -80,19 +80,19 @@ const CommunityPostList: React.FC = () => {
       <div className='mt-[55px]'>
         <div className='flex items-center'>
           <div className='flex cursor-pointer gap-[80px] text-[20px]'>
-            <div onClick={() => handleCategoryChange('')} className={`text-[${selectedCategory === '' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('')} className={`hover:font-semibold text-[${selectedCategory === '' ? '#59573D' : '#AEAC9A'}]`}>
               전체
             </div>
-            <div onClick={() => handleCategoryChange('interview')} className={`text-[${selectedCategory === 'interview' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('interview')} className={`hover:font-semibold text-[${selectedCategory === 'interview' ? '#59573D' : '#AEAC9A'}]`}>
               면접
             </div>
-            <div onClick={() => handleCategoryChange('meeting')} className={`text-[${selectedCategory === 'meeting' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('meeting')} className={`hover:font-semibold text-[${selectedCategory === 'meeting' ? '#59573D' : '#AEAC9A'}]`}>
               모임
             </div>
-            <div onClick={() => handleCategoryChange('study')} className={`text-[${selectedCategory === 'study' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('study')} className={`hover:font-semibold text-[${selectedCategory === 'study' ? '#59573D' : '#AEAC9A'}]`}>
               스터디
             </div>
-            <div onClick={() => handleCategoryChange('talk')} className={`text-[${selectedCategory === 'talk' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('talk')} className={`hover:font-semibold text-[${selectedCategory === 'talk' ? '#59573D' : '#AEAC9A'}]`}>
               잡담
             </div>
           </div>
