@@ -7,6 +7,7 @@
  * Date          Author      Status      Description
  * 2024.09.13    김우현      Created     레이아웃 완성
  * 2024.09.25    김민지      copy        작성 모달 복사본, 수정, 수정 후 페이지 새로고침
+ * 2024.10.01    김민지      Modified    input 요소 추가 로직 변경
  */
 import React, { useState } from 'react';
 import { api, baseApi } from '../../apis/base-api';
@@ -44,8 +45,13 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
   });
 
   // + 버튼 클릭 시 input 요소 추가
-  const handleAddInput = () => {
-    setInputs([...inputs, { title: '', old: '', score: 0, event: '' }]);
+  const handleAddInput = (index: number) => {
+    const updatedInputs = [
+      ...inputs.slice(0, index + 1), // 현재 인덱스까지의 요소들
+      { title: '', old: '', score: 0, event: '' }, // 새로운 빈 입력 필드
+      ...inputs.slice(index + 1), // 나머지 요소들
+    ];
+    setInputs(updatedInputs);
   };
 
   // - 버튼 클릭 시 input 요소 제거
@@ -184,7 +190,7 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
 
                   <div className='Buttons flex items-center gap-[10px]'>
                     {/* + 버튼: 입력 필드 추가 */}
-                    <button onClick={handleAddInput} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
+                    <button onClick={() => handleAddInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
                       +
                     </button>
 
