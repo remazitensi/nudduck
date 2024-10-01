@@ -15,6 +15,7 @@
  * 2024.09.18    김재영      Modified    예외 처리 개선
  * 2024.09.19    김재영      Modified    유저 권한 추가
  * 2024.09.23    김재영      Modified    로로 패턴으로 리팩토링
+ * 2024.10.01    김재영      Modified    IP 중복 조회 방지 로직 추가
  */
 
 import { CreateCommentDto } from '@_modules/community/dto/request/create-comment.dto';
@@ -27,7 +28,7 @@ import { Comment } from '@_modules/community/entities/comment.entity';
 import { Community } from '@_modules/community/entities/community.entity';
 import { CommentRepository } from '@_modules/community/repositories/comment.repository';
 import { CommunityRepository } from '@_modules/community/repositories/community.repository';
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import * as cache from 'memory-cache';
 import { EntityManager } from 'typeorm';
@@ -92,8 +93,8 @@ export class CommunityService {
 
         // 캐시에 IP와 게시글 ID 저장 (1시간 동안 유지)
         cache.put(cacheKey, true, 3600000); // 1시간 = 3600000ms
-      } catch (error) {
-        console.error('조회수 증가 중 오류 발생:', error);
+      } catch {
+        throw new HttpException('조회수 증가 중 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
   }
