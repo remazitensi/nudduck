@@ -95,11 +95,11 @@ const CommunityPostDetail: React.FC = () => {
   }, [id]);
 
   return (
-    <div className='community-titles flex flex-col items-center'>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
       <ScrollToTop />
       {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={postData.userId} />}
 
-      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
+      <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
@@ -130,7 +130,7 @@ const CommunityPostDetail: React.FC = () => {
       </div>
 
       <div className='mt-[50px] h-[500px] w-[1200px]'>
-        <div className='relative h-[500px] w-[1200px] rounded-[20px] border'>
+        <div className='relative h-[500px] w-[1200px] rounded-[20px] border bg-white'>
           <div className='whitespace-pre-line p-[50px] text-[18px] leading-loose'>{postData.content}</div>
         </div>
       </div>
