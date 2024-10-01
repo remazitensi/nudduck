@@ -1,0 +1,35 @@
+/**
+ * File Name    : Footer.css
+ * Description  : 푸터 컴포넌트 스타일 시트
+ * Author       : 황솜귤
+ * 
+ * History
+ * Date          Author      Status      Description
+ * 2024.09.10    황솜귤      Created     푸터 컴포넌트 스타일 시트
+ * 2024.09.11    황솜귤      Modified    텍스트 마진 및 구분선 색상 수정
+ * 2024.09.13    황솜귤      Modified    스크롤 업 버튼 추가
+ */
+
+ /* 스크롤 업 버튼 */
+ .scroll-up-button {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 60px;
+  height: 60px;
+  background-color: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
+.scroll-up-button:hover {
+  background-color: #fff; /* 버튼 호버 시 배경색 변경 */
+}
+
+.scroll-up-icon {
+  width: 60px;
+  height: 60px;
+}
