@@ -91,6 +91,7 @@ const MainPage = () => {
           <strong className='highlight font-semibold'>인공지능</strong>으로부터 해답을 찾아 보세요
         </p>
       </section>
+
       {/* 상담 봇 섹션 */}
       <section className='chatbot-section flex items-center justify-center py-12'>
         <div className='chatbot-placeholder relative inline-block w-full text-center'>
@@ -103,6 +104,7 @@ const MainPage = () => {
           </div>
         </div>
       </section>
+
       {/* AI 실전 면접 시나리오 섹션 */}
       <section className='scenario flex items-center justify-center py-12'>
         <div className='scenario-placeholder w-full text-center'>
@@ -112,6 +114,7 @@ const MainPage = () => {
           </p>
         </div>
       </section>
+
       {/* AI 코치 섹션 */}
       <section className='ai-coach flex items-center justify-center py-12'>
         <div className='ai-coach-placeholder w-full text-center'>
@@ -119,6 +122,7 @@ const MainPage = () => {
           <p className='mt-[100px] text-2xl transition-transform duration-300 hover:scale-105'>원하는 상대와 취업 커뮤니티를 형성하세요</p>
         </div>
       </section>
+
       {/* 하단 설명 섹션 */}
       <section className='qna-section my-6 py-[300px]'>
         {/* py로 위아래 여백을 추가하여 높이 확장 */}
@@ -131,16 +135,19 @@ const MainPage = () => {
           </p>
         </div>
       </section>
+
       {/* FAQ 섹션 */}
       <section className='faq-section bg-[#FFFFFF] px-[10%] py-[200px] text-center'>
-        <div className='faq-grid grid grid-cols-1 gap-8 md:grid-cols-3'>
+        <div className='faq-grid grid grid-cols-1 gap-8 md:grid-cols-2'>
           {/* 첫 번째 박스: AI 면접 컨설팅 */}
           <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
             <img src='/box-icon-1.png' alt='AI 면접 컨설팅 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
             <h4 className='mb-4 text-[28px] font-bold'>AI 면접 컨설팅</h4>
-            <ul className='mx-4 list-none p-0 text-left text-[20px]'>
-              <li className='mb-3 text-gray-700'>1. 온라인으로 언제 어디서나</li>
-              <li className='mb-3 text-gray-700'>2. AI를 통한 실전과 유사한 면접 프로세스</li>
+            <ul className='mx-4 list-none p-0 text-left text-[22px]'>
+              {' '}
+              {/* 텍스트 크기를 22px로 조정 */}
+              <li className='mb-3 !text-[16px] text-gray-700'>1. 온라인으로 언제 어디서나</li>
+              <li className='mb-3 !text-[16px] text-gray-700'>2. AI를 통한 실전과 유사한 면접 프로세스</li>
             </ul>
           </div>
 
@@ -148,10 +155,10 @@ const MainPage = () => {
           <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
             <img src='/box-icon-2.png' alt='커뮤니티 공간 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
             <h4 className='mb-4 text-[28px] font-bold'>커뮤니티 공간</h4>
-            <ul className='mx-4 list-none p-0 text-left text-[20px]'>
-              <li className='mb-3 text-gray-700'>1. 게시판을 활용한 글쓰기</li>
-              <li className='mb-3 text-gray-700'>2. 원하는 주제로 적합한 상대와 온라인 미팅</li>
-              <li className='mb-3 text-gray-700'>3. 유저들과 활발한 정보 공유</li>
+            <ul className='mx-4 list-none p-0 text-left text-[22px]'>
+              <li className='mb-3 !text-[16px] text-gray-700'>1. 게시판을 활용한 글쓰기</li>
+              <li className='mb-3 !text-[16px] text-gray-700'>2. 원하는 주제로 적합한 상대와 온라인 미팅</li>
+              <li className='mb-3 !text-[16px] text-gray-700'>3. 유저들과 활발한 정보 공유</li>
             </ul>
           </div>
 
@@ -159,10 +166,21 @@ const MainPage = () => {
           <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
             <img src='/box-icon-3.png' alt='인생 그래프 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
             <h4 className='mb-4 text-[28px] font-bold'>인생 그래프</h4>
-            <ul className='mx-4 list-none p-0 text-left text-[20px]'>
-              <li className='mb-3 text-gray-700'>1. 유저 정보 기반의 그래프 작성</li>
-              <li className='mb-3 text-gray-700'>2. 일대기를 그래프로 표시</li>
-              <li className='mb-3 text-gray-700'>3. 향후 방향성 및 목표 설계</li>
+            <ul className='mx-4 list-none p-0 text-left text-[22px]'>
+              <li className='mb-3 !text-[16px] text-gray-700'>1. 유저 정보 기반의 그래프 작성</li>
+              <li className='mb-3 !text-[16px] text-gray-700'>2. 일대기를 그래프로 표시</li>
+              <li className='mb-3 !text-[16px] text-gray-700'>3. 향후 방향성 및 목표 설계</li>
+            </ul>
+          </div>
+
+          {/* 네 번째 박스: 전문가 상담 */}
+          <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
+            <img src='/box-icon-4.png' alt='전문가 상담 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
+            <h4 className='mb-4 text-[28px] font-bold'>전문가 상담</h4>
+            <ul className='mx-4 list-none p-0 text-left text-[22px]'>
+              <li className='mb-3 !text-[16px] text-gray-700'>1. 전문가의 심층 상담 제공</li>
+              <li className='mb-3 !text-[16px] text-gray-700'>2. 다양한 분야의 전문 지식 공유</li>
+              <li className='mb-3 !text-[16px] text-gray-700'>3. 온라인을 통한 간편한 상담</li>
             </ul>
           </div>
         </div>
