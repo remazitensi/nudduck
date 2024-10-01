@@ -86,6 +86,12 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
       await createReply(comment.postId, data);
       if (contentRef.current) contentRef.current.value = ''; // 대댓글 입력 후 textarea 초기화
       const updatedReplies = await fetchReplyComment(); // 대댓글 등록 후 최신 대댓글 리스트를 가져옴
+      //최초 대댓글 작성 시에 토글 여는 동작
+      if (comment.replyCount === 0) {
+        comment.replyCount = 1;
+        setIsReplyVisible(!isReplyVisible);
+      }
+      handleToggleCommentInput();
       await setReplies(updatedReplies.replies);
     } catch (error) {
       console.error('댓글 생성 실패:', error);
