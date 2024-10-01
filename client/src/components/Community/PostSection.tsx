@@ -51,7 +51,7 @@ export const PostSection: React.FC<PostSectionProps> = ({ data }) => {
           <div className='flex items-center justify-end'>
             <div className='flex gap-[5px] p-[5px]' onClick={handleOpenModal}>
               <div className='h-[28px] w-[28px] rounded-full'>
-                <img className='rounded-full object-cover' src={data.imageUrl ? data.imageUrl : '/default-img.png'} alt='profile_Img' />
+                <img className='h-full w-full rounded-full object-cover' src={data.imageUrl ? data.imageUrl : '/default-img.png'} alt='profile_Img' />
               </div>
               <div>{data.nickname}</div>
             </div>
