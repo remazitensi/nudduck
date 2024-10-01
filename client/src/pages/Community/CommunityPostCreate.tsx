@@ -86,7 +86,7 @@ const CommunityPostCreate: React.FC = () => {
   };
 
   return (
-    <div className='community-titles flex flex-col items-center bg-[#fcfcf8] p-[70px]'>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
       <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
