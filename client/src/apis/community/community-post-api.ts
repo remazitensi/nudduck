@@ -39,8 +39,7 @@ export async function getPostList({ page, sort, category }: PostListParams) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
-      // alert(errorMessage);
-    } else {
+      alert(errorMessage);
     }
     throw error;
   }
@@ -54,6 +53,7 @@ export async function getPostDetail(id: number) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
+      alert(errorMessage);
     } else {
     }
     throw error;
@@ -116,6 +116,7 @@ export async function getUserProfile(userId: number) {
   } catch (error: unknown) {
     if (isAxiosError(error)) {
       const errorMessage = (error.response?.data as { message: string })?.message;
+      alert(errorMessage);
     } else {
     }
     throw error;
