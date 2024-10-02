@@ -95,9 +95,11 @@ const HomePage = () => {
     };
 
     const checkLoginStatus = async () => {
+      console.log('before');
       try {
         const response = await baseApi.post('/auth/access-token', {});
-        if (response.status === 200 && response.data.accessToken) {
+        console.log(response.status);
+        if (response.status === 200) {
           setIsLoggedIn(true); // 로그인 상태로 설정
         }
       } catch (error) {
@@ -207,7 +209,7 @@ const HomePage = () => {
         )}
         {/* Feature Cards Section */}
         <section className='mx-auto my-6 max-w-6xl p-6'>
-          <h2 className='text-2xl font-bold leading-[30px]'>로그인하고 내 조건에 맞는 서비스 이용하기</h2>
+          <h2 className='text-2xl font-bold leading-[30px]'>{isLoggedIn ? '내 조건에 맞는 서비스 이용하기' : '로그인하고 내 조건에 맞는 서비스 이용하기'}</h2>
           <div className='mt-4 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-4'>
             {/* 첫 번째 카드 */}
             <div className='relative h-[260px] w-full rounded-lg border border-gray-300 bg-[#fbfaec] p-4 transition-all duration-300 hover:border-[#AEAC9A] hover:shadow-lg'>
