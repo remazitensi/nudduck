@@ -38,9 +38,8 @@ export async function getPostList({ page, sort, category }: PostListParams) {
     return response.data; // 성공 시 data 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      const errorMessage = (error.response?.data as { message: string })?.message;
+      // const errorMessage = (error.response?.data as { message: string })?.message;
       // alert(errorMessage);
-    } else {
     }
     throw error;
   }
@@ -53,7 +52,8 @@ export async function getPostDetail(id: number) {
     return response.data;
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      const errorMessage = (error.response?.data as { message: string })?.message;
+      // const errorMessage = (error.response?.data as { message: string })?.message;
+      // alert(errorMessage);
     } else {
     }
     throw error;
@@ -89,8 +89,7 @@ export async function editPost(post: PostBodyData, id: number) {
     }
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      const errorMessage = (error.response?.data as { message: string })?.message;
-      throw new Error(errorMessage); // 에러 메시지를 상위로 던짐
+      throw error.response; // 에러 메시지를 상위로 던짐
     } else {
       throw new Error('알 수 없는 에러가 발생했습니다.');
     }
@@ -115,7 +114,8 @@ export async function getUserProfile(userId: number) {
     return response.data; // 성공 시 data 반환
   } catch (error: unknown) {
     if (isAxiosError(error)) {
-      const errorMessage = (error.response?.data as { message: string })?.message;
+      // const errorMessage = (error.response?.data as { message: string })?.message;
+      // alert(errorMessage);
     } else {
     }
     throw error;

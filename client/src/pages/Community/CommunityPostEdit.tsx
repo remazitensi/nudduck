@@ -9,18 +9,17 @@
  * 2024.09.14    김민지      Modified    카테고리 선택 후 닫기 추가
  * 2024.09.20    김민지      Modified    post api 저장하기
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api, baseApi } from '../../apis/base-api';
 import { editPost, getPostDetail } from '../../apis/community/community-post-api';
-import { CommentsDto, UserInfo } from '../../types/comments-type';
+import { UserInfo } from '../../types/comments-type';
 import { Post } from '../../types/community-type';
 
-const CommunityPostEdit: React.FC = () => {
+export const CommunityPostEdit: React.FC = () => {
   const navigate = useNavigate();
-  const editorRef = useRef<HTMLTextAreaElement>(null); // textarea에 대한 참조
   const [view, setView] = useState(false);
-  const [typing, setTyping] = useState('');
+  // const [typing, setTyping] = useState('');
   const [message, setMessage] = useState('');
   const [category, setCategory] = useState('카테고리 선택');
   const { id } = useParams();
@@ -36,18 +35,24 @@ const CommunityPostEdit: React.FC = () => {
     nickname: '',
     content: '', // content 필드 추가
   });
-  const [comments, setComments] = useState<CommentsDto[]>([]);
-  const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-  const [totalPage, setTotalPage] = useState<number>(0);
+  // const [comments, setComments] = useState<CommentsDto[]>([]);
+  // const [openUserModal, setOpenUserModal] = useState<boolean>(false);
+  // const [totalPage, setTotalPage] = useState<number>(0);
   const [info, setInfo] = useState<UserInfo | null>(null);
 
   // 제목 입력 처리
-  const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setPostData((prevData) => ({
+    await setPostData((prevData) => ({
       ...prevData,
       title: value,
     }));
+    // 제목 글자 수 유효성검사
+    if (postData.title.length > 30) {
+      setMessage('30글자 이하로 적어주세요');
+    } else {
+      setMessage('');
+    }
   };
 
   // 본문 입력 처리
@@ -69,18 +74,6 @@ const CommunityPostEdit: React.FC = () => {
     setView(false); // 카테고리를 선택한 후 드롭다운 닫기
   };
 
-  // 글지수 유효성 검사
-  const onTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setTyping(value);
-
-    if (value.length > 30) {
-      setMessage('30글자 이하로 적어주세요');
-    } else {
-      setMessage('');
-    }
-  };
-
   // 영어 카테고리를 한글로
   const getCategoryInKorean = (categoryValue: string) => {
     switch (categoryValue) {
@@ -99,30 +92,12 @@ const CommunityPostEdit: React.FC = () => {
 
   // 게시글을 저장하는 함수
   const savePost = async () => {
-    // const content = editorRef.current?.value || '';
+    const numericId = id ? Number(id) : alert('잘못된 경로입니다'); // id가 undefined일 경우 처리
+
     if (!postData.title) return alert('제목을 입력해주세요!');
     if (!postData.content) return alert('내용을 입력해주세요!');
     if (postData.content.length < 10) return alert('내용을 10자 이상 입력해주세요!');
     if (!category) return alert('카테고리를 선택해주세요!');
-
-    // 카테고리 값 변환
-    let categoryValue;
-    // switch (category) {
-    //   case '면접':
-    //     categoryValue = 'interview';
-    //     break;
-    //   case '모임':
-    //     categoryValue = 'meeting';
-    //     break;
-    //   case '스터디':
-    //     categoryValue = 'study';
-    //     break;
-    //   case '잡담':
-    //     categoryValue = 'talk';
-    //     break;
-    //   default:
-    //     return alert('카테고리 설정이 필요합니다!');
-    // }
 
     const post = {
       title: postData.title,
@@ -131,11 +106,13 @@ const CommunityPostEdit: React.FC = () => {
     };
 
     try {
-      await editPost(post, id);
+      if (numericId) {
+        await editPost(post, numericId); // numericId를 사용
+      }
       alert('게시글이 수정되었습니다! ✏');
       navigate(`/community`);
     } catch (error: any) {
-      alert(error.message.message || '게시글 저장 중 에러가 발생했습니다.');
+      alert(error.data.message.message);
     }
   };
 
@@ -145,31 +122,39 @@ const CommunityPostEdit: React.FC = () => {
         const data = await getPostDetail(Number(id));
         setPostData(data);
         setCategory(data.category); // 가져온 카테고리를 선택한 카테고리로 설정
-        return data.userId;
+        return data.userId; // 여기서 userId를 반환
       }
-    } catch (err) {}
-  };
-
-  // 로그인 유저(이용자) 정보 호출 API
-  const userInfo = async (): Promise<UserInfo | void> => {
-    try {
-      const response = await baseApi.get<UserInfo>(`${api.myPage}/info`, {});
-      setInfo(response.data);
-      return response.data.id;
-    } catch (error: any) {
-      return alert(error.message);
+    } catch (err) {
+      console.error(err); // 오류 로깅
     }
   };
 
-  // 페이지 최초 랜더링 시 게시글 상세와 댓글 불러오기, 조회수 증가
+  const userInfo = async (): Promise<UserInfo | number | void> => {
+    try {
+      const response = await baseApi.get<UserInfo>(`${api.myPage}/info`, {});
+      setInfo(response.data);
+      return response.data.id; // 여기도 id를 반환
+    } catch (error) {
+      console.error(error); // 오류 로깅
+    }
+  };
+
   useEffect(() => {
-    fetchPostDataWithComment();
-    userInfo();
-    // if (postData.userId !== info?.id) {
-    //   alert('접근할 수 없습니다!');
-    //   navigate(`/community`);
-    // }
-  }, [id]);
+    const fetchData = async () => {
+      // 포스트와 유저 정보 불러오기
+      await fetchPostDataWithComment();
+      await userInfo();
+
+      // 상태가 업데이트된 후 조건 확인
+      if (postData.userId && info?.id && postData.userId !== info.id) {
+        console.log(postData.userId, info.id);
+        alert('🚫 접근할 수 없습니다!');
+        navigate(`/community`);
+      }
+    };
+
+    fetchData();
+  }, [id]); // id가 변경될 때마다 실행
 
   return (
     <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
@@ -216,6 +201,7 @@ const CommunityPostEdit: React.FC = () => {
           className='h-[60px] w-full rounded-[10px] border bg-white pl-[35px] text-[20px] text-[#808080]'
           placeholder='게시글의 주제나 목적이 드러날 수 있도록 작성해 주세요'
         />
+        {message && <p className='mt-[5px] text-red-500'>{message}</p>}
       </div>
 
       {/* 본문 입력 */}
@@ -225,7 +211,7 @@ const CommunityPostEdit: React.FC = () => {
           onChange={onContentChange}
           className='m-[30px] w-[1240px] resize-none overflow-auto'
           rows={10}
-          placeholder='30자 이상 입력해주세요.'
+          placeholder='10자 이상 입력해주세요.'
         />
       </div>
 

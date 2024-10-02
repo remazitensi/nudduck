@@ -18,7 +18,8 @@ import AnotherUserModal from '../../components/Community/AnotherUserModal';
 import { CategoryBtn } from '../../components/Community/CategoryBtn';
 import { CommentSection } from '../../components/Community/CommentSection';
 import { CreateComment } from '../../components/Community/CreateComment';
-import ScrollToTop from '../../components/ScrolltoTop';
+
+import useScrollToTop from '../../hooks/useScrollToTop';
 import { CommentsDto, CommentsResDto } from '../../types/comments-type';
 import { Post } from '../../types/community-type';
 import { changeDateWithFormat } from '../../utils/change-date-with-format';
@@ -37,8 +38,8 @@ const CommunityPostDetail: React.FC = () => {
   });
   const [comments, setComments] = useState<CommentsDto[]>([]); // 댓글 목록 state 추가
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-  const [totalPage, setTotalPage] = useState<number>(0);
   const navigate = useNavigate();
+  useScrollToTop();
 
   const handleOpenModal = () => {
     setOpenUserModal(true);
@@ -62,7 +63,6 @@ const CommunityPostDetail: React.FC = () => {
     try {
       const data: CommentsResDto = await getComments(Number(postData.postId));
       setComments(data.comments);
-      setTotalPage(data.total);
     } catch (error) {}
   };
 
@@ -88,7 +88,6 @@ const CommunityPostDetail: React.FC = () => {
 
   return (
     <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
-      <ScrollToTop />
       {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={postData.userId} />}
 
       <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
