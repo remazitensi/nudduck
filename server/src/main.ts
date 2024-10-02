@@ -16,6 +16,7 @@ async function bootstrap() {
     }),
   );
 
+  // CORS 설정
   app.enableCors({
     origin: process.env.CLIENT_URL,
     credentials: true,
@@ -28,6 +29,7 @@ async function bootstrap() {
     .setTitle('nudduck API')
     .setDescription('누떡 API 명세서')
     .setVersion('1.0.0')
+    .addServer(process.env.CLIENT_URL + '/api-docs', 'Production Server')
     .addServer('http://localhost:3000/api-docs', 'Local Development Server')
     .addTag('Intro', 'API for main and intro pages')
     .addTag('User Management', 'API for user profile and authentication')

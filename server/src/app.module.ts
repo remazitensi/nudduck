@@ -30,7 +30,7 @@ import { ScheduleModule } from 'schedulers/quote/schedule.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // 글로벌로 환경 변수 사용
-      envFilePath: '.env',
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule], // ConfigModule에서 환경 변수 가져오기
