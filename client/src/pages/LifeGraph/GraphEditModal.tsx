@@ -77,6 +77,11 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
     }
   };
 
+  const handleSubmitBtn = () => {
+    const isDisabled = checkTitle && checkCurrentAge && checkEventAge && checkEventTitle;
+    return isDisabled;
+  };
+
   // 각 입력 필드에 대한 상태 변경 핸들러
   const handleSaveEventTitle = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
@@ -114,6 +119,24 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
     }
     setError(newError);
     setInputs(newInputs);
+  };
+
+  // 현재나이 유효성 검사
+  const handleCurrentAge = (value: string) => {
+    if (!/^\d+$/.test(value)) {
+      setCheckCurrentAge(false);
+      setError((prev) => ({ ...prev, currentAge: '숫자만 입력해주세요!' }));
+    } else if (Number(value) > 100) {
+      setCheckCurrentAge(false);
+      setError((prev) => ({ ...prev, currentAge: '100세 이하로 입력해주세요!' }));
+    } else if (Number(value) < 0) {
+      setCheckCurrentAge(false);
+      setError((prev) => ({ ...prev, currentAge: '0세 이상으로 입력해주세요' }));
+    } else {
+      setCurrentAge(value);
+      setCheckCurrentAge(true);
+      return '';
+    }
   };
 
   // 점수 저장
@@ -200,7 +223,10 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
             <div>현재 나이</div>
             <input
               value={currentAge}
-              onChange={(e) => setCurrentAge(e.target.value)}
+              onChange={(e) => {
+                setCurrentAge(e.target.value);
+                handleCurrentAge(e.target.value);
+              }} // 현재 나이 저장
               className='h-[40px] w-[200px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
               placeholder='나이를 입력해주세요'
             />
@@ -270,9 +296,13 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
           </div>
 
           <div className='flex h-[50px] w-full justify-center'>
-            <button onClick={handleSave} className='mt-[10px] flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
+            <button
+              onClick={handleSave}
+              className={`mt-[10px] flex h-[50px] w-[220px] items-center justify-center rounded-[10px] text-[25px] font-bold text-white ${handleSubmitBtn() ? 'cursor-pointer bg-[#909700]' : 'cursor-not-allowed bg-gray-300'}`}
+              disabled={!handleSubmitBtn()}
+            >
               저장하기
-            </button>
+            </button>{' '}
           </div>
         </div>
       </div>
