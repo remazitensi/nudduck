@@ -15,6 +15,7 @@
  * 2024.09.18    김재영      Modified    예외 처리 개선
  * 2024.09.19    김재영      Modified    유저 권한 추가
  * 2024.09.23    김재영      Modified    로로 패턴으로 리팩토링
+ * 2024.10.01    김재영      Modified    IP 중복 조회 방지 로직 추가
  */
 
 import { CreateCommentDto } from '@_modules/community/dto/request/create-comment.dto';
@@ -27,8 +28,10 @@ import { Comment } from '@_modules/community/entities/comment.entity';
 import { Community } from '@_modules/community/entities/community.entity';
 import { CommentRepository } from '@_modules/community/repositories/comment.repository';
 import { CommunityRepository } from '@_modules/community/repositories/community.repository';
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { Request as ExpressRequest } from 'express';
+import * as cache from 'memory-cache';
 import { EntityManager } from 'typeorm';
 import { CommentResponseDto } from './dto/response/comment-response.dto';
 import { Category } from './enums/category.enum';
@@ -79,9 +82,28 @@ export class CommunityService {
     return post;
   }
 
-  // 조회 수 증가
-  async incrementViewCount(postId: number): Promise<void> {
-    await this.communityRepository.increment({ postId }, 'viewCount', 1);
+  // 조회수 증가 (IP 중복 방지 적용)
+  async incrementViewCount(postId: number, request: ExpressRequest): Promise<void> {
+    const clientIp = this.getClientIp(request); // 클라이언트 IP 추출
+    const cacheKey = `post:${postId}:ip:${clientIp}`;
+    const cachedView = cache.get(cacheKey);
+
+    // 캐시에 조회 기록이 없을 경우에만 조회수 증가
+    if (!cachedView) {
+      try {
+        await this.communityRepository.increment({ postId }, 'viewCount', 1);
+
+        // 캐시에 IP와 게시글 ID 저장 (1시간 동안 유지)
+        cache.put(cacheKey, true, 3600000); // 1시간 = 3600000ms
+      } catch {
+        throw new HttpException('조회수 증가 중 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  private getClientIp(request: ExpressRequest): string {
+    const forwarded = request.headers['x-forwarded-for'] as string;
+    return forwarded ? forwarded.split(',')[0].trim() : request.ip;
   }
 
   // 댓글 작성

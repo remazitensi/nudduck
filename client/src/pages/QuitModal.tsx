@@ -18,13 +18,11 @@ interface QuitModalProps {
 const QuitModal: React.FC<QuitModalProps> = ({ onClose }) => {
   const handleClickQuit = async () => {
     try {
-      console.log('Error:', 'api요청 진행중');
       await deleteAccount(); // 탈퇴처리 api 호출
 
       alert('정상적으로 탈퇴처리 되었습니다.'); // 성공 메시지
       onClose();
     } catch (error) {
-      console.log('탈퇴처리 실패:', error);
       alert('탈퇴 처리중 문제가 발생하였습니다.');
     }
   };

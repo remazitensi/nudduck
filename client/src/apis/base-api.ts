@@ -37,7 +37,6 @@ baseApi.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response.status === 401 && !originalRequest._retry) {
-      console.log(error);
       originalRequest._retry = true;
       try {
         // 엑세스 토큰 재발급 요청
@@ -46,7 +45,7 @@ baseApi.interceptors.response.use(
         return baseApi(originalRequest);
       } catch (err) {
         alert('로그인이 필요합니다 😎');
-        window.location.href = 'http://localhost:5173/';
+        window.location.href = '/';
         return Promise.reject(err);
       }
     }

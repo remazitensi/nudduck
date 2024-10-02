@@ -54,9 +54,7 @@ const CommunityPostDetail: React.FC = () => {
         const data = await getPostDetail(Number(id));
         setPostData(data);
       }
-    } catch (err) {
-      console.error('Error fetching post data:', err);
-    }
+    } catch (err) {}
   };
 
   // 댓글 조회 함수
@@ -65,10 +63,7 @@ const CommunityPostDetail: React.FC = () => {
       const data: CommentsResDto = await getComments(Number(postData.postId));
       setComments(data.comments);
       setTotalPage(data.total);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    }
-    await console.log(comments);
+    } catch (error) {}
   };
 
   // postData.postId가 업데이트될 때 댓글 가져오기
@@ -85,21 +80,18 @@ const CommunityPostDetail: React.FC = () => {
     const timer = setTimeout(async () => {
       try {
         await baseApi.post(`${api.community}/articles/${id}/views`, {});
-        console.log('조회수 증가 요청 성공');
-      } catch (err) {
-        console.error('조회수 증가 요청 실패:', err);
-      }
+      } catch (err) {}
     }, 5000);
 
     return () => clearTimeout(timer);
   }, [id]);
 
   return (
-    <div className='community-titles flex flex-col items-center'>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
       <ScrollToTop />
       {openUserModal && <AnotherUserModal onClose={handleCloseModal} userId={postData.userId} />}
 
-      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
+      <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
@@ -122,7 +114,7 @@ const CommunityPostDetail: React.FC = () => {
           </div>
           <div className='mb-[5px] flex items-center justify-end gap-[5px]' onClick={handleOpenModal}>
             <div className='h-[50px] w-[50px] rounded-full'>
-              <img className='rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
+              <img className='h-full w-full rounded-full object-cover' src={postData.imageUrl ? postData.imageUrl : '/default-img.png'} alt='profile_Img' />
             </div>
             <div>{postData.nickname}</div>
           </div>
@@ -130,7 +122,7 @@ const CommunityPostDetail: React.FC = () => {
       </div>
 
       <div className='mt-[50px] h-[500px] w-[1200px]'>
-        <div className='relative h-[500px] w-[1200px] rounded-[20px] border'>
+        <div className='relative h-[500px] w-[1200px] rounded-[20px] border bg-white'>
           <div className='whitespace-pre-line p-[50px] text-[18px] leading-loose'>{postData.content}</div>
         </div>
       </div>

@@ -8,7 +8,7 @@
  * 2024.09.20    김민지      Created     댓글 CRUD api 작성, 파일 이동
  */
 
-import { CommentsResDto, CreateCommentDto } from '../../types/comments-type';
+import { CommentsResDto, CreateCommentDto, UpdateCommentDto } from '../../types/comments-type';
 import { api, baseApi } from '../base-api';
 
 // ------------- 댓글 api --------------------
@@ -21,7 +21,6 @@ export const getComments = async (postId: number, limit = 10, offset = 0): Promi
     });
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
@@ -32,29 +31,28 @@ export const createComment = async (postId: number, data: CreateCommentDto) => {
     const response = await baseApi.post<Comment>(`${api.community}/articles/${postId}/comments`, data);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
 
 // 댓글 수정
 export const updateComment = async (postId: number, commentId: number, data: UpdateCommentDto): Promise<Comment> => {
-  const response = await baseApi.patch<Comment>(`/${postId}/comments/${commentId}`, data);
-  return response.data;
+  try {
+    const response = await baseApi.put<Comment>(`${api.community}/articles/${postId}/comments/${commentId}`, data);
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
 };
 
 // 댓글 삭제
 export const deleteComment = async (postId: number, commentId: number): Promise<void> => {
   try {
     const response = await baseApi.delete(`${api.community}/articles/${postId}/comments/${commentId}`, {});
-    console.log(response);
     if (response.status === 200) {
       alert('댓글이 삭제되었습니다 💣');
     }
-  } catch (error: any) {
-    console.log('error', error.message);
-    return alert(error.message);
-  }
+  } catch (error) {}
 };
 
 // ------------- 대댓글 api --------------------
@@ -65,7 +63,6 @@ export const getReply = async (postId: number, parentId: number): Promise<Commen
     const response = await baseApi.get(`${api.community}/articles/${postId}/comments/${parentId}/replies`);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     alert(error.message);
     throw error;
   }
@@ -77,27 +74,29 @@ export const createReply = async (postId: number, data: CreateCommentDto) => {
     const response = await baseApi.post<Comment>(`${api.community}/articles/${postId}/comments/${data.parentId}/replies`, data);
     return response.data;
   } catch (error: any) {
-    console.log('error', error.message);
     throw error;
   }
 };
 
 // 대댓글 수정
 export const updateReply = async (postId: number, commentId: number, data: UpdateCommentDto): Promise<Comment> => {
-  const response = await baseApi.patch<Comment>(`/${postId}/comments/${commentId}/replies`, data);
-  return response.data;
+  try {
+    const response = await baseApi.put<Comment>(`${api.community}/articles/${postId}/comments/${commentId}/replies`, data);
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
 };
 
 // 대댓글 삭제
-export const deleteReply = async (postId: number, commentId: number): Promise<void> => {
+export const deleteReply = async (postId: number, commentId: number): Promise<number> => {
   try {
     const response = await baseApi.delete(`${api.community}/articles/${postId}/comments/${commentId}/replies`, {});
     if (response.status === 200) {
       alert('댓글이 삭제되었습니다 💣');
-      return response;
     }
+    return response.status;
   } catch (error: any) {
-    console.log('error', error.message);
-    return alert(error.message);
+    return -1;
   }
 };

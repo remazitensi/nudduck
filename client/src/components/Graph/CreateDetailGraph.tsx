@@ -7,9 +7,10 @@
  * Date          Author      Status      Description
  * 2024.09.11    김민지      Created      더미 데이터로 디자인 옵션 선정
  * 2024.09.22    김민지      Modified     리스트용과 상세페이지용 그래프 분리
+ * 2024.10.01    김민지      Modified     커스텀 툴팁 추가
  */
 
-import { CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
+import { CategoryScale, Chart as ChartJS, ChartOptions, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip, TooltipItem } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { GraphEvent } from '../../types/graph-type';
 // import { lifeData } from '../../types/graph-type';
@@ -26,7 +27,6 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
 
   //data에서 age를 라벨 추출
   const labels: number[] = events.map((item) => item.age);
-  console.log(labels);
 
   //labels 에서 최소, 최댓값 추출 => 차트
   const age: { min: number; max: number } = {
@@ -34,7 +34,7 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
     max: Math.max(...labels),
   };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
@@ -47,23 +47,49 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
       title: {
         display: false,
       },
+      //   tooltip: {
+      //     // 툴팁 커스텀 미완성으로 인한 주석처리
+      //     // callbacks: {
+      //     //   title: (tooltipItems) => {
+      //     //     const item = tooltipItems[0].parsed; // Get the current item
+      //     //     return item.title; // Set tooltip title to item.title
+      //     //   },
+      //     //   label: (tooltipItem) => {
+      //     //     const item = tooltipItem.parsed; // Get the current item
+      //     //     return item.description; // Set tooltip body to item.description
+      //     //   },
+      //     // },
+      //     bodyFont: {
+      //       size: 15, // Set tooltip font size
+      //     },
+      //     intersect: false, // Make tooltip show even if mouse is not directly on the point
+      //     mode: 'nearest', // Use 'nearest' to allow tooltip to show for the nearest point
+      //   },
+      // },
       tooltip: {
-        // 툴팁 커스텀 미완성으로 인한 주석처리
-        // callbacks: {
-        //   title: (tooltipItems) => {
-        //     const item = tooltipItems[0].parsed; // Get the current item
-        //     return item.title; // Set tooltip title to item.title
-        //   },
-        //   label: (tooltipItem) => {
-        //     const item = tooltipItem.parsed; // Get the current item
-        //     return item.description; // Set tooltip body to item.description
-        //   },
-        // },
-        bodyFont: {
-          size: 15, // Set tooltip font size
+        callbacks: {
+          // 나이와 점수를 툴팁에 표시
+          title: (tooltipItems: TooltipItem<'line'>[]) => {
+            const item = tooltipItems[0].parsed; // 데이터 접근
+            return `나이: ${item.x}`; // 나이 (x축 값) 표시
+          },
+          label: (tooltipItem: TooltipItem<'line'>) => {
+            const item = tooltipItem.parsed; // 데이터 접근
+            return `점수: ${item.y}`; // 점수 (y축 값) 표시
+          },
         },
-        intersect: false, // Make tooltip show even if mouse is not directly on the point
-        mode: 'nearest', // Use 'nearest' to allow tooltip to show for the nearest point
+        backgroundColor: 'rgba(128, 128, 128, 0.8)', // 툴팁 배경을 회색으로 설정
+        borderColor: '#ccc', // 테두리 색상 설정 (원하는 색상으로 변경 가능)
+        borderWidth: 1, // 테두리 두께 설정
+        bodyFont: {
+          size: 16, // 툴팁 글씨 크기
+        },
+        titleFont: {
+          size: 16, // 툴팁 제목 글씨 크기
+        },
+        displayColors: false, // 툴팁 옆에 색깔 박스 제거
+        intersect: false, // 점 위에 마우스를 올리지 않아도 툴팁 표시
+        mode: 'nearest', // 가까운 점의 툴팁을 표시
       },
     },
     elements: {
@@ -85,18 +111,15 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
         max: 6,
         ticks: {
           stepSize: 1,
-          callback: (value: number) => {
-            if (value === -6 || value === 6) {
+          callback: (value: string | number) => {
+            const numericValue = typeof value === 'number' ? value : Number(value);
+            if (numericValue === -6 || numericValue === 6) {
               return '';
             }
-            return value;
+            return numericValue;
           },
         },
       },
-    },
-    interaction: {
-      mode: 'nearest', // Allows tooltip to show for the nearest point
-      intersect: false, // Tooltip will show even if not directly on the point
     },
   };
 
@@ -104,18 +127,14 @@ export const CreateDetailGraph: React.FC<CreateListGraphProps> = ({ events }) =>
     labels,
     datasets: [
       {
-        type: 'line',
+        type: 'line' as const,
         data: lifeData,
         fill: 'origin',
         parsing: {
           xAxisKey: 'age',
           yAxisKey: 'score',
         },
-        interaction: {
-          mode: 'nearest',
-          intersect: true,
-        },
-        borderColor: (value) => {
+        borderColor: (value: { parsed: { y: number } }) => {
           const condition = value.parsed;
           if (condition && condition.y > 0) {
             return '#1E90FF';

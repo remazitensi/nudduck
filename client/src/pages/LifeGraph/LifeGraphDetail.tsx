@@ -11,7 +11,6 @@ export const LifeGraphDetail: React.FC = () => {
   const pathArray = window.location.pathname.split('/');
   const id = Number(pathArray[pathArray.length - 1]); // 마지막 요소 가져오기
   const navigate = useNavigate();
-  console.log(data);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +36,15 @@ export const LifeGraphDetail: React.FC = () => {
           <div className='mb-[20px] flex justify-end gap-[10px]'>
             <div className='mb-[5px] flex justify-end gap-[10px]'>
               <img src='/edit-btn.png' className='cursor-pointer' onClick={() => setModalOpen(true)} />
-              {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} onSave={setData} />}
+              {modalOpen && (
+                <GraphEditModal
+                  onClose={() => setModalOpen(false)}
+                  graphData={data}
+                  onSave={() => {
+                    setData(data);
+                  }}
+                />
+              )}
               <img
                 src='/delete-btn.png'
                 className='cursor-pointer'
@@ -59,7 +66,7 @@ export const LifeGraphDetail: React.FC = () => {
               <span className='w-[600px] flex-none text-center'>설명</span>
             </div>
             {/* 동적으로 추가되는 요소 */}
-            {data.events.map((event, index) => (
+            {data.events.map((event: { age: number; title: string; score: number; description: string }, index: number) => (
               <div key={index} className='flex h-[90px] w-[1200px] items-center border-b border-[#8D8B67]'>
                 <span className='w-[200px] flex-none text-center'>{event.age}세</span>
                 <span className='w-[200px] flex-none text-center'>{event.title}</span>

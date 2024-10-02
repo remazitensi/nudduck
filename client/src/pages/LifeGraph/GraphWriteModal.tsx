@@ -8,6 +8,7 @@
  * 2024.09.13    김우현      Created     레이아웃 완성
  * 2024.09.22    김민지      Modified    차트 이름 div추가
  * 2024.09.24    김민지      Modified    그래프 생성
+ * 2024.10.01    김민지      Modified    input 요소 추가 로직 변경
  */
 import React, { useState } from 'react';
 import { api, baseApi } from '../../apis/base-api';
@@ -18,7 +19,7 @@ interface GraphWriteModalProps {
   onSaveOld: (old: number, index: number) => void;
   onSaveScore: (score: number, index: number) => void;
   onSaveEvent: (event: string, index: number) => void;
-  updateList: () => void;
+  updateList?: () => void;
 }
 
 const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }) => {
@@ -34,8 +35,13 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
   });
 
   // + 버튼 클릭시 input 요소 추가
-  const handleAddInput = () => {
-    setInputs([...inputs, { title: '', old: '', score: 0, event: '' }]);
+  const handleAddInput = (index: number) => {
+    const updatedInputs = [
+      ...inputs.slice(0, index + 1), // 현재 인덱스까지의 요소들
+      { title: '', old: '', score: 0, event: '' }, // 새로운 빈 입력 필드
+      ...inputs.slice(index + 1), // 나머지 요소들
+    ];
+    setInputs(updatedInputs);
   };
 
   // - 버튼 클릭시 input 요소 제거
@@ -125,34 +131,35 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
     // axios POST 요청
     baseApi
       .post(api.lifeGraph, requestBody)
-      .then((response) => {
-        console.log('Data saved successfully:', response.data);
-        updateList(); // 여기서 그래프 리스트를 업데이트
+      .then(() => {
+        if (updateList) {
+          // updateList가 정의되어 있을 때만 호출
+          updateList(); // 그래프 리스트를 업데이트
+        }
         onClose(); // 모달 닫기
       })
       .catch((error) => {
-        console.error('Error saving data:', error);
         if (error.status === 400) {
-          alert('빠진 항목이 없는지 확인해주세요!');
+          alert('잘못된 항목이 있는지 확인해주세요!');
         }
       });
   };
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
-      <div className='flex h-[1000px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
+      <div className='flex h-[700px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
         <div className='flex justify-end'>
           <div onClick={onClose} className='flex cursor-pointer flex-wrap p-[20px] text-[24px]'>
             x
           </div>
         </div>
-        <div className='pl-[60px]'>
-          <div className='mt-[70px] text-[25px] font-bold'>
+        <div className='px-[60px]'>
+          <div className='text-[25px] font-bold'>
             인생 그래프 구성에 대한 정보를
             <br />
             적어주세요!
           </div>
-          <div className='mt-[50px] flex flex-col gap-[5px]'>
+          <div className='mt-[20px] flex flex-col gap-[5px]'>
             <div>제목</div>
             <input
               value={graphTitle}
@@ -171,7 +178,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
               placeholder='나이를 숫자만 입력해주세요'
             />
           </div>
-          <div className='mt-[25px] h-[400px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
+          <div className='mt-[25px] h-[280px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
             {inputs.map((input, index) => (
               <div key={index} className='mb-[20px]'>
                 <div className='flex gap-[10px]'>
@@ -211,7 +218,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
                   </div>
                   <div className='Buttons mt-[10px] flex gap-[10px] pt-[20px]'>
                     {/* todo : 요소가 하나 남았을 때는 마이너스동작 안 되게 */}
-                    <button onClick={handleAddInput} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
+                    <button onClick={() => handleAddInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
                       +
                     </button>
                     <button onClick={() => handleRemoveInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
@@ -232,8 +239,8 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
             ))}
           </div>
         </div>
-        <div className='mt-[90px] flex h-[50px] w-full justify-center pl-[20px]'>
-          <button onClick={handleSave} className='flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
+        <div className='flex h-[50px] w-full justify-center'>
+          <button onClick={handleSave} className='mt-[10px] flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
             저장하기
           </button>
         </div>

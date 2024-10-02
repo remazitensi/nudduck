@@ -29,7 +29,6 @@ const AICoach: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]); // 세션 리스트 저장 상태
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(null); // 현재 활성화된 세션 ID
   const [chatHistory, setChatHistory] = useState<Message[]>([]); // 채팅 기록 상태
-  const [isPageLoading, setIsPageLoading] = useState(true); // 페이지가 로드된 상태 확인을 위한 상태 변수
   const chatContainerRef = useRef<HTMLDivElement>(null); // 채팅 컨테이너 참조
 
   // 페이지가 로드될 때 스크롤을 최상단으로 이동
@@ -53,9 +52,7 @@ const AICoach: React.FC = () => {
 
       // 세션 클릭 시 채팅방 스크롤을 최하단으로 이동
       // endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    }
+    } catch (error) {}
   };
 
   // AI 코칭 탭 클릭 시 기존 세션 목록 불러오기
@@ -92,11 +89,8 @@ const AICoach: React.FC = () => {
           await loadMessages(lastSession.id);
           setCurrentSessionId(lastSession.id);
         } else {
-          console.warn('No history found in the session response.');
         }
-      } catch (error) {
-        console.error('채팅 세션을 불러오는데 실패했습니다.', error);
-      }
+      } catch (error) {}
     };
 
     fetchChatSessions();
@@ -113,9 +107,7 @@ const AICoach: React.FC = () => {
         setChatHistory([]);
         setCurrentSessionId(null);
       }
-    } catch (error) {
-      console.error('Failed to delete session:', error);
-    }
+    } catch (error) {}
   };
 
   // 세션 클릭 시 해당 세션의 메시지 불러오기
@@ -136,9 +128,7 @@ const AICoach: React.FC = () => {
       setCurrentSessionId(response.sessionId);
       if (isNew) setChatHistory([]);
       await loadMessages(response.sessionId);
-    } catch (error) {
-      console.log('Failed to activate simulation:', error);
-    }
+    } catch (error) {}
   };
 
   // 질문 전송 후 AI 응답 받기
@@ -189,22 +179,13 @@ const AICoach: React.FC = () => {
         return updatedHistory; // 타이핑 메시지를 AI 응답으로 변경
       });
       // endOfMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-      console.error('메시지를 전송하는데 실패하였습니다.', error);
-    }
+    } catch (error) {}
   };
 
   // 이모티콘 선택
   const handleEmojiSelect = (emoji: any) => {
     setMessage((prevMessage) => prevMessage + emoji.native);
     setShowEmojiPicker(false);
-  };
-
-  const scrollToMessage = (index: number) => {
-    const targetElement = messageRefs.current[index];
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   };
 
   // // 채팅 목록이 업데이트될 때 자동 스크롤 범인 이 부분이 화면 스크롤과 채팅방 스크롤이 같이 하단으로 가게 한 범인
@@ -223,11 +204,6 @@ const AICoach: React.FC = () => {
     if (e.key === 'Enter') {
       handleSend();
     }
-  };
-
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
   // 2. chatHistory가 업데이트될 때만 채팅 목록을 최하단으로 스크롤

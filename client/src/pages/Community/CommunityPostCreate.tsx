@@ -72,7 +72,6 @@ const CommunityPostCreate: React.FC = () => {
       content: content,
       category: categoryValue,
     };
-    console.log(post);
 
     try {
       // API 호출 및 성공 시 리다이렉트
@@ -86,15 +85,15 @@ const CommunityPostCreate: React.FC = () => {
   };
 
   return (
-    <div className='community-titles mb-[50px] flex flex-col items-center'>
-      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
+    <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
+      <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
       <div className='mt-[120px] flex w-[1300px]'>
         <div className='flex gap-[20px]'>
           <div className='text-[24px] font-bold'>게시글 작성</div>
-          <div className='relative m-auto h-[40px] w-[150px] border'>
+          <div className='relative m-auto h-[40px] w-[150px] border bg-white'>
             <ul
               onClick={() => {
                 setView(!view);
@@ -142,16 +141,16 @@ const CommunityPostCreate: React.FC = () => {
         {/* 유효성 검사 문구 유효성 검사 함수: onTyping */}
         {message && <p className='mt-[5px] text-red-500'>{message}</p>}
       </div>
-      <div className='mt-[40px] w-[1300px] rounded-[10px] border'>
+      <div className='mt-[40px] w-[1300px] rounded-[10px] border bg-white'>
         <textarea className='m-[30px] w-[1240px] resize-none overflow-auto' ref={editorRef} rows={10} placeholder='10자 이상 입력해주세요.'></textarea>
-        <div className='flex justify-end gap-[23px] p-[20px]'>
-          <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
-            취소
-          </button>
-          <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
-            저장
-          </button>
-        </div>
+      </div>
+      <div className='mb-[70px] flex w-[1300px] justify-end gap-[23px] p-[20px]'>
+        <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
+          취소
+        </button>
+        <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
+          저장
+        </button>
       </div>
     </div>
   );

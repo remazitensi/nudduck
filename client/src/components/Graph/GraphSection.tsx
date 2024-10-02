@@ -8,6 +8,7 @@
  * 2024.09.22    김민지      Created     그래프 섹션 컴포넌트 분리, 차트 이름 추가, 그래프 연결
  * 2024.09.24    김민지      Modified    그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
  * 2024.09.25    김민지      Modified    그래프 상세페이지로 이동
+ * 2024.10.01    김민지      Modified    즐겨찾기 로직 변경
  */
 
 import { useState } from 'react';
@@ -28,17 +29,15 @@ const GraphSection = ({ data, title, createdAt, updatedAt, events, id, activeSta
   };
 
   const changeStar = () => {
-    if (!isActive) {
-      // 현재 활성화된 별이 아닌 경우에만 클릭 이벤트 처리
-      changeActiveStar(id);
-    }
+    // 클릭된 그래프가 이미 활성화된 별이라면, 즐겨찾기를 해제하려는 것
+    changeActiveStar(isActive ? id : id); // 클릭된 그래프의 ID를 다시 서버로 보내 즐겨찾기 해제 요청
   };
 
   return (
     <div className='flex w-[380px] flex-col rounded-[30px] shadow-xl'>
       <div className='mb-[5px] flex justify-end gap-[10px]'>
         <img src='/edit-btn.png' className='cursor-pointer' onClick={() => setModalOpen(true)} />
-        {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} />}
+        {modalOpen && <GraphEditModal onClose={() => setModalOpen(false)} graphData={data} onSave={updateList} />}
         <img
           src='/delete-btn.png'
           className='cursor-pointer'

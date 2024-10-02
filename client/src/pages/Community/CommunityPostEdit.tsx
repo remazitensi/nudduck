@@ -129,7 +129,6 @@ const CommunityPostEdit: React.FC = () => {
       content: postData.content,
       category: category,
     };
-    console.log(post);
 
     try {
       await editPost(post, id);
@@ -148,9 +147,7 @@ const CommunityPostEdit: React.FC = () => {
         setCategory(data.category); // 가져온 카테고리를 선택한 카테고리로 설정
         return data.userId;
       }
-    } catch (err) {
-      console.error('Error fetching post data:', err);
-    }
+    } catch (err) {}
   };
 
   // 로그인 유저(이용자) 정보 호출 API
@@ -168,8 +165,6 @@ const CommunityPostEdit: React.FC = () => {
   useEffect(() => {
     fetchPostDataWithComment();
     userInfo();
-    // console.log(postData.userId);
-    // console.log(info?.id);
     // if (postData.userId !== info?.id) {
     //   alert('접근할 수 없습니다!');
     //   navigate(`/community`);
@@ -178,7 +173,7 @@ const CommunityPostEdit: React.FC = () => {
 
   return (
     <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
-      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
+      <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
@@ -186,7 +181,7 @@ const CommunityPostEdit: React.FC = () => {
       <div className='mt-[120px] flex w-[1300px]'>
         <div className='flex gap-[20px]'>
           <div className='text-[24px] font-bold'>게시글 작성</div>
-          <div className='relative m-auto h-[40px] w-[150px] border'>
+          <div className='relative m-auto h-[40px] w-[150px] border bg-white'>
             <ul onClick={() => setView(!view)} className='flex cursor-pointer p-[5px]'>
               <li className='flex w-full items-center'>
                 {getCategoryInKorean(category)}
@@ -218,13 +213,13 @@ const CommunityPostEdit: React.FC = () => {
         <input
           value={postData.title} // 제목 상태 바인딩
           onChange={onTitleChange}
-          className='h-[60px] w-full rounded-[10px] border pl-[35px] text-[20px] text-[#808080]'
+          className='h-[60px] w-full rounded-[10px] border bg-white pl-[35px] text-[20px] text-[#808080]'
           placeholder='게시글의 주제나 목적이 드러날 수 있도록 작성해 주세요'
         />
       </div>
 
       {/* 본문 입력 */}
-      <div className='mt-[40px] w-[1300px] rounded-[10px] border'>
+      <div className='mt-[40px] w-[1300px] rounded-[10px] border bg-white'>
         <textarea
           value={postData.content} // 본문 상태 바인딩
           onChange={onContentChange}
@@ -235,7 +230,7 @@ const CommunityPostEdit: React.FC = () => {
       </div>
 
       {/* 저장 및 취소 버튼 */}
-      <div className='flex justify-end gap-[23px] p-[20px]'>
+      <div className='mb-[70px] flex w-[1300px] justify-end gap-[23px] p-[20px]'>
         <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
           취소
         </button>
