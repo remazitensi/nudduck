@@ -15,9 +15,7 @@ const ExpertsPage = () => {
       const data = await fetchExperts(page, limit);
       setExperts(data.data);
       setTotalCount(data.totalCount);
-    } catch (error) {
-      console.error('Failed to fetch experts:', error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

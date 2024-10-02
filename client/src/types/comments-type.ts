@@ -24,7 +24,8 @@ export type RepliesResDto = {
 };
 
 export type CommentsResDto = {
-  replies: CommentsDto[];
+  // comments?: CommentsDto[] | undefined;
+  comments: CommentsDto[];
   total: number;
 };
 
@@ -34,4 +35,11 @@ export type UserInfo = {
   email: string;
   imageUrl: string;
   name: string;
+};
+
+export type UpdateCommentDto = {
+  content: string;
+  postId: number;
+  commentId: number;
+  parentId?: number;
 };

@@ -29,7 +29,7 @@ export const CreateComment = ({ postId, onCommentCreated }: { postId: number; on
       if (contentRef.current) contentRef.current.value = ''; // 댓글 입력란 초기화
       onCommentCreated(); // 부모 컴포넌트에 알림
     } catch (error) {
-      console.error('댓글 생성 실패:', error);
+      alert('댓글 생성에 실패했습니다.😭');
     }
   };
 

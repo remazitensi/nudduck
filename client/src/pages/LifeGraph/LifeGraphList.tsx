@@ -9,11 +9,13 @@
  * 2024.09.22    김민지      Modified     컴포넌트 분리, 차트섹션 동적 추가
  * 2024.09.24    김민지      Modified     그래프 리스트 get, 즐겨찾기, 그래프 추가/삭제
  * 2024.09.25    김민지      Modified     리팩토링, 즐겨찾기 에러 수정
+ * 2024.10.01    김민지      Modified     즐겨찾기 그래프 해제 추가 및 설정 유지
  */
 
 import React, { useEffect, useState } from 'react';
 import { api, baseApi } from '../../apis/base-api';
 
+import { useNavigate } from 'react-router-dom';
 import { fetchLifeGraphs } from '../../apis/lifeGraph/graph-api';
 import GraphSection from '../../components/Graph/GraphSection';
 import { GraphData } from '../../types/graph-type';
@@ -31,19 +33,28 @@ const LifeGraphList: React.FC = () => {
 
   const [activeStarId, setActiveStarId] = useState<number | null>(null); // 현재 활성화된 스타 ID
 
-  const changeActiveStar = async (id: number) => {
-    if (activeStarId !== id) {
-      // 현재 활성화된 스타와 다른 별을 클릭했을 때만 API 요청을 보냄
-      setActiveStarId(id); // 클릭한 스타 ID로 활성화
-      try {
-        await baseApi.post(`${api.lifeGraph}/favorite`, { graphId: id });
+  const navigate = useNavigate();
+
+  // 대표 그래프 변경
+  const changeActiveStar = async (id: number | null) => {
+    try {
+      const response = await baseApi.post(`${api.lifeGraph}/favorite`, { graphId: id });
+      // 서버 응답에 따라 별표 상태 업데이트
+      if (response.data.isFavorited) {
+        setActiveStarId(id); // 서버에서 true를 받으면 활성화
         alert('대표 그래프가 설정되었습니다. ✔');
-      } catch (error) {
+      } else {
+        setActiveStarId(null); // 서버에서 false를 받으면 비활성화
+        alert('대표 그래프가 해제되었습니다. ❌');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
         alert(error.message);
       }
     }
   };
 
+  // 페이지 로드 시 인생 그래프 데이터와 대표 그래프 상태를 서버에서 받아옴
   useEffect(() => {
     updateLifeGraphs();
   }, [currentPage]);
@@ -51,13 +62,14 @@ const LifeGraphList: React.FC = () => {
   const updateLifeGraphs = async () => {
     const res = await fetchLifeGraphs(currentPage);
     setGraphListData(res.data);
-    console.log(res);
-    console.log('graphListData에 저장된 데이터: ', graphListData);
     if (res.data.length === 0) {
       setNoData(true);
     } else if (res.data.length >= 1) {
       setNoData(false);
       setTotalPages(Math.ceil(res.totalCount / 6));
+
+      // 서버에서 받아온 favoriteGraphId로 현재 활성화된 대표 그래프 설정
+      setActiveStarId(res.favoriteGraphId);
     }
   };
 
@@ -90,13 +102,15 @@ const LifeGraphList: React.FC = () => {
           >
             작성하기
           </button>
-          {isWriteModalOpen && <GraphWriteModal updateList={updateLifeGraphs} onClose={() => setIsWriteModalOpen(false)} />}
+          {isWriteModalOpen && (
+            <GraphWriteModal updateList={updateLifeGraphs} onClose={() => setIsWriteModalOpen(false)} onSaveTitle={() => {}} onSaveOld={() => {}} onSaveScore={() => {}} onSaveEvent={() => {}} />
+          )}
         </div>
       </div>
     );
   } else {
     return (
-      <div className='graphOk-titles flex w-full flex-col items-center'>
+      <div className='graphOk-titles flex w-full flex-col items-center bg-[#fcfcf8]'>
         <div className='mt-[70px] flex flex-col items-center'>
           <div className='text-[28px] font-bold'>인생 그래프</div>
           <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
@@ -113,6 +127,10 @@ const LifeGraphList: React.FC = () => {
             <GraphWriteModal
               updateList={updateLifeGraphs} // 그래프 목록 업데이트 함수 전달
               onClose={() => setIsWriteModalOpen(false)}
+              onSaveTitle={() => {}}
+              onSaveOld={() => {}}
+              onSaveScore={() => {}}
+              onSaveEvent={() => {}}
             />
           )}
         </div>
@@ -130,6 +148,8 @@ const LifeGraphList: React.FC = () => {
               activeStarId={activeStarId} // 활성화된 스타 ID 전달
               changeActiveStar={changeActiveStar} // 스타 변경 함수 전달
               updateList={updateLifeGraphs}
+              currentAge={graphData.currentAge}
+              refreshGraphList={updateLifeGraphs}
             />
           ))}
         </div>

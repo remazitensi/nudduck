@@ -13,16 +13,37 @@ import { fetchUserProfile } from '../apis/mypage-api';
 import MyProfile from '../components/MyPage/MyProfile';
 import QuitModal from './QuitModal';
 
-interface Post {
-  id: number;
+export interface Post {
+  postId: number;
   title: string;
-  date: string;
+  createdAt: string;
 }
 
-interface FavoriteLifeGraph {
-  id: number;
+export interface LifeGraphEvent {
+  age: number;
+  score: number;
   title: string;
   description: string;
+}
+export interface FavoriteLifeGraph {
+  id: number;
+  currentAge: number;
+  title: string;
+  events: LifeGraphEvent[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Profile {
+  id: string;
+  imageUrl: string;
+  nickname: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  hashtags: string[];
+  favoriteLifeGraph: FavoriteLifeGraph | null;
+  posts: Post[];
 }
 
 const MyPage: React.FC = () => {
@@ -53,14 +74,12 @@ const MyPage: React.FC = () => {
       if (userProfileData) {
         setProfile((prevProfile) => ({
           ...prevProfile,
-          ...userProfileData,
+          ...(userProfileData as unknown as Profile),
           totalCount: userProfileData.totalCount,
         }));
         setTotalPages(Math.ceil(userProfileData.totalCount / limit));
       }
-    } catch (error) {
-      console.error('프로필을 가져오는 중 에러가 발생했습니다.', error);
-    }
+    } catch (error) {}
     setIsLoading(false);
   };
 

@@ -29,7 +29,6 @@ const CommunityPostList: React.FC = () => {
   // 카테고리에 따라 적절한 fetch 함수 호출
   const fetchPosts = async () => {
     const params: PostListParams = { page: pages.currentPage, sort, category: selectedCategory };
-    console.log(params);
     const data = await getPostList(params);
     setPosts(data[0]);
     setTotalPostCount(data[1]);
@@ -46,7 +45,6 @@ const CommunityPostList: React.FC = () => {
   // 페이지 로드 시 및 sort,selectedCategory 변경 시 fetchPosts 호출
   useEffect(() => {
     fetchPosts();
-    console.log('useEffect save posts :', posts);
   }, [selectedCategory, pages.currentPage, sort]);
 
   // 페이지네이션 현재 페이지 설정
@@ -73,26 +71,26 @@ const CommunityPostList: React.FC = () => {
 
   return (
     <div className='community-titles flex flex-col items-center bg-[#fcfcf8]'>
-      <div className='mt-[70px] cursor-pointer' onClick={() => navigate('/community')}>
+      <div className='mt-[70px] flex flex-col items-center' onClick={() => navigate('/community')}>
         <div className='text-[28px] font-bold'>커뮤니티</div>
         <div className='mt-[10px] w-[200px] border-b-4 border-[#909700]'></div>{' '}
       </div>
       <div className='mt-[55px]'>
         <div className='flex items-center'>
           <div className='flex cursor-pointer gap-[80px] text-[20px]'>
-            <div onClick={() => handleCategoryChange('')} className={`text-[${selectedCategory === '' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('')} className={`hover:font-semibold text-[${selectedCategory === '' ? '#59573D' : '#AEAC9A'}]`}>
               전체
             </div>
-            <div onClick={() => handleCategoryChange('interview')} className={`text-[${selectedCategory === 'interview' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('interview')} className={`hover:font-semibold text-[${selectedCategory === 'interview' ? '#59573D' : '#AEAC9A'}]`}>
               면접
             </div>
-            <div onClick={() => handleCategoryChange('meeting')} className={`text-[${selectedCategory === 'meeting' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('meeting')} className={`hover:font-semibold text-[${selectedCategory === 'meeting' ? '#59573D' : '#AEAC9A'}]`}>
               모임
             </div>
-            <div onClick={() => handleCategoryChange('study')} className={`text-[${selectedCategory === 'study' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('study')} className={`hover:font-semibold text-[${selectedCategory === 'study' ? '#59573D' : '#AEAC9A'}]`}>
               스터디
             </div>
-            <div onClick={() => handleCategoryChange('talk')} className={`text-[${selectedCategory === 'talk' ? '#59573D' : '#AEAC9A'}]`}>
+            <div onClick={() => handleCategoryChange('talk')} className={`hover:font-semibold text-[${selectedCategory === 'talk' ? '#59573D' : '#AEAC9A'}]`}>
               잡담
             </div>
           </div>
@@ -134,7 +132,6 @@ const CommunityPostList: React.FC = () => {
             {/* <button
               className={`text-[${sort === 'popular' ? '#59573D' : '#AEAC9A'}]`}
               onClick={() => {
-                // console.log('Sort changed to popular');
                 setSort('popular');
               }}
             >

@@ -7,8 +7,13 @@
  * Date          Author     Status       Description
  * 2024.09.05    김민지     Created     
  * 2024.09.06    김민지     Modified     tailwind CSS 추가
+ * 2024.10.01    황솜귤     Modified     커서 스타일 추가
  */
 @import url('https://fonts.googleapis.com/css2?family=Rammetto+One&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  cursor: url(https://cur.cursors-4u.net/smilies/smi-3/smi275.ani), url(https://cur.cursors-4u.net/smilies/smi-3/smi275.gif), auto !important;
+}

@@ -6,9 +6,10 @@ import { UpdateCommentDto } from '@_modules/community/dto/request/update-comment
 import { UpdateCommunityDto } from '@_modules/community/dto/request/update-community.dto';
 import { CommentResponseDto } from '@_modules/community/dto/response/comment-response.dto';
 import { CommunityResponseDto } from '@_modules/community/dto/response/community-response.dto';
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRequest } from 'common/interfaces/user-request.interface';
+import { Request as ExpressRequest } from 'express';
 import { CommunityService } from './community.service';
 import { Category } from './enums/category.enum';
 
@@ -215,7 +216,7 @@ export class CommunityController {
   @ApiParam({ name: 'id', required: true, description: '게시글 ID' })
   @ApiResponse({ status: 204, description: '게시글 조회수가 성공적으로 증가했습니다.' })
   @ApiResponse({ status: 404, description: '게시글을 찾을 수 없습니다.' })
-  async incrementViewCount(@Param('id') postId: number): Promise<void> {
-    return await this.communityService.incrementViewCount(postId);
+  async incrementViewCount(@Param('id') postId: number, @Req() request: ExpressRequest): Promise<void> {
+    await this.communityService.incrementViewCount(postId, request);
   }
 }
