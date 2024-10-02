@@ -5,14 +5,15 @@
  *
  * History
  * Date          Author      Status      Description
- * 2024.09.12    황솜귤      Created     메인페이지 생성
+ * 2024.09.12    황솜귤      Created     메인 페이지 생성
  * 2024.09.17    황솜귤      Modified    Intersection Observer(React)로 텍스트 애니메이션 효과 추가
  * 2024.09.19    황솜귤      Modified    전체 섹션 레이아웃 배치
  * 2024.09.19    황솜귤      Modified    TailwindCSS 변환
  * 2024.09.30    황솜귤      Modified    세부 디자인 수정
+ * 2024.10.02    황솜귤      Modified    메인 페이지 이미지 변경
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './MainPage.css'; // CSS 파일 유지 가능 (일부 스타일링 적용)
 
 /**
@@ -22,8 +23,11 @@ import './MainPage.css'; // CSS 파일 유지 가능 (일부 스타일링 적용
  */
 const MainPage = () => {
   const textRef = useRef<HTMLParagraphElement>(null); // 텍스트를 참조할 useRef 생성
+  const imageRef = useRef<HTMLImageElement>(null); // 이미지를 참조할 useRef 생성
+  const [isImageVisible, setIsImageVisible] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true); // 스크롤 최상단 상태 관리
 
-  // Intersection Observer 사용 (옵션 제거)
+  // Intersection Observer 사용 (텍스트)
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -46,6 +50,31 @@ const MainPage = () => {
     };
   }, []);
 
+  // Intersection Observer 사용 (이미지)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsImageVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }, // 이미지가 10% 뷰포트에 들어왔을 때 애니메이션 트리거
+    );
+
+    if (imageRef.current) {
+      observer.observe(imageRef.current);
+    }
+
+    return () => {
+      if (imageRef.current) {
+        observer.unobserve(imageRef.current);
+      }
+    };
+  }, []);
+
   // 화살표 클릭 시 부드러운 스크롤 이동
   const handleArrowClick = () => {
     window.scrollTo({
@@ -54,33 +83,67 @@ const MainPage = () => {
     });
   };
 
+  // 스크롤 이벤트를 감지하여 최상단에 있는지 여부를 업데이트
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY === 0) {
+        setIsAtTop(true); // 스크롤이 최상단에 있을 때
+      } else {
+        setIsAtTop(false); // 스크롤이 내려갔을 때
+      }
+    };
+
+    // 스크롤 이벤트 리스너 등록
+    window.addEventListener('scroll', handleScroll);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 해제
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div className='main-container m-0 w-full p-0'>
       {/* 상단 배너 */}
-      <div className='banner flex h-[900px] w-full flex-col items-center justify-center bg-gradient-to-b from-[#979e07] to-white px-5 py-20 text-center text-gray-800'>
-        <div className='banner-content'>
+      <div
+        className='banner flex h-[900px] w-full flex-col items-center justify-start bg-gradient-to-b from-[#979e07] to-white bg-cover bg-center px-5 py-10 text-center text-gray-800'
+        style={{ backgroundImage: `url('/mainpage.png')` }}
+      >
+        <div className='banner-content mt-[65px]'>
           <h1 className='banner-title mb-2 text-3xl font-extrabold'>
             <span className='extrabold'>누워서</span>
-            <span className='extrabold text-white'> 떡 </span>
+            <span className='extrabold animate-bounce text-[#909700]'> 떡 </span>
             <span className='extrabold'>먹기</span>
             <span className='semibold text-gray-800'>처럼 쉬운 면접 준비!</span>
           </h1>
           <h2 className='text-xl font-semibold'>“누떡”이 도와줄게~</h2>
-          <img
-            src='/main-page-arrow.png'
-            alt='Arrow Down'
-            className='arrow-down ml-[120px] mt-[400px] h-[142px] w-[166px] opacity-50'
-            onClick={handleArrowClick} // 클릭 이벤트 핸들러 추가
-          />
         </div>
       </div>
 
+      {/* 화살표 이미지 (최상단일 때만 표시) */}
+      {isAtTop && (
+        <img
+          src='/main-page-arrow.png'
+          alt='Arrow Down'
+          className='arrow-down fixed bottom-10 left-1/2 h-[142px] w-[166px] -translate-x-1/2 transform animate-pulse opacity-100'
+          onClick={handleArrowClick} // 클릭 이벤트 핸들러 추가
+        />
+      )}
+
+      {/* 나머지 섹션 (기존 내용 유지) */}
       {/* 텍스트 설명 */}
       <h2 className='font-regular my-8 mt-36 text-center text-2xl transition-transform duration-300 hover:scale-105'>나의 인생을 그래프로 요약하고,</h2>
+
       {/* 이미지로 대체되는 그래프 섹션 */}
       <section className='image-section px-[200px]'>
-        <img src='graph-sample.png' alt='life-graph' className='full-width-image mb-[200px] mt-[200px]' />
+        <img
+          ref={imageRef}
+          src='graph-sample.png'
+          alt='life-graph'
+          className={`full-width-image mb-[200px] mt-[200px] transition-transform duration-1000 ${isImageVisible ? 'translate-y-0 transform opacity-100' : 'translate-y-10 transform opacity-0'}`}
+        />
       </section>
+
       {/* AI 소개 섹션 */}
       <section className='ai-section relative mt-12 inline-block'>
         <img src='ai-solution.png' alt='ai-solution' className='block w-full' />
