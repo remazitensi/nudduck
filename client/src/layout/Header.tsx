@@ -58,7 +58,6 @@ const Header: React.FC = () => {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 401) {
-          alert('인증이 필요합니다. 다시 로그인해주세요.');
           setIsLoggedIn(false);
         } else {
         }
