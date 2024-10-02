@@ -36,12 +36,16 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
       event: event.description,
     })),
   );
-
+  const [checkTitle, setCheckTitle] = useState(false);
+  const [checkCurrentAge, setCheckCurrentAge] = useState(false);
+  const [checkEventAge, setCheckEventAge] = useState(false);
+  const [checkEventTitle, setCheckEventTitle] = useState(false);
   const [error, setError] = useState({
     graphTitle: '',
-    old: '',
-    event: '',
-    title: '',
+    old: Array(inputs.length).fill(''),
+    event: Array(inputs.length).fill(''),
+    title: Array(inputs.length).fill(''),
+    currentAge: '',
   });
 
   // + 버튼 클릭 시 input 요소 추가
@@ -63,37 +67,76 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
   // 그래프 제목 저장
   const handleSaveGraphTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setGraphTitle(value);
-
     if (value.length > 15) {
-      setError((prev) => ({ ...prev, graphTitle: '15자 이하로 입력해주세요.' }));
+      setError((prev) => ({ ...prev, graphTitle: '15자 이하로 적어주세요.' }));
+      setCheckTitle(false);
     } else {
       setError((prev) => ({ ...prev, graphTitle: '' }));
+      setCheckTitle(true);
+      setGraphTitle(value);
     }
   };
 
   // 각 입력 필드에 대한 상태 변경 핸들러
   const handleSaveEventTitle = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const value = e.target.value;
     const newInputs = [...inputs];
-    newInputs[index].title = e.target.value;
+    newInputs[index].title = value;
+
+    const newError = { ...error };
+    if (value.length > 15) {
+      newError.title[index] = '15자 이하로 적어주세요.';
+      setCheckEventTitle(false);
+    } else {
+      newError.title[index] = ''; // 에러 해제
+      setCheckEventTitle(true);
+    }
+    setError(newError);
     setInputs(newInputs);
   };
 
+  // 이벤트 나이 유효성 검사 및 저장
   const handleSaveOld = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const value = e.target.value;
     const newInputs = [...inputs];
-    newInputs[index].old = e.target.value;
+    newInputs[index].old = value;
+
+    const newError = { ...error };
+    if (!/^\d+$/.test(value)) {
+      newError.old[index] = '숫자만 입력해 주세요';
+      setCheckEventAge(false);
+    } else if (Number(value) > Number(currentAge)) {
+      newError.old[index] = '현재 나이보다 작아야 합니다';
+      setCheckEventAge(false);
+    } else {
+      newError.old[index] = ''; // 에러 해제
+      setCheckEventAge(true);
+    }
+    setError(newError);
     setInputs(newInputs);
   };
 
+  // 점수 저장
   const handleSaveScore = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
+    const value = Number(e.target.value);
     const newInputs = [...inputs];
-    newInputs[index].score = Number(e.target.value);
+    newInputs[index].score = value;
     setInputs(newInputs);
   };
 
+  // 이벤트 설명 저장 (data.events[i].description)
   const handleSaveEventDescription = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const value = e.target.value;
     const newInputs = [...inputs];
-    newInputs[index].event = e.target.value;
+    newInputs[index].event = value;
+
+    const newError = { ...error };
+    if (value.length > 50) {
+      newError.event[index] = '50자 이하로 적어주세요.';
+    } else {
+      newError.event[index] = ''; // 에러 해제
+    }
+    setError(newError);
     setInputs(newInputs);
   };
 
@@ -109,6 +152,14 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
         description: input.event,
       })),
     };
+
+    if (updatedData.events.length < 2) {
+      return alert('이벤트는 두 개 이상 입력해주세요!');
+    } else if (updatedData.events.length > Number(currentAge)) {
+      return alert('현재 나이보다 이벤트를 많이 등록할 수 없습니다!');
+    } else if (Math.max(...updatedData.events.map((event) => event.age)) > Number(currentAge)) {
+      return alert('현재 나이보다 미래의 이벤트는 등록할 수 없습니다!');
+    }
 
     // axios PUT 요청으로 수정된 데이터를 서버에 전송
     baseApi
@@ -127,15 +178,15 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-[#585858] bg-opacity-30' onClick={onClose}>
-      <div className='flex h-[1000px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
+      <div className='flex h-[700px] w-[700px] flex-col rounded-[20px] bg-white shadow-lg' onClick={(e) => e.stopPropagation()}>
         <div className='flex justify-end'>
           <div onClick={onClose} className='flex cursor-pointer flex-wrap p-[20px] text-[24px]'>
             x
           </div>
         </div>
-        <div className='pl-[60px]'>
-          <div className='mt-[50px] text-[25px] font-bold'>인생 그래프 수정</div>
-          <div className='mt-[30px] flex flex-col gap-[5px]'>
+        <div className='px-[50px]'>
+          <div className='text-[20px] font-bold'>인생 그래프 수정</div>
+          <div className='mt-[20px] flex flex-col gap-[5px]'>
             <div>제목</div>
             <input
               value={graphTitle}
@@ -143,7 +194,6 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
               className='h-[40px] w-[300px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
               placeholder='15자 이내로 입력해주세요.'
             />
-            {error.graphTitle && <div className='text-red-500'>{error.graphTitle}</div>}
           </div>
 
           <div className='mt-[10px] flex flex-col gap-[5px]'>
@@ -156,7 +206,7 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
             />
           </div>
 
-          <div className='mt-[25px] h-[400px] overflow-y-auto overflow-x-hidden'>
+          <div className='mt-[25px] h-[280px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
             {inputs.map((input, index) => (
               <div key={index} className='mb-[20px]'>
                 <div className='flex gap-[10px]'>
@@ -169,7 +219,7 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
                       placeholder='최대 15자'
                     />
                   </div>
-
+                  {error.title && <div className='text-red-500'>{error.title}</div>}
                   <div className='Old-input'>
                     <div>나이</div>
                     <input value={input.old} onChange={(e) => handleSaveOld(e, index)} className='h-[40px] w-[90px] rounded-[10px] bg-[#F8F8F8] pl-[10px] outline-none' placeholder='나이만' />
@@ -186,12 +236,13 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
                     </select>
                   </div>
 
-                  <div className='Buttons flex items-center gap-[10px]'>
+                  <div className='Buttons mt-[10px] flex gap-[10px] pt-[20px]'>
                     {/* + 버튼: 입력 필드 추가 */}
-                    <button onClick={() => handleAddInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
-                      +
-                    </button>
-
+                    {inputs.length < Number(currentAge) && (
+                      <button onClick={() => handleAddInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
+                        +
+                      </button>
+                    )}
                     {/* - 버튼: 입력 필드 제거, 요소가 1개 남으면 삭제 불가 */}
                     {inputs.length > 1 && (
                       <button onClick={() => handleRemoveInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
@@ -199,6 +250,10 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
                       </button>
                     )}
                   </div>
+                </div>
+                <div className='flex items-center gap-[165px]'>
+                  {error.title[index] && <div className='text-red-500'>{error.title[index]}</div>}
+                  {error.old[index] && <div className='text-red-500'>{error.old[index]}</div>}{' '}
                 </div>
 
                 <div className='Event-input mt-[10px]'>
@@ -209,12 +264,13 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
                     placeholder='이벤트 설명을 입력해주세요'
                   />
                 </div>
+                {error.event[index] && <div className='overflow-x-auto text-red-500'>{error.event[index]}</div>}
               </div>
             ))}
           </div>
 
-          <div className='mt-[70px] flex h-[50px] w-full justify-center'>
-            <button onClick={handleSave} className='flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
+          <div className='flex h-[50px] w-full justify-center'>
+            <button onClick={handleSave} className='mt-[10px] flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
               저장하기
             </button>
           </div>

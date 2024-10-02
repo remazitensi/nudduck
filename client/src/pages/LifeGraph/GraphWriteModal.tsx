@@ -94,7 +94,6 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
 
   // 이벤트 제목 저장 (data.events[i].title)
   const handleSaveEventTitle = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    Number(e.target.value) > 100 ? setCheckCurrentAge(false) : setCheckCurrentAge(true);
     const value = e.target.value;
     const newInputs = [...inputs];
     newInputs[index].title = value;
@@ -166,16 +165,19 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
       description: input.event,
     }));
 
-    if (events.length < 2) {
-      return alert('이벤트는 두 개 이상 입력해주세요!');
-    }
-
     const requestBody = {
       currentAge: Number(currentAge), // 현재 나이
       title: graphTitle, // 그래프 제목
       events: events, // 이벤트 목록
     };
 
+    if (requestBody.events.length < 2) {
+      return alert('이벤트는 두 개 이상 입력해주세요!');
+    } else if (requestBody.events.length > Number(currentAge)) {
+      return alert('현재 나이보다 이벤트를 많이 등록할 수 없습니다!');
+    } else if (Math.max(...requestBody.events.map((event) => event.age)) > Number(currentAge)) {
+      return alert('현재 나이보다 미래의 이벤트는 등록할 수 없습니다!');
+    }
     // axios POST 요청
     baseApi
       .post(api.lifeGraph, requestBody)
