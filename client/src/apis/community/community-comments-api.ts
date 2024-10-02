@@ -70,7 +70,7 @@ export const getReply = async (postId: number, parentId: number): Promise<Replie
     const response = await baseApi.get(`${api.community}/articles/${postId}/comments/${parentId}/replies`);
     return response.data;
   } catch (error: any) {
-    alert(error.message);
+    // alert(error.message);
     throw error;
   }
 };
