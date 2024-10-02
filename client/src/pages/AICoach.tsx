@@ -223,7 +223,7 @@ const AICoach: React.FC = () => {
 
       <div className='mt-[40px] flex text-[25px]'>
         <div>
-          '<span className='text-[30px] font-bold'>면접</span>'을 입력해보세요! &nbsp; &nbsp;
+          처음이라면 '<span className='text-[30px] font-bold'>새 채팅</span>'을 눌러주세요! &nbsp; &nbsp;
         </div>
       </div>
 
