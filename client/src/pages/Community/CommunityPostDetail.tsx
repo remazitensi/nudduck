@@ -18,7 +18,8 @@ import AnotherUserModal from '../../components/Community/AnotherUserModal';
 import { CategoryBtn } from '../../components/Community/CategoryBtn';
 import { CommentSection } from '../../components/Community/CommentSection';
 import { CreateComment } from '../../components/Community/CreateComment';
-import ScrollToTop from '../../components/ScrolltoTop';
+
+import ScrollToTop from '../../components/ScrollToTop';
 import { CommentsDto, CommentsResDto } from '../../types/comments-type';
 import { Post } from '../../types/community-type';
 import { changeDateWithFormat } from '../../utils/change-date-with-format';
@@ -37,7 +38,6 @@ const CommunityPostDetail: React.FC = () => {
   });
   const [comments, setComments] = useState<CommentsDto[]>([]); // 댓글 목록 state 추가
   const [openUserModal, setOpenUserModal] = useState<boolean>(false);
-  const [totalPage, setTotalPage] = useState<number>(0);
   const navigate = useNavigate();
 
   const handleOpenModal = () => {
@@ -62,7 +62,6 @@ const CommunityPostDetail: React.FC = () => {
     try {
       const data: CommentsResDto = await getComments(Number(postData.postId));
       setComments(data.comments);
-      setTotalPage(data.total);
     } catch (error) {}
   };
 

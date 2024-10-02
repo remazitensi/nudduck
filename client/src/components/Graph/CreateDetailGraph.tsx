@@ -16,8 +16,6 @@ import { GraphEvent } from '../../types/graph-type';
 // import { lifeData } from '../../types/graph-type';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-// TODO : 옵션설정 : 범례 없애기, 0 중심줄 강조, 컬러, 선 둥글게, 선 두껍게, 툴팁에 제목 나오게 등
-
 interface CreateListGraphProps {
   events: GraphEvent[]; // events는 GraphEvent 타입 배열
 }

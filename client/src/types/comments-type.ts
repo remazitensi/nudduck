@@ -24,7 +24,6 @@ export type RepliesResDto = {
 };
 
 export type CommentsResDto = {
-  // comments?: CommentsDto[] | undefined;
   comments: CommentsDto[];
   total: number;
 };

@@ -9,7 +9,6 @@
  * 2024.09.22    김민지      Modified
  */
 
-//todo : 지금 하고 있는 거 - 카테고리btn 컴포넌트 분리 주석 작성
 type ButtonProps = {
   category: string;
 };
