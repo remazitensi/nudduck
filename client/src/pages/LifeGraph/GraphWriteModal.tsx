@@ -26,13 +26,41 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
   const [graphTitle, setGraphTitle] = useState(''); // 전체 그래프의 제목
   const [currentAge, setCurrentAge] = useState(''); // 현재 나이
   const [inputs, setInputs] = useState([{ title: '', old: '', score: 0, event: '' }]);
-
+  const [checkTitle, setCheckTitle] = useState(false);
+  const [checkCurrentAge, setCheckCurrentAge] = useState(false);
+  const [checkEventAge, setCheckEventAge] = useState(false);
+  const [checkEventTitle, setCheckEventTitle] = useState(false);
   const [error, setError] = useState({
     graphTitle: '',
-    old: '',
-    event: '',
-    title: '',
+    old: Array(inputs.length).fill(''),
+    event: Array(inputs.length).fill(''),
+    title: Array(inputs.length).fill(''),
+    currentAge: '',
   });
+
+  // 현재나이 유효성 검사
+  const handleCurrentAge = (value: string) => {
+    if (!/^\d+$/.test(value)) {
+      setCheckCurrentAge(false);
+      setError((prev) => ({ ...prev, currentAge: '숫자만 입력해주세요!' }));
+    } else if (Number(value) > 100) {
+      setCheckCurrentAge(false);
+      setError((prev) => ({ ...prev, currentAge: '100세 이하로 입력해주세요!' }));
+    } else if (Number(value) < 0) {
+      setCheckCurrentAge(false);
+      setError((prev) => ({ ...prev, currentAge: '0세 이상으로 입력해주세요' }));
+    } else {
+      setCurrentAge(value);
+      setCheckCurrentAge(true);
+      return '';
+    }
+  };
+
+  // 버튼 비활성화 결정 함수
+  const handleSubmitBtn = () => {
+    const isDisabled = checkTitle && checkCurrentAge && checkEventAge && checkEventTitle;
+    return isDisabled;
+  };
 
   // + 버튼 클릭시 input 요소 추가
   const handleAddInput = (index: number) => {
@@ -53,40 +81,54 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
   // 그래프 제목 저장 (data.title)
   const handleSaveGraphTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setGraphTitle(value);
 
     if (value.length > 15) {
       setError((prev) => ({ ...prev, graphTitle: '15자 이하로 적어주세요.' }));
+      setCheckTitle(false);
     } else {
       setError((prev) => ({ ...prev, graphTitle: '' }));
+      setCheckTitle(true);
+      setGraphTitle(value);
     }
   };
 
   // 이벤트 제목 저장 (data.events[i].title)
   const handleSaveEventTitle = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    Number(e.target.value) > 100 ? setCheckCurrentAge(false) : setCheckCurrentAge(true);
     const value = e.target.value;
     const newInputs = [...inputs];
     newInputs[index].title = value;
 
+    const newError = { ...error };
     if (value.length > 15) {
-      setError((prev) => ({ ...prev, title: '15자 이하로 적어주세요.' }));
+      newError.title[index] = '15자 이하로 적어주세요.';
+      setCheckEventTitle(false);
     } else {
-      setError((prev) => ({ ...prev, title: '' }));
+      newError.title[index] = ''; // 에러 해제
+      setCheckEventTitle(true);
     }
+    setError(newError);
     setInputs(newInputs);
   };
 
-  // 나이 유효성 검사 및 저장
+  // 이벤트 나이 유효성 검사 및 저장
   const handleSaveOld = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const value = e.target.value;
     const newInputs = [...inputs];
     newInputs[index].old = value;
 
+    const newError = { ...error };
     if (!/^\d+$/.test(value)) {
-      setError((prev) => ({ ...prev, old: '숫자만 입력해 주세요' }));
+      newError.old[index] = '숫자만 입력해 주세요';
+      setCheckEventAge(false);
+    } else if (Number(value) > Number(currentAge)) {
+      newError.old[index] = '현재 나이보다 작아야 합니다';
+      setCheckEventAge(false);
     } else {
-      setError((prev) => ({ ...prev, old: '' }));
+      newError.old[index] = ''; // 에러 해제
+      setCheckEventAge(true);
     }
+    setError(newError);
     setInputs(newInputs);
   };
 
@@ -104,11 +146,13 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
     const newInputs = [...inputs];
     newInputs[index].event = value;
 
+    const newError = { ...error };
     if (value.length > 50) {
-      setError((prev) => ({ ...prev, event: '50자 이하로 적어주세요.' }));
+      newError.event[index] = '50자 이하로 적어주세요.';
     } else {
-      setError((prev) => ({ ...prev, event: '' }));
+      newError.event[index] = ''; // 에러 해제
     }
+    setError(newError);
     setInputs(newInputs);
   };
 
@@ -121,6 +165,10 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
       title: input.title,
       description: input.event,
     }));
+
+    if (events.length < 2) {
+      return alert('이벤트는 두 개 이상 입력해주세요!');
+    }
 
     const requestBody = {
       currentAge: Number(currentAge), // 현재 나이
@@ -153,7 +201,7 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
             x
           </div>
         </div>
-        <div className='px-[60px]'>
+        <div className='px-[50px]'>
           <div className='text-[25px] font-bold'>
             인생 그래프 구성에 대한 정보를
             <br />
@@ -161,24 +209,32 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
           </div>
           <div className='mt-[20px] flex flex-col gap-[5px]'>
             <div>제목</div>
-            <input
-              value={graphTitle}
-              onChange={handleSaveGraphTitle} // 그래프 제목 저장
-              className='h-[40px] w-[300px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
-              placeholder='15자 이내로 입력해주세요.'
-            />
-            {error.graphTitle && <div className='text-red-500'>{error.graphTitle}</div>}
+            <div className='flex items-center gap-[10px]'>
+              <input
+                value={graphTitle}
+                onChange={handleSaveGraphTitle} // 그래프 제목 저장
+                className='h-[40px] w-[300px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
+                placeholder='15자 이내로 입력해주세요.'
+              />
+              {error.graphTitle && <div className='text-red-500'>{error.graphTitle}</div>}
+            </div>
           </div>
           <div className='mt-[10px] flex flex-col gap-[5px]'>
             <div>현재 나이</div>
-            <input
-              value={currentAge}
-              onChange={(e) => setCurrentAge(e.target.value)} // 현재 나이 저장
-              className='h-[40px] w-[200px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
-              placeholder='나이를 숫자만 입력해주세요'
-            />
+            <div className='flex items-center gap-[10px]'>
+              <input
+                value={currentAge}
+                onChange={(e) => {
+                  setCurrentAge(e.target.value);
+                  handleCurrentAge(e.target.value);
+                }} // 현재 나이 저장
+                className='h-[40px] w-[200px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
+                placeholder='나이를 숫자만 입력해주세요'
+              />
+              {Number(currentAge) > 100 && <div className='text-red-500'>100세 이하로 입력해주세요!</div>}
+            </div>
           </div>
-          <div className='mt-[25px] h-[280px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
+          <div className='mt-[25px] h-[280px] items-center gap-[10px] overflow-y-auto overflow-x-hidden pr-[10px]'>
             {inputs.map((input, index) => (
               <div key={index} className='mb-[20px]'>
                 <div className='flex gap-[10px]'>
@@ -190,7 +246,6 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
                       className='h-[40px] w-[300px] rounded-[10px] bg-[#F8F8F8] pl-[10px] outline-none'
                       placeholder='최대 15자'
                     />
-                    {error.title && <div className='text-red-500'>{error.title}</div>}
                   </div>
                   <div className='Old-input'>
                     <div>나이</div>
@@ -200,7 +255,6 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
                       className='h-[40px] w-[90px] rounded-[10px] bg-[#F8F8F8] pl-[10px] outline-none'
                       placeholder='나이만'
                     />
-                    {error.old && <div className='text-red-500'>{error.old}</div>}
                   </div>
                   <div className='Score-input'>
                     <div>점수</div>
@@ -217,32 +271,43 @@ const GraphWriteModal: React.FC<GraphWriteModalProps> = ({ onClose, updateList }
                     </select>
                   </div>
                   <div className='Buttons mt-[10px] flex gap-[10px] pt-[20px]'>
-                    {/* todo : 요소가 하나 남았을 때는 마이너스동작 안 되게 */}
-                    <button onClick={() => handleAddInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
-                      +
-                    </button>
-                    <button onClick={() => handleRemoveInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
-                      -
-                    </button>
+                    {inputs.length < Number(currentAge) && (
+                      <button onClick={() => handleAddInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
+                        +
+                      </button>
+                    )}
+                    {inputs.length > 1 && (
+                      <button onClick={() => handleRemoveInput(index)} className='flex h-[30px] w-[30px] justify-center rounded-[6px] bg-[#909700] text-[20px] font-bold text-white'>
+                        -
+                      </button>
+                    )}
                   </div>
+                </div>
+                <div className='flex items-center gap-[165px]'>
+                  {error.title[index] && <div className='text-red-500'>{error.title[index]}</div>}
+                  {error.old[index] && <div className='text-red-500'>{error.old[index]}</div>}{' '}
                 </div>
                 <div className='Event-input mt-[10px] flex'>
                   <input
                     value={input.event}
                     onChange={(e) => handleSaveEventDescription(e, index)} // 이벤트 설명 저장
                     className='h-[40px] w-[580px] rounded-[10px] bg-[#F8F8F8] pl-[10px] outline-none'
-                    placeholder='어떤 이벤트가 있었나요? 기억하고 싶은 것을 메모하세요. (선택)'
+                    placeholder='어떤 이벤트가 있었나요? 기억하고 싶은 것을 메모하세요.'
                   />
-                  {error.event && <div className='text-red-500'>{error.event}</div>}
                 </div>
+                {error.event[index] && <div className='overflow-x-auto text-red-500'>{error.event[index]}</div>}
               </div>
             ))}
           </div>
         </div>
         <div className='flex h-[50px] w-full justify-center'>
-          <button onClick={handleSave} className='mt-[10px] flex h-[50px] w-[220px] items-center justify-center rounded-[10px] bg-[#909700] text-[25px] font-bold text-white'>
+          <button
+            onClick={handleSave}
+            className={`mt-[10px] flex h-[50px] w-[220px] items-center justify-center rounded-[10px] text-[25px] font-bold text-white ${handleSubmitBtn() ? 'cursor-pointer bg-[#909700]' : 'cursor-not-allowed bg-gray-300'}`}
+            disabled={!handleSubmitBtn()}
+          >
             저장하기
-          </button>
+          </button>{' '}
         </div>
       </div>
     </div>
