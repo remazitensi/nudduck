@@ -34,10 +34,7 @@ import ExpertsPage from './pages/ExpertsPage';
 import MyPage from './pages/MyPage';
 
 import AICoach from './pages/AICoach';
-
-// import CustomerSupportPage from './pages/CustomerSupportPage';
-// import NotFound from './pages/NotFound';
-// import Unauthorized from './pages/Unauthorized';
+import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
   return (
@@ -86,14 +83,9 @@ const App: React.FC = () => {
           <Route path='/personal-info-policy' element={<PersonalInfoPolicy />} />
           <Route path='/term-of-use' element={<TermOfUse />} />
 
-          {/* 고객센터 페이지 */}
-          {/* <Route path='support' element={<CustomerSupportPage />} /> */}
-
-          {/* 401 Unauthorized 페이지 */}
-          {/* <Route path='401' element={<Unauthorized />} /> */}
-
           {/* 404 Not Found 페이지 */}
-          {/* <Route path='*' element={<NotFound />} /> */}
+          <Route path='*' element={<NotFound />} />
+          <Route path='/not-found' element={<NotFound />} />
         </Route>
       </Routes>
     </Router>
