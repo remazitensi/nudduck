@@ -8,17 +8,24 @@
  * 2024.09.20    김민지      Created     댓글 CRUD api 작성, 파일 이동
  */
 
-import { CommentsResDto, CreateCommentDto, UpdateCommentDto } from '../../types/comments-type';
+import { CommentsResDto, CreateCommentDto, RepliesResDto, UpdateCommentDto } from '../../types/comments-type';
 import { api, baseApi } from '../base-api';
 
 // ------------- 댓글 api --------------------
 
 // 댓글 목록 조회 (페이지네이션 포함)
-export const getComments = async (postId: number, limit = 10, offset = 0): Promise<CommentsResDto> => {
+export const getComments = async (
+  postId: number,
+  // limit = 100, offset = 0 // 페이지네이션
+): Promise<CommentsResDto> => {
   try {
     const response = await baseApi.get<CommentsResDto>(`${api.community}/articles/${postId}/comments/top-n`, {
-      params: { limit, offset, sort: 'createdAt:asc' },
+      params: {
+        // limit, offset, //페이지네이션
+        sort: 'createdAt:asc',
+      },
     });
+
     return response.data;
   } catch (error: any) {
     throw error;
@@ -58,12 +65,12 @@ export const deleteComment = async (postId: number, commentId: number): Promise<
 // ------------- 대댓글 api --------------------
 
 // 대댓글 조회
-export const getReply = async (postId: number, parentId: number): Promise<CommentsResDto> => {
+export const getReply = async (postId: number, parentId: number): Promise<RepliesResDto> => {
   try {
     const response = await baseApi.get(`${api.community}/articles/${postId}/comments/${parentId}/replies`);
     return response.data;
   } catch (error: any) {
-    alert(error.message);
+    // alert(error.message);
     throw error;
   }
 };

@@ -24,7 +24,7 @@ export const CommentSection: React.FC<{ comments: CommentsDto[] }> = ({ comments
       setInfo(response.data);
       return response.data;
     } catch (error: any) {
-      return alert(error.message);
+      // return alert(error.message);
     }
   };
 

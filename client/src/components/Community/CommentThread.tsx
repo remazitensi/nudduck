@@ -29,7 +29,7 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
       setReplies(data.replies); // 받은 데이터를 설정
       return data;
     } catch (error) {
-      return { comments: [], total: 0 }; // 기본값을 반환
+      return { replies: [], total: 0 }; // 기본값을 반환
     }
   };
 
@@ -56,7 +56,7 @@ export const CommentThread: React.FC<{ comment: CommentsDto; userId: number }> =
     let flag = confirm('삭제 하시겠습니까?'); //확인 취소 버튼
     if (flag == true) {
       const response = await deleteReply(postId, commentId);
-      if (response.status === 200) {
+      if (response === 200) {
         await updateReplies(); // 삭제 후 대댓글 리스트 업데이트
       }
     }
