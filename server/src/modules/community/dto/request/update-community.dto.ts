@@ -12,7 +12,7 @@
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEnum, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsEnum } from 'class-validator';
 import { Category } from '@_modules/community/enums/category.enum';
 
 export class UpdateCommunityDto {
@@ -33,14 +33,4 @@ export class UpdateCommunityDto {
   @IsOptional()
   @IsEnum(Category)
   category?: Category;
-
-  @ApiPropertyOptional({ description: '수정된 조회수' })
-  @IsOptional()
-  @IsNumber()
-  viewCount?: number;
-
-  @ApiPropertyOptional({ description: '수정된 댓글 수' })
-  @IsOptional()
-  @IsNumber()
-  commentCount?: number;
 }
