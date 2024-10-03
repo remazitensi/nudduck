@@ -8,8 +8,8 @@
  * 2024.09.28    김민지      Created
  */
 
+import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { api, baseApi } from '../../apis/base-api';
 import { CommentsDto, UserInfo } from '../../types/comments-type';
 import { CommentThread } from './CommentThread';
 
@@ -20,7 +20,12 @@ export const CommentSection: React.FC<{ comments: CommentsDto[] }> = ({ comments
   // 로그인 유저(이용자) 정보 호출 API
   const userInfo = async (): Promise<UserInfo | void> => {
     try {
-      const response = await baseApi.get<UserInfo>(`${api.myPage}/info`, {});
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/my/info`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // 엑세스 토큰 포함
+        },
+        withCredentials: true, // 쿠키 포함 설정
+      });
       setInfo(response.data);
       return response.data;
     } catch (error: any) {
