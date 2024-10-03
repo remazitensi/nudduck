@@ -12,6 +12,7 @@
  * 2024.09.21    이승철      Modified    절대경로 변경
  * 2024.09.29    이승철      Modified    주석 추가
  * 2024.09.29    이승철      Modified    세션 삭제 api 추가
+ * 2024.10.03    이승철      Modified    타 유저 세션 접근제한 추가
  */
 
 import { Jwt } from '@_modules/auth/guards/jwt';
@@ -44,8 +45,9 @@ export class SimulationController {
   @ApiResponse({ status: 200, description: '특정 세션의 대화 기록을 성공적으로 반환', type: AIChatMessageDto })
   @ApiResponse({ status: 404, description: '해당 세션을 찾을 수 없습니다.' })
   @Get('/:sessionId')
-  async getSessionHistory(@Param('sessionId') sessionId: number): Promise<AIChatMessageDto> {
-    const messages = await this.simulationService.getSessionHistory(sessionId);
+  async getSessionHistory(@Req() req, @Param('sessionId') sessionId: number): Promise<AIChatMessageDto> {
+    const userId = req.user.id;
+    const messages = await this.simulationService.getSessionHistory(userId, sessionId);
     return { messages };
   }
 
@@ -85,8 +87,9 @@ export class SimulationController {
   @ApiResponse({ status: 404, description: '해당 세션을 찾을 수 없습니다.' })
   @ApiResponse({ status: 500, description: '서버 에러' })
   @Delete('/:sessionId')
-  async deleteSession(@Param('sessionId') sessionId: number): Promise<{ success: boolean }> {
-    await this.simulationService.deleteSession(sessionId);
+  async deleteSession(@Req() req, @Param('sessionId') sessionId: number): Promise<{ success: boolean }> {
+    const userId = req.user.id;
+    await this.simulationService.deleteSession(userId, sessionId);
     return { success: true };
-  }  
+  }
 }
