@@ -14,6 +14,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './MainPage.css'; // CSS 파일 유지 가능 (일부 스타일링 적용)
 
 /**
@@ -26,6 +27,7 @@ const MainPage = () => {
   const imageRef = useRef<HTMLImageElement>(null); // 이미지를 참조할 useRef 생성
   const [isImageVisible, setIsImageVisible] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true); // 스크롤 최상단 상태 관리
+  const navigate = useNavigate();
 
   // Intersection Observer 사용 (텍스트)
   useEffect(() => {
@@ -203,7 +205,7 @@ const MainPage = () => {
       <section className='faq-section bg-[#FFFFFF] px-[10%] py-[200px] text-center'>
         <div className='faq-grid grid grid-cols-1 gap-8 md:grid-cols-2'>
           {/* 첫 번째 박스: AI 면접 컨설팅 */}
-          <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
+          <div onClick={() => navigate('/HomePage')} className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
             <img src='/box-icon-1.png' alt='AI 면접 컨설팅 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
             <h4 className='mb-4 text-[28px] font-bold'>AI 면접 컨설팅</h4>
             <ul className='mx-4 list-none p-0 text-left text-[22px]'>
@@ -215,7 +217,7 @@ const MainPage = () => {
           </div>
 
           {/* 두 번째 박스: 커뮤니티 공간 */}
-          <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
+          <div onClick={() => navigate('/community')} className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
             <img src='/box-icon-2.png' alt='커뮤니티 공간 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
             <h4 className='mb-4 text-[28px] font-bold'>커뮤니티 공간</h4>
             <ul className='mx-4 list-none p-0 text-left text-[22px]'>
@@ -226,7 +228,7 @@ const MainPage = () => {
           </div>
 
           {/* 세 번째 박스: 인생 그래프 */}
-          <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
+          <div onClick={() => navigate('/HomePage')} className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
             <img src='/box-icon-3.png' alt='인생 그래프 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
             <h4 className='mb-4 text-[28px] font-bold'>인생 그래프</h4>
             <ul className='mx-4 list-none p-0 text-left text-[22px]'>
@@ -237,7 +239,7 @@ const MainPage = () => {
           </div>
 
           {/* 네 번째 박스: 전문가 상담 */}
-          <div className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
+          <div onClick={() => navigate('/experts')} className='faq-item transform rounded-xl bg-[#ECEBD4] p-10 text-center shadow-md transition-transform duration-300 hover:-translate-y-2'>
             <img src='/box-icon-4.png' alt='전문가 상담 아이콘' className='box-icon mx-auto mb-6 h-24 w-24' />
             <h4 className='mb-4 text-[28px] font-bold'>전문가 상담</h4>
             <ul className='mx-4 list-none p-0 text-left text-[22px]'>
@@ -255,14 +257,14 @@ const MainPage = () => {
             AI 코치 <strong>누떡</strong>과 함께 면접 준비를 시작해 보세요!
           </p>
           <a
-            href='#'
+            onClick={() => navigate('/HomePage')}
             className='cta-button mb-2 ml-2 inline-block rounded bg-[#909700] px-5 py-2 text-base text-white'
             // onClick={(e) => {
             //   // e.preventDefault(); // 기본 동작 방지
             //   window.scrollTo({ top: 0, behavior: 'smooth' }); // 최상단으로 스크롤
             // }}
           >
-            면접 준비 바로가기
+            홈페이지 바로가기
           </a>
         </div>
       </div>

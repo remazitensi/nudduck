@@ -45,7 +45,7 @@ baseApi.interceptors.response.use(
         return baseApi(originalRequest);
       } catch (err) {
         alert('로그인이 필요합니다 😎');
-        window.location.href = '/';
+        window.location.href = '/HomePage';
         return Promise.reject(err);
       }
     }
