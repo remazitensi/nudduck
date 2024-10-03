@@ -9,15 +9,15 @@
  * 2024.09.16    이승철      Modified    절대경로 변경
  * 2024.09.29    이승철      Modified    HttpService 삽입
  * 2024.09.29    이승철      Modified    세션 삭제 로직 추가
+ * 2024.10.03    이승철      Modified    타 유저 세션 접근제한 추가
  */
 
 import { AIChatMessage, AIChatSession } from '@_modules/simulation/entity/ai-chat.entity';
 import { SimulationRepository } from '@_modules/simulation/simulation.repository';
+import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { HttpService } from '@nestjs/axios'; 
 import { firstValueFrom } from 'rxjs';
-
 
 @Injectable()
 export class SimulationService {
@@ -33,7 +33,17 @@ export class SimulationService {
   }
 
   // 특정 세션의 대화 기록 조회
-  async getSessionHistory(sessionId: number): Promise<AIChatMessage[]> {
+  async getSessionHistory(userId: number, sessionId: number): Promise<AIChatMessage[]> {
+    const session = await this.simulationRepository.findSessionById(sessionId);
+
+    if (!session) {
+      throw new BadRequestException(`세션을 찾을 수 없습니다. sessionId: ${sessionId}`);
+    }
+
+    if (session.userId !== userId) {
+      throw new BadRequestException('해당 세션에 접근할 권한이 없습니다.');
+    }
+
     return this.simulationRepository.findMessagesBySessionId(sessionId);
   }
 
@@ -76,9 +86,7 @@ export class SimulationService {
   // AI 서버로 질문을 보내고 응답 받기 (예외 처리 추가)
   async getAIResponse(query: string): Promise<{ Answer: string }> {
     try {
-      const response = await firstValueFrom(
-        this.httpService.post(this.configService.get('AI_QUERY_URL'), { query }),
-      );
+      const response = await firstValueFrom(this.httpService.post(this.configService.get('AI_QUERY_URL'), { query }));
       return response.data;
     } catch (error) {
       if (error.response) {
@@ -112,20 +120,24 @@ export class SimulationService {
   }
 
   // 특정 세션 삭제 로직 추가
-  async deleteSession(sessionId: number): Promise<void> {
+  async deleteSession(userId: number, sessionId: number): Promise<void> {
     const session = await this.simulationRepository.findSessionById(sessionId);
 
     if (!session) {
       throw new BadRequestException(`세션을 찾을 수 없습니다. sessionId: ${sessionId}`);
     }
 
+    if (session.userId !== userId) {
+      throw new BadRequestException('해당 세션에 접근할 권한이 없습니다.');
+    }
+
     try {
       // 세션의 메시지 먼저 삭제 후,
       await this.simulationRepository.deleteMessagesBySessionId(sessionId);
       // 세션 삭제
-      await this.simulationRepository.deleteSession(sessionId); 
+      await this.simulationRepository.deleteSession(sessionId);
     } catch (error) {
       throw new InternalServerErrorException('세션 삭제 중 오류가 발생했습니다.');
     }
-  }  
+  }
 }
