@@ -183,29 +183,26 @@
 ```bash
 git clone https://github.com/your-repo/nudduck.git
 cd nudduck
-2. .env 파일 설정
-서버(server)와 클라이언트(client) 폴더에 각각 .env 파일을 생성해야 합니다. .env 파일의 설정 값은 프로젝트 설정에 맞게 지정합니다.
-
-3. 의존성 설치
-서버와 클라이언트 디렉토리 각각에서 필요한 패키지를 설치합니다:
 ```
-### 2. 서버 의존성 설치
+### 2. .env 파일 설정
+```bash
+서버(server)와 클라이언트(client) 폴더에 각각 .env 파일을 생성해야 합니다. .env 파일의 설정 값은 프로젝트 설정에 맞게 지정합니다.
+```
+### 3. 서버 의존성 설치
 ```bash
 cd server
 npm install
 ```
-### 3. 클라이언트 의존성 설치
+### 4. 클라이언트 의존성 설치
 ```bash
 cd ../client
 npm install
 ```
-
-### 4. 서버 실행
+### 5. 서버 실행
 ```bash
 cd ../
 npm run start
 ```
-서버가 정상적으로 실행되면, 클라이언트와 백엔드 서버가 구동되며, 브라우저에서 서비스를 사용할 수 있습니다.
 
 # 7. .env 파일 설정
 
