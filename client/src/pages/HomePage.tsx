@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { baseApi } from '../apis/base-api'; // baseApi 임포트
 import LoginModal from '../components/LoginModal';
+import useScrollToTop from '../hooks/useScrollToTop';
 import './HomePage.css';
 
 // 게시글 타입 정의
@@ -57,6 +58,8 @@ const HomePage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 }); // 마우스 위치
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 모달 상태 관리
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
+
+  useScrollToTop();
 
   const openLoginModal = () => {
     setIsLoginModalOpen(true); // 모달 열기
@@ -184,7 +187,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* AI Coach Section */}
+        {/* Login Section */}
         {!isLoggedIn && (
           <section className='my-6 flex items-center justify-between rounded p-6'>
             <img src='nudduck-coach.png' alt='AI Coach' className='h-[600px] w-[700px]' />
@@ -196,7 +199,7 @@ const HomePage = () => {
                 </p>
                 <div className='absolute -left-14 top-10 h-0 w-0 border-[30px] border-transparent border-r-[#A1DFFF]'></div>
               </div>
-              <p className='m-auto mt-[95px] text-center text-[24px] font-bold transition-transform duration-300 hover:scale-105'>
+              <p className='m-auto mt-[95px] text-center text-[24px] font-bold transition-transform duration-300 hover:scale-105' onClick={openLoginModal}>
                 구글, 카카오 아이디가 있으신가요?
                 <br />
                 <span onClick={openLoginModal} className='cursor-pointer bg-none text-[#909700]'>
