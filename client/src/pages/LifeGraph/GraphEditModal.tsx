@@ -36,10 +36,10 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
       event: event.description,
     })),
   );
-  const [checkTitle, setCheckTitle] = useState(false);
-  const [checkCurrentAge, setCheckCurrentAge] = useState(false);
-  const [checkEventAge, setCheckEventAge] = useState(false);
-  const [checkEventTitle, setCheckEventTitle] = useState(false);
+  const [checkTitle, setCheckTitle] = useState(true);
+  const [checkCurrentAge, setCheckCurrentAge] = useState(true);
+  const [checkEventAge, setCheckEventAge] = useState(true);
+  const [checkEventTitle, setCheckEventTitle] = useState(true);
   const [error, setError] = useState({
     graphTitle: '',
     old: Array(inputs.length).fill(''),
@@ -190,6 +190,7 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
       .then(() => {
         // onSave(); // 저장 후 부모 컴포넌트에서 리스트 갱신
         window.location.reload();
+        alert('그래프 수정에 성공했습니다 😎');
         onClose(); // 모달 닫기
       })
       .catch((error) => {
@@ -211,25 +212,31 @@ const GraphEditModal: React.FC<GraphEditModalProps> = ({ onClose, graphData }) =
           <div className='text-[20px] font-bold'>인생 그래프 수정</div>
           <div className='mt-[20px] flex flex-col gap-[5px]'>
             <div>제목</div>
-            <input
-              value={graphTitle}
-              onChange={handleSaveGraphTitle}
-              className='h-[40px] w-[300px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
-              placeholder='15자 이내로 입력해주세요.'
-            />
+            <div className='flex items-center gap-[10px]'>
+              <input
+                value={graphTitle}
+                onChange={handleSaveGraphTitle}
+                className='h-[40px] w-[300px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
+                placeholder='15자 이내로 입력해주세요.'
+              />
+              {error.graphTitle && <div className='text-red-500'>{error.graphTitle}</div>}
+            </div>
           </div>
 
           <div className='mt-[10px] flex flex-col gap-[5px]'>
             <div>현재 나이</div>
-            <input
-              value={currentAge}
-              onChange={(e) => {
-                setCurrentAge(e.target.value);
-                handleCurrentAge(e.target.value);
-              }} // 현재 나이 저장
-              className='h-[40px] w-[200px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
-              placeholder='나이를 입력해주세요'
-            />
+            <div className='flex items-center gap-[10px]'>
+              <input
+                value={currentAge}
+                onChange={(e) => {
+                  setCurrentAge(e.target.value);
+                  handleCurrentAge(e.target.value);
+                }} // 현재 나이 저장
+                className='h-[40px] w-[200px] rounded-[10px] border bg-[#f3f3f3] pl-[10px] outline-none'
+                placeholder='나이를 입력해주세요'
+              />
+              {Number(currentAge) > 100 && <div className='text-red-500'>100세 이하로 입력해주세요!</div>}
+            </div>
           </div>
 
           <div className='mt-[25px] h-[280px] items-center gap-[10px] overflow-y-auto overflow-x-hidden'>
