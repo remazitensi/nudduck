@@ -110,7 +110,7 @@ export const CommunityPostEdit: React.FC = () => {
         await editPost(post, numericId); // numericId를 사용
       }
       alert('게시글이 수정되었습니다! ✏');
-      navigate(`/community`);
+      navigate(`/my-page`);
     } catch (error: any) {
       alert(error.data.message.message);
     }
@@ -217,7 +217,7 @@ export const CommunityPostEdit: React.FC = () => {
 
       {/* 저장 및 취소 버튼 */}
       <div className='mb-[70px] flex w-[1300px] justify-end gap-[23px] p-[20px]'>
-        <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/community')}>
+        <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#FFC5C3] text-[24px] text-pink-50 hover:text-white' onClick={() => navigate('/my-page')}>
           취소
         </button>
         <button className='h-[50px] w-[140px] items-center rounded-[10px] bg-[#AEAC9A] text-[24px] text-[#DAD7B9] hover:text-white' onClick={savePost}>
