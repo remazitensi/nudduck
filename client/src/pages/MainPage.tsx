@@ -15,6 +15,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useScrollToTop from '../hooks/useScrollToTop';
 import './MainPage.css'; // CSS 파일 유지 가능 (일부 스타일링 적용)
 
 /**
@@ -28,7 +29,7 @@ const MainPage = () => {
   const [isImageVisible, setIsImageVisible] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true); // 스크롤 최상단 상태 관리
   const navigate = useNavigate();
-
+  useScrollToTop();
   // Intersection Observer 사용 (텍스트)
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {

@@ -19,8 +19,8 @@ const QuitModal: React.FC<QuitModalProps> = ({ onClose }) => {
   const handleClickQuit = async () => {
     try {
       await deleteAccount(); // 탈퇴처리 api 호출
-
-      alert('정상적으로 탈퇴처리 되었습니다.'); // 성공 메시지
+      // alert('정상적으로 탈퇴처리 되었습니다.'); // 성공 메시지 중복으로 주석
+      window.location.href = '/';
       onClose();
     } catch (error) {
       alert('탈퇴 처리중 문제가 발생하였습니다.');
